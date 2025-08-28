@@ -35,9 +35,17 @@
 	</div>
 </div>
 
+<h4>Product Table</h4>
+<div class="row">
+	<div class="col-12 border p-3">		
+	</div>
+</div>
+
 @code {
 	private string selectedProp = string.Empty;
 	private string selectedPropValue = string.Empty;
+
+	List<Product> products = new();
 
 	Product product = new()
 	{
@@ -52,4 +60,36 @@
 			new() { Id = 1, Key = "Flavor", Value = "Rose" }
 		}
 	};
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		products.Add(new()
+		{
+			Name = "Product 1",
+			IsActive = false,
+			Id = 1,
+			Price = 5,
+			ProductProperties = new List<Product_Prop>()
+			{
+				new() { Id = 1, Key = "Color", Value = "Red" },
+				new() { Id = 1, Key = "Size", Value = "20oz" },
+				new() { Id = 1, Key = "Flavor", Value = "Rose" }
+			}
+		});
+		products.Add(new()
+		{
+			Name = "Product 2",
+			IsActive = true,
+			Id = 2,
+			Price = 10,
+			ProductProperties = new List<Product_Prop>()
+			{
+				new() { Id = 1, Key = "Color", Value = "Blue" },
+				new() { Id = 1, Key = "Size", Value = "32oz" },
+				new() { Id = 1, Key = "Flavor", Value = "Ocean" }
+			}
+		});
+	}
 }

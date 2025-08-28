@@ -2,7 +2,7 @@
 
 <PageTitle>Teams</PageTitle>
 
-<h4>My favourite Team</h4>
+<h4>My favourite Teams</h4>
 <div class="col-6">
 	<p>This component demonstrates showing a team's data.</p>
 
@@ -15,9 +15,9 @@
 		<table class="table">
 			<thead>
 				<tr>
+					<th>Id</th>
 					<th>Name</th>
 					<th>Country</th>
-					<th>ID</th>
 					<th>Points</th>
 					<th>Is Active?</th>
 				</tr>
@@ -26,11 +26,11 @@
 				@foreach (var team in teams)
 				{
 					<tr>
-						<td>@team.Name</td>
-						<td>@team.Country</td>
 						<td>@team.Id</td>
-						<td>@team.Points</td>
-						<td>@team.IsActive</td>
+						<td>@team.Name</td>
+						<td>@team.Country.Name</td>
+						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)"/></td>
+						<td><input type="checkbox" @bind="@team.IsActive" disabled /></td>
 					</tr>
 				}
 			</tbody>
@@ -46,13 +46,33 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		teams = Enumerable.Range(1, 1).Select(index => new Team
+		teams = new[]
 		{
-			Name = "AEK",
-			Country = "Greece",
-			IsActive = true,
-			Id = 1,
-			Points = 2
-		}).ToArray();
+			new Team
+			{
+				Name = "AEK",
+				Country = new Country() { Name = "Greece", Id = 1 },
+				IsActive = true,
+				Id = 1,
+				Points = 2
+
+			},
+			new Team
+			{
+				Name = "Vfb",
+				Country = new Country() { Name = "Germany", Id = 2 },
+				IsActive = false,
+				Id = 2,
+				Points = 0
+			}   ,
+			new Team
+			{
+				Name = "Sevilla",
+				Country = new Country() { Name = "Spain", Id = 4 },
+				IsActive = false,
+				Id = 2,
+				Points = 0
+			}
+		};
 	}
 }
