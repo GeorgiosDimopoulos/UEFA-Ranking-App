@@ -1,0 +1,58 @@
+﻿@page "/teams"
+
+<PageTitle>Teams</PageTitle>
+
+<h4>My favourite Team</h4>
+<div class="col-6">
+	<p>This component demonstrates showing a team's data.</p>
+
+	@if (teams == null)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Country</th>
+					<th>ID</th>
+					<th>Points</th>
+					<th>Is Active?</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var team in teams)
+				{
+					<tr>
+						<td>@team.Name</td>
+						<td>@team.Country</td>
+						<td>@team.Id</td>
+						<td>@team.Points</td>
+						<td>@team.IsActive</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+
+</div>
+
+@code
+{
+	private Team[]? teams;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await Task.Delay(500);
+		teams = Enumerable.Range(1, 1).Select(index => new Team
+		{
+			Name = "AEK",
+			Country = "Greece",
+			IsActive = true,
+			Id = 1,
+			Points = 2
+		}).ToArray();
+	}
+}

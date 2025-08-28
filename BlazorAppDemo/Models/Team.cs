@@ -6,6 +6,6 @@
         public string Name { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public int Points { get; set; }
-        // public Country Country { get; set; }
+        public string Country { get; set; } // Country 
     }
 }
