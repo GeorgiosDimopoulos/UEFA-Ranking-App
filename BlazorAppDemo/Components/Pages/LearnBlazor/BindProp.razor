@@ -49,17 +49,22 @@
 					@foreach (var pr in products)
 					{
 						<tr>
-							<td> <input type="text" @bind="pr.Name" @bind:event="oninput"/> </td>
-							<td> <input type="text" @bind="pr.Price" @bind:event="oninput"/> </td>
-							<td> <input type="checkbox" @bind="pr.IsActive"/> </td>
+							<td> <input type="text" @bind="pr.Name" @bind:event="oninput" /> </td>
+							<td> <input type="text" @bind="pr.Price" @bind:event="oninput" /> </td>
+							<td> <input type="checkbox" @bind="pr.IsActive" /> </td>
 						</tr>
 						<tr></tr>
 						<tr></tr>
 					}
 				</tbody>
 			</table>
+			<h4>Product Summary</h4>
+			@foreach (var pr in products)
+			{
+				<p>@pr.Name, @pr.Price, @(pr.IsActive)</p>
+			}
 		</div>
-	</div>
+	</div>	
 </div>
 
 @code {

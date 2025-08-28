@@ -30,7 +30,7 @@
 						<td>@team.Name</td>
 						<td>@team.Country.Name</td>
 						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)"/></td>
-						<td><input type="checkbox" @bind="@team.IsActive" disabled /></td>
+						<td><input type="checkbox" @bind="@team.IsActive" /></td>
 					</tr>
 				}
 			</tbody>
