@@ -33,11 +33,32 @@
 			<p>Selected product property value: @product.ProductProperties.FirstOrDefault(pr => pr.Key.Equals(selectedProp)).Value</p>
 		}
 	</div>
-</div>
 
-<h4>Product Table</h4>
-<div class="row">
-	<div class="col-12 border p-3">		
+	<div class="col-12 p4">
+		<h4 class="text-success">Product Table</h4>
+		<div class="row">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<td>Product Name</td>
+						<td>Price</td>
+						<td>Active?</td>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var pr in products)
+					{
+						<tr>
+							<td> <input type="text" @bind="pr.Name" @bind:event="oninput"/> </td>
+							<td> <input type="text" @bind="pr.Price" @bind:event="oninput"/> </td>
+							<td> <input type="checkbox" @bind="pr.IsActive"/> </td>
+						</tr>
+						<tr></tr>
+						<tr></tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 
