@@ -5,5 +5,7 @@
         public string Name { get; set; } = string.Empty;
         public int Id { get; set; }
         public IEnumerable<Team> Teams { get; set; } = [];
+        public int NumberOfTeams => Teams.Count();
+        public int TotalPoints => Teams.Sum(t => t.Points);
     }
 }

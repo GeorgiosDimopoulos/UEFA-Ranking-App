@@ -1,0 +1,40 @@
+﻿@page "/countries"
+
+<PageTitle>Countries</PageTitle>
+
+<h1>Countries Statistics</h1>
+
+<div>
+	<p>This component demonstrates showing countries data.</p>
+
+	if@(countries == null)
+	{
+	<p><em>Loading countries...</em></p>
+	}
+	else
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Name</th>
+					<th>Teams</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	}
+
+</div>
+
+@code {
+	private List<Country> countries = new List<Country>
+	{
+		new Country { Id = 1, Name = "Greece"},
+		new Country { Id = 2, Name = "Germany"},
+		new Country { Id = 3, Name = "France"},
+		new Country { Id = 4, Name = "Italy"},
+		new Country { Id = 5, Name = "Spain" }
+	};
+}
