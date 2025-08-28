@@ -7,34 +7,48 @@
 <div>
 	<p>This component demonstrates showing countries data.</p>
 
-	if@(countries == null)
+	@if (countries == null)
 	{
-	<p><em>Loading countries...</em></p>
+		<p><em>Loading countries...</em></p>
 	}
 	else
 	{
-		<table class="table">
+		<table class="table table-striped">
 			<thead>
 				<tr>
 					<th>Id</th>
 					<th>Name</th>
 					<th>Teams</th>
+					<th>Points</th>
 				</tr>
 			</thead>
 			<tbody>
+				@foreach (var c in countries)
+				{
+					<tr>
+						<td>@c.Id</td>
+						<td>@c.Name</td>
+						<td>@c.NumberOfTeams</td>
+						<td>@c.TotalPoints</td>
+					</tr>
+				}
 			</tbody>
 		</table>
 	}
-
 </div>
 
 @code {
-	private List<Country> countries = new List<Country>
+	private Country[]? countries;
+
+	protected override async Task OnInitializedAsync()
 	{
-		new Country { Id = 1, Name = "Greece"},
-		new Country { Id = 2, Name = "Germany"},
-		new Country { Id = 3, Name = "France"},
-		new Country { Id = 4, Name = "Italy"},
-		new Country { Id = 5, Name = "Spain" }
-	};
+		await Task.Delay(500);
+
+		countries = new[]
+		{
+			new Country { Id = 1, Name = "Greece", Teams = new[] { new Team { Points = 2 } } },
+			new Country { Id = 2, Name = "Germany", Teams = new[] { new Team { Points = 5 } }  },
+			new Country { Id = 3, Name = "Cyprus" },
+		};
+	}
 }
