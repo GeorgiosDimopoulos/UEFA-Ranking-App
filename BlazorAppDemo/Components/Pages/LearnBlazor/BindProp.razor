@@ -1,25 +1,47 @@
 ﻿@page "/learnBlazor/bindprop"
-@using BlazorAppDemo.Models
 
-<h3>Product - Data Binding</h3>
+<div class="row">
+	<div class="col-6 border p-3">
+		<h4>Product - Data Info</h4>
+		Name : @product.Name
+		<br />
+		Current Price : @product.Price
+		<br />
+		The product is : @(product.IsActive ? "Active" : "Inactive")
+		<br />
+	</div>
+	<div class="col-6 border p-3">
+		<h4>Product - Data Binding</h4>
+		IsActive:
+		<input type="checkbox" @bind="@product.IsActive" />
+		<br />
 
-Name : @product.Name
-<br />
-Price : @product.Price
-<br />
-The product is : @(product.IsActive ? "Active" : "Inactive")
-<br />
-<br />
-IsActive:
-<input type="checkbox" @bind="@product.IsActive" />
-<br />
-Input price :
-<input type="number" @bind="@product.Price" @bind:event="oninput" />
+		Input price :
+		<input type="number" @bind="@product.Price" @bind:event="oninput" />
+		<br />
+
+		Select a product property:
+		<select @bind="selectedProp">
+			@foreach (var prop in product.ProductProperties)
+			{
+				<option value="@prop.Key">@prop.Key</option>
+			}
+		</select>
+		<br />
+		@if (!string.IsNullOrEmpty(@selectedProp))
+		{
+			<p>Selected product property value: @product.ProductProperties.FirstOrDefault(pr => pr.Key.Equals(selectedProp)).Value</p>
+		}
+	</div>
+</div>
 
 @code {
+	private string selectedProp = string.Empty;
+	private string selectedPropValue = string.Empty;
+
 	Product product = new()
 	{
-		Name = "Apple",
+		Name = "Product 1",
 		IsActive = false,
 		Id = 1,
 		Price = 5,
