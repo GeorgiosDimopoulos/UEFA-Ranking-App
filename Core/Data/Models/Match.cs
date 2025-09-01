@@ -17,14 +17,20 @@
         public required Team AwayTeam { get; set; }
     }
 }
+
 public enum MatchResult
 {
-    Win = 3,
-    Draw = 1,
-    Loss = 0
+    //Win = 3,
+    //Draw = 1,
+    //Loss = 0
+    HomeWin,
+    Draw,
+    AwayWin
 }
+
 public enum Competition
 {
+    None = 0,
     ChampionsLeague = 1,
     EuropaLeague = 2,
     ConferenceLeague = 3

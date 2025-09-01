@@ -23,6 +23,7 @@
 					<th>Points</th>
 					<th>Position</th>
 					<th>Is Active?</th>
+					<th>Matches:</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -36,7 +37,9 @@
 						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)" /></td>
 						<td>@team.Position</td>
 						<td><input type="checkbox" @bind="@team.IsActive" /></td>
+						<td><input type="button" class="btn btn-success" style="width:40px" value=">" onclick="ShowMatches()"/></td>
 					</tr>
+					<tr></tr>
 				}
 			</tbody>
 		</table>
@@ -82,5 +85,10 @@
 				Points = 0
 			}
 		};
+	}
+
+	public void ShowMatches()
+	{
+		
 	}
 }
