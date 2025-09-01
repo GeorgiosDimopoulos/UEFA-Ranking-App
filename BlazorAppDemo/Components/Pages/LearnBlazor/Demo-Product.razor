@@ -19,7 +19,7 @@
 					}
 				}
 				<br />
-				<input type="button" class="btn btn-danger" style="width:100px" value="Delete" />
+				<input type="button" class="btn btn-danger" style="width:100px" value="Delete" @onclick="() => DeleteProductById(prod.Id)" />
 			</div>
 		}
 	</div>
@@ -88,4 +88,13 @@
 		count += incr;
 	}
 
+	private void DeleteProductById(int id)
+	{
+		// products.RemoveAll(p => p.Id == id);
+		var product = products.FirstOrDefault(pr => pr.Id == id);
+		if (product != null)
+		{
+			products.Remove(product);
+		}
+	}
 }
