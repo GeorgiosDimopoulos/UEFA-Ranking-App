@@ -1,0 +1,21 @@
+﻿<input type="button" class="btn btn-danger" style="width:200px" value="Delete: @ProductName" />
+
+@code {
+	[Parameter]
+	public int ProductId { get; set; }
+
+	[Parameter]
+	public string ProductName { get; set; } = string.Empty;
+
+	List<Product> products = new();
+
+	private void DeleteProductById(int id)
+	{
+		// products.RemoveAll(p => p.Id == id);
+		var product = products.FirstOrDefault(pr => pr.Id == id);
+		if (product != null)
+		{
+			products.Remove(product);
+		}
+	}
+}

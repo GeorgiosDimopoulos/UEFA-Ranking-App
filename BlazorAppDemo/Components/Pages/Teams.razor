@@ -1,11 +1,11 @@
-﻿@page "/favsteams"
+﻿@page "/teams"
 @using Core.Data.Models
+@using Humanizer
 
-<PageTitle>My Favourite Teams</PageTitle>
+<PageTitle>Teams</PageTitle>
 
-<h4 class="text-info">My favourite Teams</h4>
-<div class="col-6">
-	<p>This component demonstrates showing a team's data.</p>
+<div class="col-12">
+	<p>This component demonstrates showing teams data.</p>
 
 	@if (teams == null)
 	{
@@ -19,7 +19,9 @@
 					<th>Id</th>
 					<th>Name</th>
 					<th>Country</th>
+					<th>Competition</th>
 					<th>Points</th>
+					<th>Position</th>
 					<th>Is Active?</th>
 				</tr>
 			</thead>
@@ -30,7 +32,9 @@
 						<td>@team.Id</td>
 						<td>@team.Name</td>
 						<td>@team.Country.Name</td>
-						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)"/></td>
+						<td>@team.Competition.ToString().Humanize(LetterCasing.Title)</td>
+						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)" /></td>
+						<td>@team.Position</td>
 						<td><input type="checkbox" @bind="@team.IsActive" /></td>
 					</tr>
 				}
@@ -52,6 +56,7 @@
 			new Team
 			{
 				Name = "AEK",
+				Competition = Competition.ConferenceLeague,
 				Country = new Country() { Name = "Greece", Id = 1 },
 				IsActive = true,
 				Id = 1,
@@ -61,6 +66,7 @@
 			new Team
 			{
 				Name = "Vfb",
+				Competition = Competition.EuropaLeague,
 				Country = new Country() { Name = "Germany", Id = 2 },
 				IsActive = false,
 				Id = 2,
@@ -69,6 +75,7 @@
 			new Team
 			{
 				Name = "Sevilla",
+				Competition = Competition.None,
 				Country = new Country() { Name = "Spain", Id = 4 },
 				IsActive = false,
 				Id = 2,
