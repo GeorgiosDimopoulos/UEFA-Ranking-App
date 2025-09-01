@@ -1,27 +1,45 @@
 ﻿@page "/learnBlazor/demo-product"
 
-<h2 class="text-primary">Demo Product</h2>
+<h2 class="text-primary">DemoProduct</h2>
 
-<div class="border p-2 mt-2 bg-secondary">
+<div class="p-2 mt-2">
 	<div class="row">
 		@foreach (var prod in products)
 		{
-			<div class="bg-light border m-1 col-5"></div>
+			<div class="bg-light border col-6">
+				<h4 class="text-secondary">Product - @prod.Id</h4>
+				Name - @prod.Name <br />
+				Show properties:
+				<input type="checkbox" @bind="prod.IsActive" />
+				@if (prod.IsActive)
+				{
+					@foreach (var prop in prod.ProductProperties)
+					{
+						<p>@prop.Key - @prop.Value</p>
+					}				
+				}
+				<br/>
+				<input type="button" class="btn btn-danger" style="width:100px" value="Delete"/>
+			</div>
 		}
 	</div>
-	<div class="row">
+	<div class="row pt-4">
+		Count : @Count
+		<br />
+		<input type="button" class="btn btn-success" style="width:100px" value="Count" @onclick="IncreaseCount"/>		
 	</div>
 </div>
 
 @code {
 	private string selectedProp = string.Empty;
 	private string selectedPropValue = string.Empty;
+	private int Count { get; set; } = 0;
 
 	List<Product> products = new();
 
 	Product product = new()
 	{
-		Name = "Product 1",
+		Name = "Test product 1",
 		IsActive = false,
 		Id = 1,
 		Price = 5,
@@ -39,7 +57,7 @@
 
 		products.Add(new()
 		{
-			Name = "Product 1",
+			Name = "Test product 1",
 			IsActive = false,
 			Id = 1,
 			Price = 5,
@@ -52,7 +70,7 @@
 		});
 		products.Add(new()
 		{
-			Name = "Product 2",
+			Name = "Test Product 2",
 			IsActive = true,
 			Id = 2,
 			Price = 10,
@@ -64,4 +82,10 @@
 			}
 		});
 	}
+
+	private void IncreaseCount()
+	{
+		Count++;
+	}
+
 }

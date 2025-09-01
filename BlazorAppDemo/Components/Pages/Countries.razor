@@ -16,20 +16,24 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Id</th>
+					<th>Position</th>
 					<th>Name</th>
-					<th>Teams</th>
-					<th>Points</th>
+					<th>Total Teams</th>
+					<th>Active Teams</th>
+					<th>Total Points</th>
+					<th>Show Teams</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var c in countries)
 				{
 					<tr>
-						<td>@c.Id</td>
+						<td>@c.Position</td>
 						<td>@c.Name</td>
 						<td>@c.NumberOfTeams</td>
+						<td>@c.NumberOfTeams</td>
 						<td>@c.TotalPoints</td>
+						<td><input type="checkbox" checked="@(c.NumberOfTeams > 0)"/></td>
 					</tr>
 				}
 			</tbody>
@@ -46,9 +50,9 @@
 
 		countries = new[]
 		{
-			new Country { Id = 1, Name = "Greece", Teams = new[] { new Team { Points = 2 } } },
-			new Country { Id = 2, Name = "Germany", Teams = new[] { new Team { Points = 5 } }  },
-			new Country { Id = 3, Name = "Cyprus" },
+			new Country { Id = 1, Name = "Greece", Position = 11 , Teams = new[] { new Team { Points = 40000 } } },
+			new Country { Id = 2, Name = "Germany", Position = 3, Teams = new[] { new Team { Points = 55000 } }  },
+			new Country { Id = 3, Name = "Cyprus" , Position = 19, Teams = new[] { new Team { Points = 30000 } }  },
 		};
 	}
 }
