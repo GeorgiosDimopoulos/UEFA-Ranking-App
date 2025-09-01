@@ -16,24 +16,24 @@
 					@foreach (var prop in prod.ProductProperties)
 					{
 						<p>@prop.Key - @prop.Value</p>
-					}				
+					}
 				}
-				<br/>
-				<input type="button" class="btn btn-danger" style="width:100px" value="Delete"/>
+				<br />
+				<input type="button" class="btn btn-danger" style="width:100px" value="Delete" />
 			</div>
 		}
 	</div>
 	<div class="row pt-4">
-		Count : @Count
+		Count : @count
 		<br />
-		<input type="button" class="btn btn-success" style="width:100px" value="Count" @onclick="IncreaseCount"/>		
+		<input type="button" class="btn btn-success" style="width:100px" value="Count" @onclick="() => IncreaseCount(5)" />
 	</div>
 </div>
 
 @code {
 	private string selectedProp = string.Empty;
 	private string selectedPropValue = string.Empty;
-	private int Count { get; set; } = 0;
+	private int count { get; set; } = 0;
 
 	List<Product> products = new();
 
@@ -83,9 +83,9 @@
 		});
 	}
 
-	private void IncreaseCount()
+	private void IncreaseCount(int incr)
 	{
-		Count++;
+		count += incr;
 	}
 
 }
