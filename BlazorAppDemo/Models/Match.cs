@@ -3,23 +3,23 @@
     public class Match
     {
         public int Id { get; set; }
-        // public int ExternalId { get; set; }
+
+        public int ExternalId { get; set; }
+        public int HomeTeamId { get; set; }
+        public int AwayTeamId { get; set; }
+
         public DateTime Date { get; set; }
 
-        public string HomeTeamName { get; set; } = string.Empty;
-        public string AwayTeamName { get; set; } = string.Empty;
+        public required Competition Competition { get; set; }
+        public required MatchResult Result { get; set; }
 
-        public Team HomeTeam { get; set; } // required 
-        public Team AwayTeam { get; set; } // required
-
-        // public Competition Competition { get; set; }
-
-        public MatchResult Result { get; set; }
+        public required Team HomeTeam { get; set; }
+        public required Team AwayTeam { get; set; }
     }
 }
 public enum MatchResult
 {
-    HomeWin,
-    AwayWin,
-    Draw
+    Win = 3,
+    Draw = 1,
+    Loss = 0
 }

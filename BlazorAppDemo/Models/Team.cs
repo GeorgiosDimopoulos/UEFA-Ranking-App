@@ -9,5 +9,6 @@
         public Country Country { get; set; } = new();
 
         public Competition Competition { get; set; }
+        public IEnumerable<Match> Matches { get; set; } = [];
     }
 }
