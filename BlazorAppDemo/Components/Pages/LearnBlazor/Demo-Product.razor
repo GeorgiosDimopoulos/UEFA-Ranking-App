@@ -3,37 +3,29 @@
 <h2 class="text-primary">DemoProduct</h2>
 
 <div class="p-2 mt-2">
+	<p> Favourite count: @FavouritesCount </p>
+	<p> Selected property is: @SelectedPropertyName </p>
 	<div class="row">
 		@foreach (var prod in products)
 		{
-			<div class="bg-light border col-6">
-				<h4 class="text-secondary">Product - @prod.Id</h4>
-				Name - @prod.Name <br />
-				Show properties:
-				<input type="checkbox" @bind="prod.IsActive" />
-				@if (prod.IsActive)
-				{
-					@foreach (var prop in prod.ProductProperties)
-					{
-						<p>@prop.Key - @prop.Value</p>
-					}
-				}
-				<br />
-				<_DeleteButtonComponent ProductId="@prod.Id" ProductName="@prod.Name" />
-			</div>
+			<_InnerProductComponent Product="prod" OnFavouriteUpdated="FavouriteCountChange" OnProductClicked="ProductClicked">
+			</_InnerProductComponent>
 		}
 	</div>
 	<div class="row pt-4">
 		Count : @count
 		<br />
-		<input type="button" class="btn btn-success" style="width:100px" value="Count" @* @onclick="() => IncreaseCount(5)"  *@/>
+		<input type="button" class="btn btn-success" style="width:100px" value="Count" /> @* @onclick="() => IncreaseCount(5)" *@ 
 	</div>
 </div>
 
 @code {
 	private string selectedProp = string.Empty;
 	private string selectedPropValue = string.Empty;
-	private int count { get; set; } = 0;
+	private int count = 0;
+
+	public int FavouritesCount { get; set; } = 0;
+	public string SelectedPropertyName { get; set; } = string.Empty;
 
 	List<Product> products = new();
 
@@ -83,8 +75,24 @@
 		});
 	}
 
-	// private void IncreaseCount(int incr)
-	// {
-	// 	count += incr;
-	// }
+	protected void FavouriteCountChange(bool isSelected)
+	{
+		if (isSelected)
+		{
+			FavouritesCount++;
+		}
+		else
+		{
+			FavouritesCount--;
+		}
+	}
+
+	protected void ProductClicked(string name)
+	{
+		if(string.IsNullOrEmpty(name))
+		{
+			return;
+		}
+		SelectedPropertyName = name;
+	}
 }

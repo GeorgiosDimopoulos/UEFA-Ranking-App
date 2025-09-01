@@ -35,8 +35,8 @@
 						<td>@team.Name</td>
 						<td>@team.Country.Name</td>
 						<td>@team.Competition.ToString().Humanize(LetterCasing.Title)</td>
-						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)" /></td>
 						<td>@team.Position</td>
+						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)" /></td>
 						<td><input type="checkbox" @bind="@team.IsActive" /></td>
 						<td><input type="button" class="btn btn-success" style="width:40px" value=">" @onclick="ShowMatches" /></td>
 					</tr>
@@ -55,11 +55,11 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		teams = Databasefeeder.FeedTeams();
+		var databasefeeder = new Databasefeeder();
+		teams = databasefeeder.GetTeams();
 	}
 
 	public void ShowMatches()
 	{
-
 	}
 }

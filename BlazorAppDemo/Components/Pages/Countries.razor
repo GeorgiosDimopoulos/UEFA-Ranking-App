@@ -52,8 +52,8 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-
-		countries = Databasefeeder.FeedCountries();
+		var databasefeeder = new Databasefeeder();
+		countries = databasefeeder.GetCountries();
 	}
 
 	public void ShowTeams()

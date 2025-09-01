@@ -1,59 +1,86 @@
-﻿using Core.Data.Models;
+﻿using System;
+using Core.Data.Models;
 
 namespace Core.DataAccess
 {
-    public static class Databasefeeder
+    public class Databasefeeder
     {
-        private static Team[]? teams;
-        private static Country[]? countries;
+        public Country[] Countries { get; set; }
+        public Team[]? Teams { get; set; }
 
-        public static Team[] FeedTeams()
+        public Databasefeeder()
         {
-            teams =
-            [
-                new Team
-                {
-                    Name = "AEK",
-                    Competition = Competition.ConferenceLeague,
-                    Country = new Country() { Name = "Greece", Id = 1 },
-                    IsActive = true,
-                    Id = 1,
-                    Points = 2
+            try
+            {
+                Countries = [
+                    new()
+                    {
+                        Id = 1,
+                        Name = "Greece",
+                        Position = 11
+                    },
+                    new()
+                    {
+                        Id = 2,
+                        Name = "Germany",
+                        Position = 3
+                    },
+                    new()
+                    {
+                        Id = 3,
+                        Name = "Spain",
+                        Position = 2
+                    }];
 
-                },
-                new Team
+                Teams = [
+                    new Team
+                    {
+                        Name = "AEK",
+                        Competition = Competition.ConferenceLeague,
+                        Country = Countries.First(c => c.Name.Equals("Greece")),
+                        IsActive = true,
+                        Id = 1,
+                        Points = 2
+                        },
+                    new Team
+                    {
+                        Name = "Vfb",
+                        Competition = Competition.EuropaLeague,
+                        Country = Countries.First(c => c.Name.Equals("Germany")),
+                        IsActive = false,
+                        Id = 2,
+                        Points = 0
+                    },
+                    new Team
+                    {
+                        Name = "Sevilla",
+                        Competition = Competition.None,
+                        Country = Countries.First(c => c.Name.Equals("Spain")),
+                        IsActive = false,
+                        Id = 2,
+                        Points = 0
+                }];
+
+                foreach (var c in Countries)
                 {
-                    Name = "Vfb",
-                    Competition = Competition.EuropaLeague,
-                    Country = new Country() { Name = "Germany", Id = 2 },
-                    IsActive = false,
-                    Id = 2,
-                    Points = 0
-                }   ,
-                new Team
-                {
-                    Name = "Sevilla",
-                    Competition = Competition.None,
-                    Country = new Country() { Name = "Spain", Id = 4 },
-                    IsActive = false,
-                    Id = 2,
-                    Points = 0
+                    c.Teams = Teams.Where(t => t.Country.Name.Equals(c.Name)).ToArray();
                 }
-            ];
-
-            return teams;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
-        public static Country[] FeedCountries()
+        public Team[]? GetTeams()
         {
-            countries =
-            [
-                new Country { Id = 1, Name = "Greece", Position = 11 , Teams = [new Team { Points = 40000 }] },
-                new Country { Id = 2, Name = "Germany", Position = 3, Teams = [new Team { Points = 55000 }]  },
-                new Country { Id = 3, Name = "Cyprus" , Position = 19, Teams = [new Team { Points = 30000 }]  },
-            ];
+            return Teams;
+        }
 
-            return countries;
+        public Country[]? GetCountries()
+        {
+            return Countries;
         }
     }
 }
