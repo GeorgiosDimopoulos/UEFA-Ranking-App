@@ -1,5 +1,6 @@
 ﻿@page "/countries"
 @using Core.Data.Models
+@using Core.DataAccess
 
 <PageTitle>Countries</PageTitle>
 
@@ -17,9 +18,10 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Position</th>
 					<th>Name</th>
-					<th>Total Teams</th>
+					<th>Initial Position</th>
+					<th>Active Position</th>
+					<th>Initial Teams</th>
 					<th>Active Teams</th>
 					<th>Total Points</th>
 					<th>Show Teams</th>
@@ -29,12 +31,14 @@
 				@foreach (var c in countries)
 				{
 					<tr>
-						<td>@c.Position</td>
 						<td>@c.Name</td>
+						<td>@c.Position</td>
+						<td>@c.Position</td>
 						<td>@c.NumberOfTeams</td>
 						<td>@c.NumberOfTeams</td>
 						<td>@c.TotalPoints</td>
-						<td><input type="checkbox" checked="@(c.NumberOfTeams > 0)"/></td>
+						@* <td><input type="checkbox" checked="@(c.NumberOfTeams > 0)" /></td> *@
+						<td><input type="button" class="btn btn-success" style="width:40px" value=">" @onclick="ShowTeams" /></td>
 					</tr>
 				}
 			</tbody>
@@ -49,11 +53,10 @@
 	{
 		await Task.Delay(500);
 
-		countries = new[]
-		{
-			new Country { Id = 1, Name = "Greece", Position = 11 , Teams = new[] { new Team { Points = 40000 } } },
-			new Country { Id = 2, Name = "Germany", Position = 3, Teams = new[] { new Team { Points = 55000 } }  },
-			new Country { Id = 3, Name = "Cyprus" , Position = 19, Teams = new[] { new Team { Points = 30000 } }  },
-		};
+		countries = Databasefeeder.FeedCountries();
+	}
+
+	public void ShowTeams()
+	{
 	}
 }

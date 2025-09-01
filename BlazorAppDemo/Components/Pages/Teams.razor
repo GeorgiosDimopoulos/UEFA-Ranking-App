@@ -1,5 +1,6 @@
 ﻿@page "/teams"
 @using Core.Data.Models
+@using Core.DataAccess
 @using Humanizer
 
 <PageTitle>Teams</PageTitle>
@@ -37,7 +38,7 @@
 						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)" /></td>
 						<td>@team.Position</td>
 						<td><input type="checkbox" @bind="@team.IsActive" /></td>
-						<td><input type="button" class="btn btn-success" style="width:40px" value=">" onclick="ShowMatches()"/></td>
+						<td><input type="button" class="btn btn-success" style="width:40px" value=">" @onclick="ShowMatches" /></td>
 					</tr>
 					<tr></tr>
 				}
@@ -54,41 +55,11 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		teams = new[]
-		{
-			new Team
-			{
-				Name = "AEK",
-				Competition = Competition.ConferenceLeague,
-				Country = new Country() { Name = "Greece", Id = 1 },
-				IsActive = true,
-				Id = 1,
-				Points = 2
-
-			},
-			new Team
-			{
-				Name = "Vfb",
-				Competition = Competition.EuropaLeague,
-				Country = new Country() { Name = "Germany", Id = 2 },
-				IsActive = false,
-				Id = 2,
-				Points = 0
-			}   ,
-			new Team
-			{
-				Name = "Sevilla",
-				Competition = Competition.None,
-				Country = new Country() { Name = "Spain", Id = 4 },
-				IsActive = false,
-				Id = 2,
-				Points = 0
-			}
-		};
+		teams = Databasefeeder.FeedTeams();
 	}
 
 	public void ShowMatches()
 	{
-		
+
 	}
 }
