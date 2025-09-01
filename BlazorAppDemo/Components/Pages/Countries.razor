@@ -24,7 +24,7 @@
 					<th>Initial Teams</th>
 					<th>Active Teams</th>
 					<th>Total Points</th>
-					<th>Show Teams</th>
+					@* <th>Show Teams</th> *@
 				</tr>
 			</thead>
 			<tbody>
@@ -37,8 +37,19 @@
 						<td>@c.NumberOfTeams</td>
 						<td>@c.NumberOfTeams</td>
 						<td>@c.TotalPoints</td>
-						@* <td><input type="checkbox" checked="@(c.NumberOfTeams > 0)" /></td> *@
-						<td><input type="button" class="btn btn-success" style="width:40px" value=">" @onclick="ShowTeams" /></td>
+						<td>
+							@* <input type="checkbox" checked="@(c.NumberOfTeams > 0)" onclick="() => ShowTeams(c.Id)" /> *@
+						</td>
+					</tr>
+					<tr>
+						@if (c.Teams.Count() > 0)
+						{
+							@foreach (var t in c.Teams)
+							{
+								<p>@t.Name with @t.Points points</p>
+							}
+							@* <_CountryTeamComponent CountryName="@c.Name"></_CountryTeamComponent> *@	
+						}						
 					</tr>
 				}
 			</tbody>
@@ -54,9 +65,5 @@
 		await Task.Delay(500);
 		var databasefeeder = new Databasefeeder();
 		countries = databasefeeder.GetCountries();
-	}
-
-	public void ShowTeams()
-	{
 	}
 }
