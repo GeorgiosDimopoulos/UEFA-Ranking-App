@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.DataAccess;
 
@@ -7,10 +8,9 @@ public class TeamRepository : ITeamRepository
 {
     private readonly string _connectionString;
 
-    public TeamRepository(string connectionString)
+    public TeamRepository(IConfiguration config)
     {
-        _connectionString = connectionString;
-
+        _connectionString = config.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
         if (string.IsNullOrWhiteSpace(_connectionString))
             throw new InvalidOperationException("Connection string is not set.");
     }

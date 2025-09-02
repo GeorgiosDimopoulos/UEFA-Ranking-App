@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.DataAccess;
 
@@ -7,12 +8,11 @@ public class CountryRepository : ICountryRepository
 {
     private readonly string _connectionString;
 
-    public CountryRepository(string connectionString)
+    public CountryRepository(IConfiguration config)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
+        _connectionString = config.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
+        if (string.IsNullOrWhiteSpace(_connectionString))
             throw new InvalidOperationException("Connection string is not set.");
-
-        _connectionString = connectionString;
     }
 
     public async Task<List<Country>> GetAllCountries()
