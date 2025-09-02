@@ -12,6 +12,8 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAn
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 
+SQLitePCL.Batteries_V2.Init();
+
 var app = builder.Build();
 
 app.UseCors();
