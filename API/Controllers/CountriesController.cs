@@ -23,7 +23,7 @@ public class CountriesController : ControllerBase
         return await countryRepository.GetAllCountries();
     }
 
-    [HttpGet(Name = "CountryById")]
+    [HttpGet("{$id:int}", Name = "CountryById")]
     public async Task<Country> GetCountryById(int id)
     {
         return await countryRepository.GetCountryById(id) ?? new();
@@ -36,20 +36,42 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPost(Name = "AddCountry")]
-    public async Task AddCountry(Country c)
+    public async Task<ActionResult> AddCountry([FromBody] Country c)
     {
-        await countryRepository.AddCountry(c);
+        var result = await countryRepository.AddCountry(c);
+        if (result == false)
+        {
+            _logger.LogWarning("Could not add country {Country}", c.Name);
+            return BadRequest();
+        }
+
+        return CreatedAtAction(nameof(GetCountryById), new { id = c.Id }, c);
     }
 
-    [HttpPut(Name = "UpdateCountry")]
-    public async Task UpdateCountry(Country c)
+    [HttpPut("{id: int}", Name = "UpdateCountry")]
+    public async Task<ActionResult> UpdateCountry(Country c, int id)
     {
-        await countryRepository.UpdateCountry(c);
+        c.Id = id;
+        var result = await countryRepository.UpdateCountry(c);
+        if (result == false)
+        {
+            _logger.LogWarning("Could not update country {Country}", c.Name);
+            return BadRequest();
+        }
+
+        return NoContent();
     }
 
-    [HttpDelete(Name = "DeleteCountry")]
-    public async Task DeleteCountry(int id)
+    [HttpDelete("{id: int}", Name = "DeleteCountry")]
+    public async Task<ActionResult> DeleteCountry(int id)
     {
-        await countryRepository.DeleteCountry(id);
+        var result = await countryRepository.DeleteCountry(id);
+        if (result == false)
+        {
+            _logger.LogWarning("Could not delete country with id {Id}", id);
+            return NotFound();
+        }
+
+        return BadRequest();
     }
 }

@@ -1,6 +1,4 @@
-﻿using Core.Models;
-
-namespace Infrastructure.DataAccess;
+﻿namespace Infrastructure;
 
 public class Databasefeeder
 {

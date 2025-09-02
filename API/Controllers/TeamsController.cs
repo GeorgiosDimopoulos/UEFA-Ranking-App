@@ -49,25 +49,28 @@ public class TeamsController : ControllerBase
     }
 
     [HttpPut(Name = "UpdateTeam")]
-    public async Task UpdateTeam(Team t)
+    public async Task<ActionResult> UpdateTeam(Team t)
     {
         var result = await teamRepository.UpdateTeam(t);
         if (result == false)
         {
             _logger.LogWarning("Could not update team {Team}", t.Name);
+            return BadRequest();
         }
 
-        return;
+        return NoContent();
     }
 
     [HttpDelete(Name = "DeleteTeam")]
-    public async Task DeleteTeam(int id)
+    public async Task<ActionResult> DeleteTeam(int id)
     {
         var result = await teamRepository.DeleteTeam(id);
         if (result == false)
         {
             _logger.LogWarning("Could not delete team with id {Id}", id);
+            return BadRequest();
         }
-        return;
+
+        return NoContent();
     }
 }

@@ -45,7 +45,7 @@ public class CountryRepository : ICountryRepository
         return country;
     }
 
-    public async Task AddCountry(Country c)
+    public async Task<bool> AddCountry(Country c)
     {
         using var connection = new SqliteConnection(_connectionString);
 
@@ -56,27 +56,27 @@ public class CountryRepository : ICountryRepository
         };
 
         var insertCountryQuery = "INSERT INTO Countries (Name, Position) VALUES(@Name, @Position)";
-        await connection.ExecuteAsync(insertCountryQuery, newCountry);
+        var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
+        return result > 0;
     }
 
-    public async Task UpdateCountry(Country c)
+    public async Task<bool> UpdateCountry(Country c)
     {
         using var connection = new SqliteConnection(_connectionString);
 
         var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position WHERE Id = @Id";
+
         var result = await connection.ExecuteAsync(updateCountryQuery, c);
-        if (result == 0)
-            throw new InvalidOperationException("Country does not exist in the database.");
+        return result > 0;
     }
 
-    public async Task DeleteCountry(int id)
+    public async Task<bool> DeleteCountry(int id)
     {
         using var connection = new SqliteConnection(_connectionString);
 
         var deleteCountryQuery = "DELETE FROM Countries WHERE Id = @Id";
 
         var result = await connection.ExecuteAsync(deleteCountryQuery, new { Id = id });
-        if (result == 0)
-            throw new InvalidOperationException("Country does not exist in the database.");
+        return result > 0;
     }
 }
