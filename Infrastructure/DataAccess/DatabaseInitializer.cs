@@ -16,11 +16,10 @@ public static class DatabaseInitializer
                 NumberOfTeams INTEGER NOT NULL,
                 TotalPoints REAL)";
 
-        var createTeamsTableQuery = @"CREATE TABLE IF NOT EXISTS Countries(
+        var createTeamsTableQuery = @"CREATE TABLE IF NOT EXISTS Teams(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
                 Position INTEGER NOT NULL,
-                NumberOfTeams INTEGER NOT NULL,
                 TotalPoints REAL)";
 
         ExecuteNonQuery(connection, createCountriesTableQuery);
