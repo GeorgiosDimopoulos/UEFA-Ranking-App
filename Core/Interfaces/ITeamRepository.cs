@@ -1,4 +1,4 @@
-﻿namespace Core.DataAccess.Interfaces;
+﻿namespace Core.Interfaces;
 
 public interface ITeamRepository
 {

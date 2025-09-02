@@ -1,4 +1,4 @@
-﻿namespace Core.DataAccess;
+﻿namespace Infrastructure.DataAccess;
 
 public class Databasefeeder
 {

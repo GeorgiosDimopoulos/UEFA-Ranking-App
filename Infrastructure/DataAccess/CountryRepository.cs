@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 
-namespace Core.DataAccess;
+namespace Infrastructure.DataAccess;
 
 public class CountryRepository : ICountryRepository
 {

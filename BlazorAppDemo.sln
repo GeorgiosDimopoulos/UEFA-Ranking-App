@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorAppDemo", "BlazorAppD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{53101E96-31E3-4E15-B8BB-A4D9F822D0F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{EBCFC78B-BB88-41D7-A47F-71AAA427DB07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{53101E96-31E3-4E15-B8BB-A4D9F822D0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53101E96-31E3-4E15-B8BB-A4D9F822D0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53101E96-31E3-4E15-B8BB-A4D9F822D0F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBCFC78B-BB88-41D7-A47F-71AAA427DB07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBCFC78B-BB88-41D7-A47F-71AAA427DB07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBCFC78B-BB88-41D7-A47F-71AAA427DB07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBCFC78B-BB88-41D7-A47F-71AAA427DB07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

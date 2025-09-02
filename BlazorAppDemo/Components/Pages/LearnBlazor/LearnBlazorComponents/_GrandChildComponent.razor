@@ -1,0 +1,9 @@
+﻿<div class="row">
+	<h4 class="text-primary p-lg-4 pt-2 col-12">Grand child component</h4>
+	<p>There is a message - @MessageInGrandChild</p>
+</div>
+
+@code {
+	[Parameter]
+	public string MessageInGrandChild { get; set; } = string.Empty;
+}

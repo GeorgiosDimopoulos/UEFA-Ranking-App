@@ -13,18 +13,30 @@
 	{
 		<div class="alert alert-success">
 			@ChildContent
+			<br/>
+			@ExtraChildContent
 		</div>
 	}
 	<button class="btn btn-danger" @onclick="OnButtonClick">Click me from Child</button>
+
+	<_GrandChildComponent MessageInGrandChild="@MessageForGrandChild">
+
+	</_GrandChildComponent>
 </div>
 
-@code 
+@code
 {
 	[Parameter]
 	public string? Title { get; set; }
 
 	[Parameter]
-	public RenderFragment ChildContent { get; set; }
+	public string? MessageForGrandChild { get; set; }
+
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+
+	[Parameter]
+	public RenderFragment? ExtraChildContent { get; set; }
 
 	[Parameter]
 	public EventCallback OnButtonClickEvent { get; set; }
