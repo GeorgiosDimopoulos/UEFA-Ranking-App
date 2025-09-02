@@ -1,0 +1,37 @@
+﻿using Microsoft.Data.Sqlite;
+
+namespace Infrastructure.DataAccess;
+
+public static class DatabaseInitializer
+{
+    public static void EnsureCountryTableExists(string connectionString)
+    {
+        using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+
+        var createCountriesTableQuery = @"CREATE TABLE IF NOT EXISTS Countries(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL,
+                Position INTEGER NOT NULL,
+                NumberOfTeams INTEGER NOT NULL,
+                TotalPoints REAL)";
+
+        var createTeamsTableQuery = @"CREATE TABLE IF NOT EXISTS Countries(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL,
+                Position INTEGER NOT NULL,
+                NumberOfTeams INTEGER NOT NULL,
+                TotalPoints REAL)";
+
+        ExecuteNonQuery(connection, createCountriesTableQuery);
+        ExecuteNonQuery(connection, createTeamsTableQuery);
+    }
+
+    private static void ExecuteNonQuery(SqliteConnection connection, string createCountriesTableQuery)
+    {
+        using var command = connection.CreateCommand();
+
+        command.CommandText = createCountriesTableQuery;
+        var result = command.ExecuteNonQuery();
+    }
+}
