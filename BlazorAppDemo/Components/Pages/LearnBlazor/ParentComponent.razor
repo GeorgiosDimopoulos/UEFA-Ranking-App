@@ -1,0 +1,21 @@
+﻿@page "/learnBlazor/parentcomponent"
+
+<h3>Parent Component</h3>
+
+<_ChildComponent Title="Title is from parent component" OnButtonClickEvent="ShowMessage">
+	<p>This content is passed from Parent Component to Child Component using RenderFragment.</p>
+</_ChildComponent>
+
+<_ChildComponent Title="Title is from 2 parent component"></_ChildComponent>
+
+<p>@MessageText</p>
+
+@code {
+	public string MessageText = string.Empty;
+
+	public void ShowMessage()
+	{
+		MessageText = "Button inside child Component was clicked!";
+	}
+
+}

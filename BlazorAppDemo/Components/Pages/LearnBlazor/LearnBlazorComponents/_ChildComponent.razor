@@ -1,0 +1,36 @@
+﻿<div>
+	<div class="alert alert-info">
+		@if (!string.IsNullOrEmpty(Title))
+		{
+			<h4>@Title</h4>
+		}
+		else
+		{
+			<h4>Default Title from Child Component</h4>
+		}
+	</div>
+	@if (ChildContent != null)
+	{
+		<div class="alert alert-success">
+			@ChildContent
+		</div>
+	}
+	<button class="btn btn-danger" @onclick="OnButtonClick">Click me from Child</button>
+</div>
+
+@code 
+{
+	[Parameter]
+	public string? Title { get; set; }
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	[Parameter]
+	public EventCallback OnButtonClickEvent { get; set; }
+
+	private void OnButtonClick()
+	{
+		OnButtonClickEvent.InvokeAsync();
+	}
+}
