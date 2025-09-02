@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class TeamsController : ControllerBase
 {
     private readonly ILogger<TeamsController> _logger;
@@ -23,27 +23,51 @@ public class TeamsController : ControllerBase
         return await teamRepository.GetAllTeams();
     }
 
-    [HttpGet(Name = "TeamById")]
-    public async Task<Team> GetTeamById(int id)
+    [HttpGet("{id : int}", Name = "TeamById")]
+    public async Task<ActionResult<Team>> GetTeamById(int id)
     {
-        return await teamRepository.GetTeamById(id) ?? new();
+        var team = await teamRepository.GetTeamById(id);
+        if (team == null)
+        {
+            _logger.LogWarning("Team with id {Id} not found", id);
+            return NotFound();
+        }
+
+        return Ok(team);
     }
 
     [HttpPost(Name = "AddTeam")]
-    public async Task GetTeamByName(Team t, string countryName, Competition c, int pos)
+    public async Task<ActionResult<Team>> AddTeam([FromBody] Team t, string countryName, Competition c, int pos)
     {
-        await teamRepository.AddTeam(t, countryName, c, pos);
+        var result = await teamRepository.AddTeam(t, countryName, c, pos);
+        if (result == false)
+        {
+            _logger.LogWarning("Could not add team {Team}", t.Name);
+            return BadRequest();
+        }
+        return CreatedAtAction(nameof(GetTeamById), new { id = t.Id }, t);
     }
 
     [HttpPut(Name = "UpdateTeam")]
     public async Task UpdateTeam(Team t)
     {
-        await teamRepository.UpdateTeam(t);
+        var result = await teamRepository.UpdateTeam(t);
+        if (result == false)
+        {
+            _logger.LogWarning("Could not update team {Team}", t.Name);
+        }
+
+        return;
     }
 
     [HttpDelete(Name = "DeleteTeam")]
     public async Task DeleteTeam(int id)
     {
-        await teamRepository.DeleteTeam(id);
+        var result = await teamRepository.DeleteTeam(id);
+        if (result == false)
+        {
+            _logger.LogWarning("Could not delete team with id {Id}", id);
+        }
+        return;
     }
 }
