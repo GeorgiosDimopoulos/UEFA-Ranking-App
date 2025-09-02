@@ -75,7 +75,7 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
 
         var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points, Position = @Position WHERE Id = @Id";
-        var result = await connection.ExecuteAsync(updateQuery, new { Id = id });
+        var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, t.Position, Id = id , t.Competition});
 
         return result > 0;
     }

@@ -66,7 +66,7 @@ public class CountryRepository : ICountryRepository
 
         var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position WHERE Id = @Id";
 
-        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, c.Position, Id = id });
+        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, c.Position, Id = id, c.TotalPoints, c.NumberOfTeams});
         return result > 0;
     }
 
