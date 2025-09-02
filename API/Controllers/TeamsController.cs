@@ -17,13 +17,13 @@ public class TeamsController : ControllerBase
         this.teamRepository = teamRepository;
     }
 
-    [HttpGet(Name = "Teams")]
+    [HttpGet()]
     public async Task<IEnumerable<Team>> GetTeams()
     {
         return await teamRepository.GetAllTeams();
     }
 
-    [HttpGet("{id :int}", Name = "TeamById")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<Team>> GetTeamById(int id)
     {
         var team = await teamRepository.GetTeamById(id);

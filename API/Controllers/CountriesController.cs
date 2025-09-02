@@ -23,7 +23,7 @@ public class CountriesController : ControllerBase
         return await countryRepository.GetAllCountries();
     }
 
-    [HttpGet("{id:int}", Name = "CountryById")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<Country>> GetCountryById(int id)
     {
         var country = await countryRepository.GetCountryById(id) ?? new();
@@ -36,7 +36,7 @@ public class CountriesController : ControllerBase
         return Ok(country);
     }
 
-    [HttpGet("byName",Name = "CountryByName")]
+    [HttpGet("byName")]
     public async Task<ActionResult<Country>> GetCountryByName(string n)
     {
         var country = await countryRepository.GetCountryByName(n) ?? new();
@@ -49,7 +49,7 @@ public class CountriesController : ControllerBase
         return Ok(country);
     }
 
-    [HttpPost(Name = "AddCountry")]
+    [HttpPost()]
     public async Task<ActionResult> AddCountry([FromBody] Country c)
     {
         var result = await countryRepository.AddCountry(c);
@@ -62,7 +62,7 @@ public class CountriesController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{id:int}", Name = "UpdateCountry")]
+    [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateCountry(Country c, int id)
     {
         c.Id = id;
@@ -76,7 +76,7 @@ public class CountriesController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id:int}", Name = "DeleteCountry")]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteCountry(int id)
     {
         var result = await countryRepository.DeleteCountry(id);
