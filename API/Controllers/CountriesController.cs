@@ -8,10 +8,10 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class CountriesController : ControllerBase
 {
-    private readonly ILogger<TeamsController> _logger;
+    private readonly ILogger<CountriesController> _logger;
     private readonly ICountryRepository countryRepository;
 
-    public CountriesController(ILogger<TeamsController> logger, ICountryRepository countryRepository)
+    public CountriesController(ILogger<CountriesController> logger, ICountryRepository countryRepository)
     {
         _logger = logger;
         this.countryRepository = countryRepository;
@@ -23,16 +23,30 @@ public class CountriesController : ControllerBase
         return await countryRepository.GetAllCountries();
     }
 
-    [HttpGet("{$id:int}", Name = "CountryById")]
-    public async Task<Country> GetCountryById(int id)
+    [HttpGet("{id:int}", Name = "CountryById")]
+    public async Task<ActionResult<Country>> GetCountryById(int id)
     {
-        return await countryRepository.GetCountryById(id) ?? new();
+        var country = await countryRepository.GetCountryById(id) ?? new();
+        if (country == null)
+        {
+            _logger.LogWarning("Country with id {Id} not found", id);
+            return NotFound();
+        }
+
+        return Ok(country);
     }
 
-    [HttpGet(Name = "CountryByName")]
-    public async Task<Country> GetCountryByName(string n)
+    [HttpGet("byName",Name = "CountryByName")]
+    public async Task<ActionResult<Country>> GetCountryByName(string n)
     {
-        return await countryRepository.GetCountryByName(n) ?? new();
+        var country = await countryRepository.GetCountryByName(n) ?? new();
+        if (country == null)
+        {
+            _logger.LogWarning("Country with name {Name} not found", n);
+            return NotFound();
+        }
+
+        return Ok(country);
     }
 
     [HttpPost(Name = "AddCountry")]
@@ -45,7 +59,7 @@ public class CountriesController : ControllerBase
             return BadRequest();
         }
 
-        return CreatedAtAction(nameof(GetCountryById), new { id = c.Id }, c);
+        return Ok();
     }
 
     [HttpPut("{id: int}", Name = "UpdateCountry")]
@@ -56,7 +70,7 @@ public class CountriesController : ControllerBase
         if (result == false)
         {
             _logger.LogWarning("Could not update country {Country}", c.Name);
-            return BadRequest();
+            return NotFound();
         }
 
         return NoContent();
@@ -72,6 +86,6 @@ public class CountriesController : ControllerBase
             return NotFound();
         }
 
-        return BadRequest();
+        return NoContent();
     }
 }

@@ -45,30 +45,31 @@ public class TeamsController : ControllerBase
             _logger.LogWarning("Could not add team {Team}", t.Name);
             return BadRequest();
         }
-        return CreatedAtAction(nameof(GetTeamById), new { id = t.Id }, t);
+        return Ok();
     }
 
-    [HttpPut(Name = "UpdateTeam")]
-    public async Task<ActionResult> UpdateTeam(Team t)
+    [HttpPut("{id: int}", Name = "UpdateTeam")]
+    public async Task<ActionResult> UpdateTeam(Team t, int id)
     {
+        t.Id = id;
         var result = await teamRepository.UpdateTeam(t);
         if (result == false)
         {
             _logger.LogWarning("Could not update team {Team}", t.Name);
-            return BadRequest();
+            return NotFound();
         }
 
         return NoContent();
     }
 
-    [HttpDelete(Name = "DeleteTeam")]
+    [HttpDelete("{id: int}", Name = "DeleteTeam")]
     public async Task<ActionResult> DeleteTeam(int id)
     {
         var result = await teamRepository.DeleteTeam(id);
         if (result == false)
         {
             _logger.LogWarning("Could not delete team with id {Id}", id);
-            return BadRequest();
+            return NotFound();
         }
 
         return NoContent();
