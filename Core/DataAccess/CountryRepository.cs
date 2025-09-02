@@ -9,6 +9,9 @@ public class CountryRepository : ICountryRepository
 
     public CountryRepository(string connectionString)
     {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new InvalidOperationException("Connection string is not set.");
+
         _connectionString = connectionString;
     }
 
@@ -16,7 +19,7 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, Position FROM Countries ORDER BY Position ASC");
+        var countries = await connection.QueryAsync<Country>("SELECT * FROM Countries ORDER BY Position ASC");
         return countries.ToList();
     }
 
@@ -52,18 +55,28 @@ public class CountryRepository : ICountryRepository
             Position = c.Position
         };
 
-        var insertCountryQuery =;
+        var insertCountryQuery = "INSERT INTO Countries (Name, Position) VALUES(@Name, @Position)";
+        await connection.ExecuteAsync(insertCountryQuery, newCountry);
     }
 
     public async Task UpdateCountry(Country c)
     {
         using var connection = new SqliteConnection(_connectionString);
 
+        var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position WHERE Id = @Id";
+        var result = await connection.ExecuteAsync(updateCountryQuery, c);
+        if (result == 0)
+            throw new InvalidOperationException("Country does not exist in the database.");
     }
 
     public async Task DeleteCountry(int id)
     {
         using var connection = new SqliteConnection(_connectionString);
 
+        var deleteCountryQuery = "DELETE FROM Countries WHERE Id = @Id";
+
+        var result = await connection.ExecuteAsync(deleteCountryQuery, new { Id = id });
+        if (result == 0)
+            throw new InvalidOperationException("Country does not exist in the database.");
     }
 }
