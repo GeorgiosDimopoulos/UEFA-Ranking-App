@@ -1,6 +1,4 @@
-﻿using Core.Data.Models;
-
-namespace Core.DataAccess.Interfaces;
+﻿namespace Core.DataAccess.Interfaces;
 
 public interface ICountryRepository
 {

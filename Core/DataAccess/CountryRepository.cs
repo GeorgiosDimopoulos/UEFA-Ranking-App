@@ -1,37 +1,36 @@
-﻿using Core.Data.Models;
-using Core.DataAccess.Interfaces;
-
-namespace Core.DataAccess;
+﻿namespace Core.DataAccess;
 
 public class CountryRepository : ICountryRepository
 {
+    private readonly string _connectionString;
+
+    public CountryRepository(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
     public Task AddCountry(Country c)
     {
-        throw new NotImplementedException();
+        using var connection = new SqlConnection(_connectionString);
     }
 
     public Task DeleteCountry(int id)
     {
-        throw new NotImplementedException();
     }
 
     public Task<List<Country>> GetAllCountries()
     {
-        throw new NotImplementedException();
     }
 
     public Task<Country?> GetCountryById(int id)
     {
-        throw new NotImplementedException();
     }
 
     public Task<Country?> GetCountryByName(string name)
     {
-        throw new NotImplementedException();
     }
 
     public Task UpdateCountry(Country c)
     {
-        throw new NotImplementedException();
     }
 }
