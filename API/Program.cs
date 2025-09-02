@@ -39,21 +39,3 @@ app.MapControllers();
 app.MapGet("/", () => "Welcome to UEFA Ranking API");
 
 app.Run();
-
-//void CreateDbPath()
-//{
-//    var dataDir = Path.Combine(builder.Environment.ContentRootPath, "Data");
-//    Directory.CreateDirectory(dataDir);
-//    var dbPath = Path.Combine(dataDir, "uefa.db");
-    
-//    var csb = new SqliteConnectionStringBuilder
-//    {
-//        DataSource = dbPath,
-//        Mode = SqliteOpenMode.ReadWriteCreate,
-//        Cache = SqliteCacheMode.Shared
-//    };
-
-//    var cs = csb.ToString();
-
-//    builder.Configuration["ConnectionStrings:Default"] = cs;
-//}
