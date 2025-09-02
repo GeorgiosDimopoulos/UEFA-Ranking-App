@@ -24,7 +24,7 @@
 					<th>Initial Teams</th>
 					<th>Active Teams</th>
 					<th>Total Points</th>
-					@* <th>Show Teams</th> *@
+					<th>Show Teams</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -38,18 +38,18 @@
 						<td>@c.NumberOfTeams</td>
 						<td>@c.TotalPoints</td>
 						<td>
-							@* <input type="checkbox" checked="@(c.NumberOfTeams > 0)" onclick="() => ShowTeams(c.Id)" /> *@
+							<input type="checkbox" @onclick="() => ToggleTeamId(c.Id)" />
 						</td>
 					</tr>
 					<tr>
-						@if (c.Teams.Count() > 0)
+						@if (c.Teams.Count() > 0 && expanded.Contains(c.Id))
 						{
 							@foreach (var t in c.Teams)
 							{
-								<p>@t.Name with @t.Points points</p>
+								@* <_CountryTeamComponent CountryName="@c.Name"></_CountryTeamComponent> *@
+								<td colspan="7">@t.Name with @t.Points points</td>
 							}
-							@* <_CountryTeamComponent CountryName="@c.Name"></_CountryTeamComponent> *@	
-						}						
+						}
 					</tr>
 				}
 			</tbody>
@@ -59,11 +59,19 @@
 
 @code {
 	private Country[]? countries;
+	private HashSet<int> expanded = new();
+	private bool shownTeams;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
 		var databasefeeder = new Databasefeeder();
 		countries = databasefeeder.GetCountries();
+	}
+
+	private void ToggleTeamId(int id)
+	{
+		if (!expanded.Add(id))
+			expanded.Remove(id);
 	}
 }
