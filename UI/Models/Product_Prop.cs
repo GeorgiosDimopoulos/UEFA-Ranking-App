@@ -1,4 +1,4 @@
-﻿namespace BlazorAppDemo.Models
+﻿namespace UI.Models
 {
     public class Product_Prop
     {
