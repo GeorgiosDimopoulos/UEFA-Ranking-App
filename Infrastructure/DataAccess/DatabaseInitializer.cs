@@ -19,8 +19,12 @@ public static class DatabaseInitializer
         var createTeamsTableQuery = @"CREATE TABLE IF NOT EXISTS Teams(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
+                IsActive INTEGER NOT NULL,
+                Competition INTEGER NOT NULL,
+                CountryId INTEGER NOT NULL,
                 Position INTEGER NOT NULL,
-                TotalPoints REAL)";
+                Points INTEGER NOT NULL,
+                FOREIGN KEY (CountryId) REFERENCES Countries(Id))";
 
         ExecuteNonQuery(connection, createCountriesTableQuery);
         ExecuteNonQuery(connection, createTeamsTableQuery);
