@@ -60,13 +60,13 @@ public class CountryRepository : ICountryRepository
         return result > 0;
     }
 
-    public async Task<bool> UpdateCountry(Country c)
+    public async Task<bool> UpdateCountry(Country c, int id)
     {
         using var connection = new SqliteConnection(_connectionString);
 
         var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position WHERE Id = @Id";
 
-        var result = await connection.ExecuteAsync(updateCountryQuery, c);
+        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, c.Position, Id = id });
         return result > 0;
     }
 

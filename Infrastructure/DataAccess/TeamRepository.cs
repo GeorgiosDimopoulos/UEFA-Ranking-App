@@ -45,7 +45,7 @@ public class TeamRepository : ITeamRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = countryName }) 
+        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = countryName })
             ?? throw new InvalidOperationException("Country does not exist in the database.");
 
         var newTeam = new Team
@@ -70,27 +70,18 @@ public class TeamRepository : ITeamRepository
         return result > 0;
     }
 
-    public async Task<bool> UpdateTeam(Team t)
+    public async Task<bool> UpdateTeam(Team t, int id)
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var team = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Id = @Id", new { Id = t.Id });
-        if (team is null)
-            throw new InvalidOperationException("Team does not exist in the database.");
-
-        team.Name = t.Name;
-        team.IsActive = t.IsActive;
-        team.Points = t.Points;
-        team.Position = t.Position;
-
         var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points, Position = @Position WHERE Id = @Id";
-        var result = await connection.ExecuteAsync(updateQuery, team);
+        var result = await connection.ExecuteAsync(updateQuery, new { Id = id });
 
         return result > 0;
     }
 
     public async Task<bool> DeleteTeam(int id)
-    {        
+    {
         using var connection = new SqliteConnection(_connectionString);
 
         var deleteQuery = "DELETE FROM Teams WHERE Id = @Id";

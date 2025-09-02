@@ -1,3 +1,4 @@
+using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,18 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet(Name = "Countries")]
-    public async Task<IEnumerable<Country>> GetCountries()
+    public async Task<IEnumerable<CountryDto>> GetCountries()
     {
-        return await countryRepository.GetAllCountries();
+        var countries = await countryRepository.GetAllCountries();
+        return countries.Select(c => new CountryDto
+        {
+            Name = c.Name,
+            Position = c.Position
+        });
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Country>> GetCountryById(int id)
+    public async Task<ActionResult<CountryDto>> GetCountryById(int id)
     {
         var country = await countryRepository.GetCountryById(id) ?? new();
         if (country == null)
@@ -37,7 +43,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet("byName")]
-    public async Task<ActionResult<Country>> GetCountryByName(string n)
+    public async Task<ActionResult<CountryDto>> GetCountryByName(string n)
     {
         var country = await countryRepository.GetCountryByName(n) ?? new();
         if (country == null)
@@ -50,9 +56,10 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPost()]
-    public async Task<ActionResult> AddCountry([FromBody] Country c)
+    public async Task<ActionResult> AddCountry([FromBody] CountryDto c)
     {
-        var result = await countryRepository.AddCountry(c);
+        var country = new Country { Name = c.Name, Position = c.Position };
+        var result = await countryRepository.AddCountry(country);
         if (result == false)
         {
             _logger.LogWarning("Could not add country {Country}", c.Name);
@@ -63,10 +70,10 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> UpdateCountry(Country c, int id)
+    public async Task<ActionResult> UpdateCountry(CountryDto c, int id)
     {
-        c.Id = id;
-        var result = await countryRepository.UpdateCountry(c);
+        var country = new Country { Name = c.Name, Position = c.Position };
+        var result = await countryRepository.UpdateCountry(country, id);
         if (result == false)
         {
             _logger.LogWarning("Could not update country {Country}", c.Name);
