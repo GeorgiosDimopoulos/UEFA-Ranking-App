@@ -2,13 +2,11 @@
 @using Core.Data.Models
 @using Core.DataAccess
 
-<PageTitle>Countries</PageTitle>
+<PageTitle>Countries Statistics</PageTitle>
 
-<div class="alert alert-info">Countries Statistics</div>
+<div class="alert alert-info">This component demonstrates showing countries football statistics data for 2025 - 2026</div>
 
 <div>
-	<p>This component demonstrates showing countries data.</p>
-
 	@if (countries == null)
 	{
 		<p><em>Loading countries...</em></p>
@@ -18,12 +16,17 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
+					<th>Country</th>
+					<th class="text-center" colspan="1">Position</th>
+					<th class="text-center" colspan="5">Teams</th>
+				</tr>
+				<tr>
 					<th>Name</th>
-					<th>Initial Position</th>
-					<th>Active Position</th>
-					<th>Initial Teams</th>
-					<th>Active Teams</th>
-					<th>Total Points</th>
+					<th>Initial</th>
+					<th>Active</th>
+					<th>Points</th>
+					<th>Initial</th>
+					<th>Active</th>
 					<th>Show Teams</th>
 				</tr>
 			</thead>
@@ -34,9 +37,9 @@
 						<td>@c.Name</td>
 						<td>@c.Position</td>
 						<td>@c.Position</td>
-						<td>@c.NumberOfTeams</td>
-						<td>@c.NumberOfTeams</td>
 						<td>@c.TotalPoints</td>
+						<td>@c.NumberOfTeams</td>
+						<td>@c.NumberOfTeams</td>
 						<td>
 							<input type="checkbox" @onclick="() => ToggleTeamId(c.Id)" />
 						</td>
