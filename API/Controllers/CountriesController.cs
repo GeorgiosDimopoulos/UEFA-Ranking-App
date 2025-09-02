@@ -62,7 +62,7 @@ public class CountriesController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{id: int}", Name = "UpdateCountry")]
+    [HttpPut("{id:int}", Name = "UpdateCountry")]
     public async Task<ActionResult> UpdateCountry(Country c, int id)
     {
         c.Id = id;
@@ -76,7 +76,7 @@ public class CountriesController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id: int}", Name = "DeleteCountry")]
+    [HttpDelete("{id:int}", Name = "DeleteCountry")]
     public async Task<ActionResult> DeleteCountry(int id)
     {
         var result = await countryRepository.DeleteCountry(id);

@@ -23,7 +23,7 @@ public class TeamsController : ControllerBase
         return await teamRepository.GetAllTeams();
     }
 
-    [HttpGet("{id : int}", Name = "TeamById")]
+    [HttpGet("{id :int}", Name = "TeamById")]
     public async Task<ActionResult<Team>> GetTeamById(int id)
     {
         var team = await teamRepository.GetTeamById(id);
@@ -48,7 +48,7 @@ public class TeamsController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{id: int}", Name = "UpdateTeam")]
+    [HttpPut("{id:int}", Name = "UpdateTeam")]
     public async Task<ActionResult> UpdateTeam(Team t, int id)
     {
         t.Id = id;
@@ -62,7 +62,7 @@ public class TeamsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id: int}", Name = "DeleteTeam")]
+    [HttpDelete("{id:int}", Name = "DeleteTeam")]
     public async Task<ActionResult> DeleteTeam(int id)
     {
         var result = await teamRepository.DeleteTeam(id);
