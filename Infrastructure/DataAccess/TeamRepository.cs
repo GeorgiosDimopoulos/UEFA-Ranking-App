@@ -41,11 +41,11 @@ public class TeamRepository : ITeamRepository
         return countryTeams;
     }
 
-    public async Task<bool> AddTeam(Team team, string countryName, Competition competition, int position)
+    public async Task<bool> AddTeam(Team team)
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = countryName })
+        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Id", new { Id= team.Id})
             ?? throw new InvalidOperationException("Country does not exist in the database.");
 
         var newTeam = new Team
@@ -53,13 +53,13 @@ public class TeamRepository : ITeamRepository
             Name = team.Name,
             Country = availableCountry,
             CountryId = availableCountry.Id,
-            Competition = competition,
+            Competition = team.Competition,
             Points = 0,
-            Position = position,
+            Position = team.Position,
             Matches = [],
         };
 
-        if (competition != Competition.None)
+        if (team.Competition != Competition.None)
         {
             newTeam.IsActive = true;
         }

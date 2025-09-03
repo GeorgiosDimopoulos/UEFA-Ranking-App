@@ -56,7 +56,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPost()]
-    public async Task<ActionResult> AddCountry([FromBody] CountryDto c)
+    public async Task<ActionResult> AddCountry([FromQuery] CountryDto c)
     {
         var country = new Country { Name = c.Name, Position = c.Position };
         var result = await countryRepository.AddCountry(country);
@@ -70,7 +70,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> UpdateCountry(CountryDto c, int id)
+    public async Task<ActionResult> UpdateCountry([FromQuery] CountryDto c, int id)
     {
         var country = new Country { Name = c.Name, Position = c.Position };
         var result = await countryRepository.UpdateCountry(country, id);
