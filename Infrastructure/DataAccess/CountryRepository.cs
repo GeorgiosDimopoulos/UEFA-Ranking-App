@@ -55,7 +55,7 @@ public class CountryRepository : ICountryRepository
             Position = c.Position
         };
 
-        var insertCountryQuery = "INSERT INTO Countries (Name, Position) VALUES(@Name, @Position)";
+        var insertCountryQuery = "INSERT INTO Countries (Name, Position, NumberOfTeams, TotalPoints) VALUES(@Name, @Position, @NumberOfTeams, @TotalPoints)";
         var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
         return result > 0;
     }
