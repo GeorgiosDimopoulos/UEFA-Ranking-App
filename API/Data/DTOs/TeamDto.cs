@@ -6,6 +6,6 @@ public class TeamDto
     public bool IsActive { get; set; }
     public int Points { get; set; }
     public int Position { get; set; }
-    public int CountryId { get; set; }
+    public string CountryName { get; set; } = string.Empty;
     public int Competition { get; set; }
 }

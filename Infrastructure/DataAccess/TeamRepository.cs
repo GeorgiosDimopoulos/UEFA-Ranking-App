@@ -19,7 +19,8 @@ public class TeamRepository : ITeamRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var teams = await connection.QueryAsync<Team>("SELECT * FROM Teams Order By Name ASC");
+        var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.Position, t.CountryId, t.Competition, c.Id, c.Name, c.Position FROM Teams t JOIN Countries c ON t.CountryId = c.Id"; 
+        var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) => { team.Country = country; return team; }, splitOn: "Id");
         return teams.ToList();
     }
 
@@ -41,11 +42,11 @@ public class TeamRepository : ITeamRepository
         return countryTeams;
     }
 
-    public async Task<bool> AddTeam(Team team)
+    public async Task<bool> AddTeam(Team team, string country)
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Id", new { Id= team.Id})
+        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = country })
             ?? throw new InvalidOperationException("Country does not exist in the database.");
 
         var newTeam = new Team
@@ -63,6 +64,10 @@ public class TeamRepository : ITeamRepository
         {
             newTeam.IsActive = true;
         }
+        else
+        {
+            newTeam.IsActive = false;
+        }
 
         var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, Points, Position, CountryId, Competition) VALUES (@Name, @IsActive, @Points, @Position, @CountryId, @Competition)";
         var result = await connection.ExecuteAsync(insertTeamQuery, newTeam);
@@ -75,7 +80,7 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
 
         var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points, Position = @Position WHERE Id = @Id";
-        var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, t.Position, Id = id , t.Competition});
+        var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, t.Position, Id = id, t.Competition });
 
         return result > 0;
     }

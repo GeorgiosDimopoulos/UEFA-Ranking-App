@@ -28,7 +28,7 @@ public class TeamsController : ControllerBase
             IsActive = t.IsActive,
             Points = t.Points,
             Position = t.Position,
-            CountryId = t.CountryId,
+            CountryName = t.Country.Name,
             Competition = (int)t.Competition
         });
     }
@@ -50,7 +50,8 @@ public class TeamsController : ControllerBase
     public async Task<ActionResult<TeamDto>> AddTeam([FromQuery] TeamDto t)
     {
         var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points, Position = t.Position };
-        var result = await teamRepository.AddTeam(team);
+        team.Competition = (Competition)t.Competition;
+        var result = await teamRepository.AddTeam(team, t.CountryName);
         if (result == false)
         {
             _logger.LogWarning("Could not add team {Team}", t.Name);
@@ -60,7 +61,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpPut("{id:int}", Name = "UpdateTeam")]
-    public async Task<ActionResult> UpdateTeam([FromQuery]TeamDto t, int id)
+    public async Task<ActionResult> UpdateTeam([FromQuery] TeamDto t, int id)
     {
         var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points, Position = t.Position };
         var result = await teamRepository.UpdateTeam(team, id);
