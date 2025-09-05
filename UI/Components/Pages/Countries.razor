@@ -20,8 +20,7 @@
 				<MudTh>Name</MudTh>
 				<MudTh>Initial Position</MudTh>
 				<MudTh>Active Position</MudTh>
-				<MudTh>Initial Points</MudTh>
-				<MudTh>Active Points</MudTh>
+				<MudTh>Points</MudTh>
 				<MudTh>Teams Number</MudTh>
 				<MudTh>Show Teams</MudTh>
 			</HeaderContent>
@@ -33,18 +32,22 @@
 				<MudTd>@context.Position</MudTd>
 				<MudTd>@context.Position</MudTd>
 				<MudTd>@context.TotalPoints</MudTd>
-				<MudTd>@context.TotalPoints</MudTd>
 				<MudTd>@context.NumberOfTeams</MudTd>
 				<MudTd>
-					@* <MudCheckBox @onclick="@(() => ToggleTeamId(context.ExternalId))" /> *@
-					<MudButton Color="Color.Success"
+					<MudCheckBox T="bool" @onclick="@(() => ToggleTeamId(context.ExternalId))" />
+					@* <MudButton Color="Color.Success"
 							   Variant="Variant.Filled"
 							   Style="min-width:40px; width:40px; height:30px; padding:0;"
 							   OnClick="@(() => ToggleTeamId(context.ExternalId))">
-						<MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
-					</MudButton>
+						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+					</MudButton> *@
 				</MudTd>
 			</RowTemplate>
+			<ChildRowContent>
+				<MudTd Colspan="3">
+					Extra details for @context.Name
+				</MudTd>
+			</ChildRowContent>
 		</MudTable>
 	}
 </div>
