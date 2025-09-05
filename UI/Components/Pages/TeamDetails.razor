@@ -1,7 +1,17 @@
 ﻿@page "/teams/{Id:guid}"
 
-<h3>TeamDetails</h3>
+@using Core.Models
+@using Infrastructure.DataAccess
 
-@code {	
+<MudDialog>
+	<DialogContent>
+		<EditForm>
+
+		</EditForm>
+	</DialogContent>
+</MudDialog>
+
+@code {
 	[Parameter] public Guid Id { get; set; }
+	[Parameter] public Team Team { get; set; } = default!;
 }

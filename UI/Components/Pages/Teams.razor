@@ -15,43 +15,48 @@
 	}
 	else
 	{
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Id</th>
-					<th>Name</th>
-					<th>Country</th>
-					<th>Competition</th>
-					<th>Points</th>
-					<th>Position</th>
-					<th>Is Active?</th>
-					<th>Matches:</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var team in teams)
-				{
-					<tr>
-						<td>@team.ExternalId</td>
-						<NavLink class="nav-link" href=@($"/teams/{team.Id}") style="text-decoration:underline">@team.Name</NavLink>
-						<td>@team.Country.Name</td>
-						<td>@team.Competition.ToString().Humanize(LetterCasing.Title)</td>
-						<td>@team.Position</td>
-						<td><input type="number" @bind=@team.Points style="width:40px;" disabled="@(team.IsActive == false)" /></td>
-						<td><input type="checkbox" @bind="@team.IsActive" /></td>
-						<td><input type="button" class="btn btn-success" style="width:40px" value=">" @onclick="ShowMatches" /></td>
-					</tr>
-					<tr></tr>
-				}
-			</tbody>
-		</table>
+		<MudTable Items="teams">
+			<HeaderContent>
+				<MudTh>Id</MudTh>
+				<MudTh>Name</MudTh>
+				<MudTh>Competition</MudTh>
+				<MudTh>Points</MudTh>
+				<MudTh>Position</MudTh>
+				<MudTh>Is Active?</MudTh>
+				<MudTh>Matches:</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd>@context.Name</MudTd>
+				<MudTd>@context.ExternalId</MudTd>
+				<MudTd>@context.Country.Name</MudTd>
+				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
+				<MudTd>@context.Position</MudTd>
+				<MudTd>@context.Points</MudTd>
+				<MudTd>
+					<input type="number" @bind=@context.Points style="width:40px;" disabled="@(context.IsActive == false)" />
+					<MudNumericField T="int"
+									 @bind-value="context.Points"
+									 Disabled="@(!context.IsActive)" />
+				</MudTd>
+				<MudTd>
+					<MudCheckBox T="bool" @bind-Checked="@context.IsActive" />
+				</MudTd>
+				<MudTd>
+					<MudButton Color="Color.Success"
+							   Variant="Variant.Filled"
+							   Style="min-width:40px; width:40px; height:30px; padding:0;"
+							   OnClick="@(() => ShowMatches(context))" />
+				</MudTd>
+				<NavLink class="nav-link" href=@($"/teams/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
+			</RowTemplate>
+		</MudTable>
 	}
 
 </div>
 
 @code
 {
-	private Team[]? teams;
+	private Team[]? teams = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -60,7 +65,7 @@
 		teams = databasefeeder.GetTeams();
 	}
 
-	public void ShowMatches()
+	private void ShowMatches(Team t)
 	{
 	}
 }

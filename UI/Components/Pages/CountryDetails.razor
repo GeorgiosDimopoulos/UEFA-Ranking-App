@@ -1,7 +1,16 @@
 ﻿@page "/countries/{Id:guid}"
+@using Core.Models
 
-<h3>CountryDetails</h3>
+<MudDialog>
+	<DialogContent>
+		<EditForm>
+
+		</EditForm>
+	</DialogContent>
+</MudDialog>
 
 @code {
 	[Parameter] public Guid Id { get; set; }
+	[Parameter] public Country Country { get; set; }
 }
+
