@@ -17,8 +17,8 @@
 	{
 		<MudTable Items="teams">
 			<HeaderContent>
-				<MudTh>Name</MudTh>
 				<MudTh>Id</MudTh>
+				<MudTh>Name</MudTh>
 				<MudTh>Country</MudTh>
 				<MudTh>Competition</MudTh>
 				<MudTh>Position</MudTh>
@@ -27,18 +27,15 @@
 				<MudTh>Matches:</MudTh>
 			</HeaderContent>
 			<RowTemplate>
+				<MudTd>@context.ExternalId</MudTd>
 				<MudTd>
 					<NavLink class="nav-link" href=@($"/teams/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
 				</MudTd>
-				<MudTd>@context.ExternalId</MudTd>
 				<MudTd>@context.Country.Name</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
 				<MudTd>@context.Position</MudTd>
 				<MudTd>
-					<MudNumericField T="int"
-									 @bind-value="context.Points"
-									 Style="width:60px;"
-									 Disabled="@(!context.IsActive)" />
+					<MudNumericField T="int" @bind-value="context.Points" Style="width:60px;" Disabled="@(!context.IsActive)" />
 				</MudTd>
 				<MudTd>
 					<MudCheckBox T="bool" @bind-Checked="@context.IsActive" />

@@ -14,51 +14,38 @@
 	}
 	else
 	{
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>Country</th>
-					<th class="text-center" colspan="1">Position</th>
-					<th class="text-center" colspan="5">Teams</th>
-				</tr>
-				<tr>
-					<th>Name</th>
-					<th>Initial</th>
-					<th>Active</th>
-					<th>Points</th>
-					<th>Initial</th>
-					<th>Active</th>
-					<th>Show Teams</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var c in countries)
-				{
-					<tr>
-						@* <NavLink class="nav-link" href=@($"/countries/{c.Id}") style="text-decoration:underline">@c.Name</NavLink> *@
-						<MudButton @onclick="OpenCountryAsync" Variant="Variant.Filled" Color="Color.Primary">@c.Name</MudButton>
-						<td>@c.Position</td>
-						<td>@c.Position</td>
-						<td>@c.TotalPoints</td>
-						<td>@c.NumberOfTeams</td>
-						<td>@c.NumberOfTeams</td>
-						<td>
-							<input type="checkbox" @onclick="() => ToggleTeamId(c.ExternalId)" />
-						</td>
-					</tr>
-					<tr>
-						@if (c.Teams.Count() > 0 && expanded.Contains(c.ExternalId))
-						{
-							@foreach (var t in c.Teams)
-							{
-								@* <_CountryTeamComponent CountryName="@c.Name"></_CountryTeamComponent> *@
-								<td colspan="7">@t.Name with @t.Points points</td>
-							}
-						}
-					</tr>
-				}
-			</tbody>
-		</table>
+		<MudTable Items="countries">
+			<HeaderContent>
+				<MudTh>Id</MudTh>
+				<MudTh>Name</MudTh>
+				<MudTh>Initial Position</MudTh>
+				<MudTh>Active Position</MudTh>
+				<MudTh>Initial Points</MudTh>
+				<MudTh>Active Points</MudTh>
+				<MudTh>Teams Number</MudTh>
+				<MudTh>Show Teams</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd>@context.ExternalId</MudTd>
+				<MudTd>
+					<NavLink class="nav-link" href=@($"/countries/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
+				</MudTd>
+				<MudTd>@context.Position</MudTd>
+				<MudTd>@context.Position</MudTd>
+				<MudTd>@context.TotalPoints</MudTd>
+				<MudTd>@context.TotalPoints</MudTd>
+				<MudTd>@context.NumberOfTeams</MudTd>
+				<MudTd>
+					@* <MudCheckBox @onclick="@(() => ToggleTeamId(context.ExternalId))" /> *@
+					<MudButton Color="Color.Success"
+							   Variant="Variant.Filled"
+							   Style="min-width:40px; width:40px; height:30px; padding:0;"
+							   OnClick="@(() => ToggleTeamId(context.ExternalId))">
+						<MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
+					</MudButton>
+				</MudTd>
+			</RowTemplate>
+		</MudTable>
 	}
 </div>
 
