@@ -18,7 +18,7 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7170;http://localhost:5276"
     },
-    "Chrome": {
+    "UI": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

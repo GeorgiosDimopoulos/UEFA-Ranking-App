@@ -1,5 +1,6 @@
 ﻿@page "/countries/{Id:guid}"
 @using Core.Models
+@inherits ComponentBase
 
 <MudDialog>
 	<DialogContent>
@@ -12,5 +13,10 @@
 @code {
 	[Parameter] public Guid Id { get; set; }
 	[Parameter] public Country Country { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		
+	}
 }
 

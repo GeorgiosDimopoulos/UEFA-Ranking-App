@@ -2,10 +2,11 @@
 @using Core.Models
 @using Infrastructure
 @using Infrastructure.DataAccess
+@inject IDialogService DialogService
 
 <PageTitle>Countries Statistics</PageTitle>
 
-<div class="alert alert-info">This component demonstrates showing countries football statistics data for 2025 - 2026</div>
+<MudAlert Severity="Severity.Info">This component demonstrates showing countries football statistics data for 2025 - 2026</MudAlert>
 
 <div>
 	@if (countries == null)

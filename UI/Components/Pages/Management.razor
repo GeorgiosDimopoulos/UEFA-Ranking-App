@@ -4,26 +4,59 @@
 
 <PageTitle>Managements</PageTitle>
 
-<h2>Page for handling Teams and Countries!</h2>
-
 <div class="col-12">
-	@if (teams == null)
-	{
-		<p><em>Loading teams...</em></p>
-	}
-	else
-	{		
-	}
+    @if (teams == null)
+    {
+        <p><em>Loading countries and teams...</em></p>
+    }
+    else
+    {
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardHeader>
+                        @* <MudItem xs="12" sm="6" md="4">
+                            <MudAutocomplete T="string" AdornmentColor="Color.Primary" />                            
+                        </MudItem> *@
+                        Countries:
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>text</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Info">
+                            Edit
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>Teams:</CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText>text</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Info">
+                            Edit
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    }
 </div>
 
 @code
 {
-	private Team[]? teams;
-	
-	protected override async Task OnInitializedAsync()
-	{
-		await Task.Delay(500);
-		var databasefeeder = new DatabaseFeeder();
-		teams = databasefeeder.GetTeams();
-	}
+    private Team[]? teams;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        var databasefeeder = new DatabaseFeeder();
+        teams = databasefeeder.GetTeams();
+    }
 }
