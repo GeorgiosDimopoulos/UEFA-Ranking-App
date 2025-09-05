@@ -46,6 +46,19 @@ public class TeamsController : ControllerBase
         return Ok(team);
     }
 
+    [HttpGet("/byName")]
+    public async Task<ActionResult<TeamDto>> GetTeamById(string n)
+    {
+        var team = await teamRepository.GetTeamByName(n);
+        if (team == null)
+        {
+            _logger.LogWarning("Team with name: {n} not found", n);
+            return NotFound();
+        }
+
+        return Ok(team);
+    }
+
     [HttpPost(Name = "AddTeam")]
     public async Task<ActionResult<TeamDto>> AddTeam([FromQuery] TeamDto t)
     {

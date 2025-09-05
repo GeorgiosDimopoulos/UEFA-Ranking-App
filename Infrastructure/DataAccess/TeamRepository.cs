@@ -32,6 +32,14 @@ public class TeamRepository : ITeamRepository
         return team;
     }
 
+    public async Task<Team?> GetTeamByname(string name)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+
+        var team = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { Name = name });
+        return team;
+    }
+
     public async Task<IEnumerable<Team?>> GetTeamsByCountryId(int countryId)
     {
         using var connection = new SqliteConnection(_connectionString);
