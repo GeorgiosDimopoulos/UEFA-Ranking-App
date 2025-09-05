@@ -32,7 +32,7 @@
 				@foreach (var team in teams)
 				{
 					<tr>
-						<td>@team.Id</td>
+						<td>@team.ExternalId</td>
 						<td>@team.Name</td>
 						<td>@team.Country.Name</td>
 						<td>@team.Competition.ToString().Humanize(LetterCasing.Title)</td>
@@ -56,7 +56,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var databasefeeder = new Databasefeeder();
+		var databasefeeder = new DatabaseFeeder();
 		teams = databasefeeder.GetTeams();
 	}
 

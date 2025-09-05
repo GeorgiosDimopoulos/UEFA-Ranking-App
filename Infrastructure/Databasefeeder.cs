@@ -1,48 +1,53 @@
-﻿namespace Infrastructure;
+﻿using System;
 
-public class Databasefeeder
+namespace Infrastructure;
+
+public class DatabaseFeeder
 {
     public Country[] Countries { get; set; }
     public Team[]? Teams { get; set; }
 
-    public Databasefeeder()
+    public DatabaseFeeder()
     {
         try
         {
             Countries = [
-                new() { Id = 1, Name = "England", Position = 1 },
-                new() { Id = 2, Name = "Spain", Position = 2 },
-                new() { Id = 3, Name = "Germany", Position = 3 },
-                new() { Id = 4, Name = "Italy", Position = 4 },
-                new() { Id = 5, Name = "France", Position = 5 },
-                new() { Id = 6, Name = "Portugal", Position = 6 },
-                new() { Id = 7, Name = "Netherlands", Position = 7 },
-                new() { Id = 8, Name = "Belgium", Position = 8 },
-                new() { Id = 9, Name = "Turkey", Position = 9 },
-                new() { Id = 10, Name = "Czech", Position = 10 },
-                new() { Id = 11, Name = "Greece", Position = 11 }];
+                new() { ExternalId = 1, Id = Guid.NewGuid(), Name = "England", Position = 1 },
+                new() { ExternalId = 2, Id = Guid.NewGuid(), Name = "Spain", Position = 2 },
+                new() { ExternalId = 3, Id = Guid.NewGuid(), Name = "Germany", Position = 3 },
+                new() { ExternalId = 4, Id = Guid.NewGuid(), Name = "Italy", Position = 4 },
+                new() { ExternalId = 5, Id = Guid.NewGuid(), Name = "France", Position = 5 },
+                new() { ExternalId = 6, Id = Guid.NewGuid(), Name = "Portugal", Position = 6 },
+                new() { ExternalId = 7, Id = Guid.NewGuid(), Name = "Netherlands", Position = 7 },
+                new() { ExternalId = 8, Id = Guid.NewGuid(), Name = "Belgium", Position = 8 },
+                new() { ExternalId = 9, Id = Guid.NewGuid(), Name = "Turkey", Position = 9 },
+                new() { ExternalId = 10, Id = Guid.NewGuid(), Name = "Czech", Position = 10 },
+                new() { ExternalId = 11, Id = Guid.NewGuid(), Name = "Greece", Position = 11 }];
 
             Teams = [
                 new Team {
+                    Id = Guid.NewGuid(),
                     Name = "AEK",
                     Competition = Competition.ConferenceLeague,
                     Country = Countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found"),
                     IsActive = true,
-                    Id = 1,
+                    ExternalId = 1,
                     Points = 2 },
                 new Team {
+                    Id = Guid.NewGuid(),
                     Name = "Vfb",
                     Competition = Competition.EuropaLeague,
                     Country = Countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found"),
                     IsActive = false,
-                    Id = 2,
+                    ExternalId = 2,
                     Points = 0 },
                 new Team {
+                    Id = Guid.NewGuid(),
                     Name = "Sevilla",
                     Competition = Competition.None,
                     Country = Countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found"),
                     IsActive = false,
-                    Id = 3,
+                    ExternalId = 3,
                     Points = 0
                 }];
 

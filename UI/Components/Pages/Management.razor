@@ -1,0 +1,29 @@
+﻿@page "/management"
+@using Core.Models
+@using Infrastructure
+
+<PageTitle>Managements</PageTitle>
+
+<h2>Page for handling Teams and Countries!</h2>
+
+<div class="col-12">
+	@if (teams == null)
+	{
+		<p><em>Loading teams...</em></p>
+	}
+	else
+	{		
+	}
+</div>
+
+@code
+{
+	private Team[]? teams;
+	
+	protected override async Task OnInitializedAsync()
+	{
+		await Task.Delay(500);
+		var databasefeeder = new DatabaseFeeder();
+		teams = databasefeeder.GetTeams();
+	}
+}

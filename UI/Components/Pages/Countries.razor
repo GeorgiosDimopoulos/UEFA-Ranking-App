@@ -42,11 +42,11 @@
 						<td>@c.NumberOfTeams</td>
 						<td>@c.NumberOfTeams</td>
 						<td>
-							<input type="checkbox" @onclick="() => ToggleTeamId(c.Id)" />
+							<input type="checkbox" @onclick="() => ToggleTeamId(c.ExternalId)" />
 						</td>
 					</tr>
 					<tr>
-						@if (c.Teams.Count() > 0 && expanded.Contains(c.Id))
+						@if (c.Teams.Count() > 0 && expanded.Contains(c.ExternalId))
 						{
 							@foreach (var t in c.Teams)
 							{
@@ -69,7 +69,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var databasefeeder = new Databasefeeder();
+		var databasefeeder = new DatabaseFeeder();
 		countries = databasefeeder.GetCountries();
 	}
 
