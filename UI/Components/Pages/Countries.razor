@@ -35,7 +35,7 @@
 				@foreach (var c in countries)
 				{
 					<tr>
-						<NavLink class="nav-link" href=@($"/countries/{c.Id}")>@c.Name</NavLink>
+						<NavLink class="nav-link" href=@($"/countries/{c.Id}") style="text-decoration:underline">@c.Name</NavLink>
 						<td>@c.Position</td>
 						<td>@c.Position</td>
 						<td>@c.TotalPoints</td>

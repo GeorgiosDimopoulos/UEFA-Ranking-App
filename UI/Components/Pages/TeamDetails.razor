@@ -1,6 +1,7 @@
-﻿@page "/teams/{id:int}"
+﻿@page "/teams/{Id:guid}"
 
 <h3>TeamDetails</h3>
 
 @code {	
+	[Parameter] public Guid Id { get; set; }
 }
