@@ -35,18 +35,13 @@
 				<MudTd>@context.NumberOfTeams</MudTd>
 				<MudTd>
 					<MudCheckBox T="bool" @onclick="@(() => ToggleTeamId(context.ExternalId))" />
-					@* <MudButton Color="Color.Success"
-							   Variant="Variant.Filled"
-							   Style="min-width:40px; width:40px; height:30px; padding:0;"
-							   OnClick="@(() => ToggleTeamId(context.ExternalId))">
-						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-					</MudButton> *@
 				</MudTd>
 			</RowTemplate>
 			<ChildRowContent>
-				<MudTd Colspan="3">
-					Extra details for @context.Name
-				</MudTd>
+				@if (expanded.Contains(context.ExternalId))
+				{
+					<MudTd Colspan="3"> Extra details for @context.Name </MudTd>
+				}
 			</ChildRowContent>
 		</MudTable>
 	}
@@ -60,8 +55,8 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var databasefeeder = new DatabaseFeeder();
-		countries = databasefeeder.GetCountries();
+		var databaseFeeder = new DatabaseFeeder();
+		countries = databaseFeeder.GetCountries();
 	}
 
 	private void ToggleTeamId(int id)
