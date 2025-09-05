@@ -7,8 +7,6 @@
 <PageTitle>Teams</PageTitle>
 
 <div class="col-12">
-	<div class="alert alert-info">This component demonstrates showing teams data.</div>
-
 	@if (teams == null)
 	{
 		<p><em>Loading teams...</em></p>
@@ -33,7 +31,6 @@
 				<MudTd>@context.Position</MudTd>
 				<MudTd>@context.Points</MudTd>
 				<MudTd>
-					<input type="number" @bind=@context.Points style="width:40px;" disabled="@(context.IsActive == false)" />
 					<MudNumericField T="int"
 									 @bind-value="context.Points"
 									 Disabled="@(!context.IsActive)" />
