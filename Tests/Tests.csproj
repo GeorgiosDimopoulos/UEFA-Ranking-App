@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Backend\" />
-    <Folder Include="UI\" />
   </ItemGroup>
 
 </Project>
