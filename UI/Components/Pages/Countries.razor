@@ -40,7 +40,10 @@
 			<ChildRowContent>
 				@if (expanded.Contains(context.ExternalId))
 				{
-					<MudTd Colspan="3"> Extra details for @context.Name </MudTd>
+					foreach (var team in context.Teams)
+					{
+						<MudTd Colspan="3">@team.Name, has @team.Points points, is in @team.Competition cup, in @team.Position place. </MudTd>
+					}
 				}
 			</ChildRowContent>
 		</MudTable>
