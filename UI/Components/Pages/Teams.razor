@@ -7,6 +7,8 @@
 <PageTitle>Teams</PageTitle>
 
 <div class="col-12">
+	<div class="alert alert-info">This component demonstrates showing teams data.</div>
+
 	@if (teams == null)
 	{
 		<p><em>Loading teams...</em></p>
@@ -15,24 +17,27 @@
 	{
 		<MudTable Items="teams">
 			<HeaderContent>
-				<MudTh>Id</MudTh>
 				<MudTh>Name</MudTh>
+				<MudTh>Id</MudTh>
+				<MudTh>Country</MudTh>
 				<MudTh>Competition</MudTh>
-				<MudTh>Points</MudTh>
 				<MudTh>Position</MudTh>
+				<MudTh>Points</MudTh>
 				<MudTh>Is Active?</MudTh>
 				<MudTh>Matches:</MudTh>
 			</HeaderContent>
 			<RowTemplate>
-				<MudTd>@context.Name</MudTd>
+				<MudTd>
+					<NavLink class="nav-link" href=@($"/teams/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
+				</MudTd>
 				<MudTd>@context.ExternalId</MudTd>
 				<MudTd>@context.Country.Name</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
 				<MudTd>@context.Position</MudTd>
-				<MudTd>@context.Points</MudTd>
 				<MudTd>
 					<MudNumericField T="int"
 									 @bind-value="context.Points"
+									 Style="width:60px;"
 									 Disabled="@(!context.IsActive)" />
 				</MudTd>
 				<MudTd>
@@ -42,9 +47,10 @@
 					<MudButton Color="Color.Success"
 							   Variant="Variant.Filled"
 							   Style="min-width:40px; width:40px; height:30px; padding:0;"
-							   OnClick="@(() => ShowMatches(context))" />
+							   OnClick="@(() => ShowMatches(context))">
+						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+					</MudButton>
 				</MudTd>
-				<NavLink class="nav-link" href=@($"/teams/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
 			</RowTemplate>
 		</MudTable>
 	}
