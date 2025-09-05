@@ -32,7 +32,7 @@ public class TeamRepository : ITeamRepository
         return team;
     }
 
-    public async Task<Team?> GetTeamByname(string name)
+    public async Task<Team?> GetTeamByName(string name)
     {
         using var connection = new SqliteConnection(_connectionString);
 

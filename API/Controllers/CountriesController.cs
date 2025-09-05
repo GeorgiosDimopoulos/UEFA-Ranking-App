@@ -42,13 +42,13 @@ public class CountriesController : ControllerBase
         return Ok(country);
     }
 
-    [HttpGet("byName")]
-    public async Task<ActionResult<CountryDto>> GetCountryByName(string n)
+    [HttpGet("{name}")]
+    public async Task<ActionResult<CountryDto>> GetCountryByName(string name)
     {
-        var country = await countryRepository.GetCountryByName(n) ?? new();
+        var country = await countryRepository.GetCountryByName(name) ?? new();
         if (country == null)
         {
-            _logger.LogWarning("Country with name {Name} not found", n);
+            _logger.LogWarning("Country with name {name} not found", name);
             return NotFound();
         }
 

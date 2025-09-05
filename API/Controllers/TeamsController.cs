@@ -46,7 +46,7 @@ public class TeamsController : ControllerBase
         return Ok(team);
     }
 
-    [HttpGet("/byName")]
+    [HttpGet("{name}")]
     public async Task<ActionResult<TeamDto>> GetTeamById(string n)
     {
         var team = await teamRepository.GetTeamByName(n);
