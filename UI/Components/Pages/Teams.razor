@@ -33,7 +33,7 @@
 				{
 					<tr>
 						<td>@team.ExternalId</td>
-						<td>@team.Name</td>
+						<NavLink class="nav-link" href=@($"/teams/{team.Id}")>@team.Name</NavLink>
 						<td>@team.Country.Name</td>
 						<td>@team.Competition.ToString().Humanize(LetterCasing.Title)</td>
 						<td>@team.Position</td>
