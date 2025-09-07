@@ -7,6 +7,7 @@ public class Country
     public int ExternalId { get; set; }
     public int Position { get; set; }
     public IEnumerable<Team> Teams { get; set; } = [];
-    public int NumberOfTeams => Teams.Count();
-    public int TotalPoints => Teams.Sum(t => t.Points);
+    public int NumberOfInitialTeams => Teams.Count();
+    public int NumberOfActiveTeams => Teams.Where(t => t.IsActive).Count();
+    public int TotalPoints { get; set; } // => Teams.Sum(t => t.Points);
 }

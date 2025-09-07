@@ -1,22 +1,42 @@
-﻿@page "/countries/{Id:guid}"
+﻿@using MudBlazor
 @using Core.Models
+
+@page "/countries/{Id:guid}"
+
 @inherits ComponentBase
+@inject IDialogService DialogService
 
 <MudDialog>
-	<DialogContent>
-		<EditForm>
-
-		</EditForm>
-	</DialogContent>
+    <DialogContent>
+        <MudForm @ref="editForm">
+            <MudTextField @bind-Value="country.Name" Label="Name"/>
+            <MudNumericField @bind-Value="country.Position" Label="Initial Position" />
+            <MudNumericField @bind-Value="country.Position" Label="Current Position"/>
+            <MudNumericField @bind-Value="country.TotalPoints" Label="Points" />
+            <MudNumericField Value="country.Teams.Count()" Label="Initial Teams" />
+            <MudNumericField Value="country.NumberOfActiveTeams" Label="Active Teams" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onClick="Save">Save</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
-	[Parameter] public Guid Id { get; set; }
-	[Parameter] public Country Country { get; set; }
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public Country Country { get; set; } = default!;
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
-	protected override void OnParametersSet()
-	{
-		
-	}
-}
+    private MudForm editForm = default!;
+    private Country country = new();
 
+    protected override void OnParametersSet()
+    {
+    }
+        
+    private void Save()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        MudDialog?.Close(DialogResult.Ok(country));
+    }        
+}   

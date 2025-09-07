@@ -9,70 +9,81 @@
 <MudAlert Severity="Severity.Info">This component demonstrates showing countries football statistics data for 2025 - 2026</MudAlert>
 
 <div>
-	@if (countries == null)
-	{
-		<p><em>Loading countries...</em></p>
-	}
-	else
-	{
-		<MudTable Items="countries">
-			<HeaderContent>
-				<MudTh>Id</MudTh>
-				<MudTh>Name</MudTh>
-				<MudTh>Initial Position</MudTh>
-				<MudTh>Active Position</MudTh>
-				<MudTh>Points</MudTh>
-				<MudTh>Teams Number</MudTh>
-				<MudTh>Show Teams</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				<MudTd>@context.ExternalId</MudTd>
-				<MudTd>
-					<NavLink class="nav-link" href=@($"/countries/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
-				</MudTd>
-				<MudTd>@context.Position</MudTd>
-				<MudTd>@context.Position</MudTd>
-				<MudTd>@context.TotalPoints</MudTd>
-				<MudTd>@context.NumberOfTeams</MudTd>
-				<MudTd>
-					<MudCheckBox T="bool" @onclick="@(() => ToggleTeamId(context.ExternalId))" />
-				</MudTd>
-			</RowTemplate>
-			<ChildRowContent>
-				@if (expanded.Contains(context.ExternalId))
-				{
-					foreach (var team in context.Teams)
-					{
-						<MudTd Colspan="3">@team.Name, has @team.Points points, is in @team.Competition cup, in @team.Position place. </MudTd>
-					}
-				}
-			</ChildRowContent>
-		</MudTable>
-	}
+    @if (countries == null)
+    {
+        <p><em>Loading countries...</em></p>
+    }
+    else
+    {
+        <MudTable Items="countries">
+            <HeaderContent>
+                <MudTh>Id</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Initial Position</MudTh>
+                <MudTh>Active Position</MudTh>
+                <MudTh>Points</MudTh>
+                <MudTh>Teams Number</MudTh>
+                <MudTh>Show Teams</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.ExternalId</MudTd>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenCountryAsync(context)">
+                        <span style="text-decoration:underline"> @context.Name </span>
+                    </MudButton>
+                </MudTd>
+                <MudTd>@context.Position</MudTd>
+                <MudTd>@context.Position</MudTd>
+                <MudTd>@context.TotalPoints</MudTd>
+                <MudTd>@context.NumberOfInitialTeams</MudTd>
+                <MudTd>@context.NumberOfActiveTeams</MudTd>
+                <MudTd>
+                    <MudCheckBox T="bool" @onclick="@(() => ToggleTeamId(context.ExternalId))" />
+                </MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+                @if (expanded.Contains(context.ExternalId))
+                {
+                    foreach (var team in context.Teams)
+                    {
+                        <MudTd Colspan="3">@team.Name, has @team.Points points, is in @team.Competition cup, in @team.Position place. </MudTd>
+                    }
+                }
+            </ChildRowContent>
+        </MudTable>
+    }
 </div>
 
 @code {
-	private Country[]? countries;
-	private HashSet<int> expanded = new();
-	private bool shownTeams;
+    private Country[]? countries;
+    private HashSet<int> expanded = new();
+    private bool shownTeams;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await Task.Delay(500);
-		var databaseFeeder = new DatabaseFeeder();
-		countries = databaseFeeder.GetCountries();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        var databaseFeeder = new DatabaseFeeder();
+        countries = databaseFeeder.GetCountries();
+    }
 
-	private void ToggleTeamId(int id)
-	{
-		if (!expanded.Add(id))
-			expanded.Remove(id);
-	}
+    private void ToggleTeamId(int id)
+    {
+        if (!expanded.Add(id))
+            expanded.Remove(id);
+    }
 
-	private Task OpenCountryAsync()
-	{
-		var options = new DialogOptions { CloseOnEscapeKey = true };
+    private async Task OpenCountryAsync(Country country)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Country"] = country
+        };
 
-		return Task.CompletedTask;
-	}
+        var dialogRef = await DialogService.ShowAsync<CountryDetails>(country.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is Country updatedCountry)
+        {
+            StateHasChanged();
+        }
+    }
 }
