@@ -55,7 +55,7 @@
 </div>
 
 @code {
-    private Country[]? countries;
+    private Country[] countries = default!;
     private HashSet<int> expanded = new();
     private bool shownTeams;
 
@@ -63,7 +63,7 @@
     {
         await Task.Delay(500);
         var databaseFeeder = new DatabaseFeeder();
-        countries = databaseFeeder.GetCountries();
+        countries = databaseFeeder.GetCountries()!.OrderByDescending(c=> c.TotalPoints).ToArray();
     }
 
     private void ToggleTeamId(int id)

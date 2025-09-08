@@ -12,17 +12,17 @@ public class DatabaseFeeder
         try
         {
             Countries = [
-                new() { ExternalId = 1, Id = Guid.NewGuid(), Name = "England", Position = 1 },
-                new() { ExternalId = 2, Id = Guid.NewGuid(), Name = "Spain", Position = 2 },
-                new() { ExternalId = 3, Id = Guid.NewGuid(), Name = "Germany", Position = 3 },
-                new() { ExternalId = 4, Id = Guid.NewGuid(), Name = "Italy", Position = 4 },
-                new() { ExternalId = 5, Id = Guid.NewGuid(), Name = "France", Position = 5 },
-                new() { ExternalId = 6, Id = Guid.NewGuid(), Name = "Portugal", Position = 6 },                                                                                                     
-                new() { ExternalId = 7, Id = Guid.NewGuid(), Name = "Netherlands", Position = 7 },
-                new() { ExternalId = 8, Id = Guid.NewGuid(), Name = "Belgium", Position = 8 },
-                new() { ExternalId = 9, Id = Guid.NewGuid(), Name = "Turkey", Position = 9 },
-                new() { ExternalId = 10, Id = Guid.NewGuid(), Name = "Czech", Position = 10 },
-                new() { ExternalId = 11, Id = Guid.NewGuid(), Name = "Greece", Position = 11 }];
+                new() { ExternalId = 1, Id = Guid.NewGuid(), Name = "England", Position = 1, TotalPoints = 95000 },
+                new() { ExternalId = 2, Id = Guid.NewGuid(), Name = "Spain", Position = 3 , TotalPoints = 79000},
+                new() { ExternalId = 3, Id = Guid.NewGuid(), Name = "Germany", Position = 4 , TotalPoints = 75000},
+                new() { ExternalId = 4, Id = Guid.NewGuid(), Name = "Italy", Position = 2 , TotalPoints = 84000},
+                new() { ExternalId = 5, Id = Guid.NewGuid(), Name = "France", Position = 5 , TotalPoints = 68000},
+                new() { ExternalId = 6, Id = Guid.NewGuid(), Name = "Portugal", Position = 7 , TotalPoints = 57000},                                                                                                     
+                new() { ExternalId = 7, Id = Guid.NewGuid(), Name = "Netherlands", Position = 6 , TotalPoints = 62000},
+                new() { ExternalId = 8, Id = Guid.NewGuid(), Name = "Belgium", Position = 8 , TotalPoints = 55000},
+                new() { ExternalId = 9, Id = Guid.NewGuid(), Name = "Turkey", Position = 9 , TotalPoints = 44000},
+                new() { ExternalId = 10, Id = Guid.NewGuid(), Name = "Czech", Position = 10 , TotalPoints = 40500},
+                new() { ExternalId = 11, Id = Guid.NewGuid(), Name = "Greece", Position = 11 , TotalPoints = 37500}];
 
             Teams = [
                 new Team {

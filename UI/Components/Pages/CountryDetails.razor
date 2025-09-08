@@ -11,7 +11,7 @@
             <MudTextField @bind-Value="country.Name" Label="Name"/>
             <MudNumericField @bind-Value="country.Position" Label="Initial Position" />
             <MudNumericField @bind-Value="country.Position" Label="Current Position"/>
-            <MudNumericField @bind-Value="country.TotalPoints" Label="Points" />
+            <MudNumericField @bind-Value="country.TotalPoints" Label="Total Points" />
             <MudNumericField Value="country.Teams.Count()" Label="Initial Teams" />
             <MudNumericField Value="country.NumberOfActiveTeams" Label="Active Teams" />
         </MudForm>
@@ -34,6 +34,7 @@
     {
         country = new Country
         {
+            Position =Country.Position,
             Id = Country.Id,
             ExternalId = Country.ExternalId,
             Name = Country.Name,
