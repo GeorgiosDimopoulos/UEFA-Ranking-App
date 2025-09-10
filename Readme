@@ -1,0 +1,50 @@
+# ?? TASK FOR CODEX
+
+## Objective
+Implement a multi-layer .NET 8 Web API project with:
+- Business Logic (MyProject.BLL)
+- Data Access with EF Core (MyProject.DAL)
+- PostgreSQL as the DB
+- Docker Compose support
+- Optional: PGAdmin + Portainer
+
+## Tasks
+
+1. Scaffold basic projects:
+   - MyProject.Api (.NET 8 Web API)
+   - MyProject.BLL (.NET Class Library)
+   - MyProject.DAL (.NET Class Library)
+
+2. Set up Dependency Injection:
+   - Register BLL and DAL services in `Program.cs`
+   - Use extension method in BLL: `DependencyInjection.AddBusinessLayer()`
+
+3. Configure Entity Framework:
+   - Use PostgreSQL
+   - Create `MyDbContext` with one model: `Customer { Id, Name, Email }`
+   - Migrate DB
+
+4. Create one working endpoint:
+   - `[GET] /customers` => returns list of customers from DB
+
+5. Add `docker-compose.yml` with:
+   - `api`: runs MyProject.Api
+   - `db`: PostgreSQL
+   - `pgadmin`: PGAdmin
+   - `portainer`: Portainer UI
+
+6. Build and run containers:
+   - Ensure API runs on `http://localhost:5000`
+   - PGAdmin on `http://localhost:8080`
+   - Portainer on `http://localhost:9000`
+
+## Notes
+- Follow clean code principles
+- Keep logic separated across layers
+- Use async calls
+- Include `CustomerRepository`, `CustomerService`, and their interfaces
+
+? Expected Output:
+- Working multi-container .NET solution
+- Full Git repo ready to push
+
