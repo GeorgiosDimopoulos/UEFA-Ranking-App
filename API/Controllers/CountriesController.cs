@@ -25,7 +25,9 @@ public class CountriesController : ControllerBase
         return countries.Select(c => new CountryDto
         {
             Name = c.Name,
-            Position = c.Position
+            Position = c.Position,
+            NumberOfTeams = c.Teams?.Count() ?? 0,
+            TotalPoints = c.Teams?.Sum(t => t.Points) ?? 0
         });
     }
 
