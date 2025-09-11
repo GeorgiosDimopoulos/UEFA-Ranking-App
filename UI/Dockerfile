@@ -14,7 +14,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["UI/UI.csproj", "UI/"]
 COPY ["Core/Core.csproj", "Core/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["Infrastructure", "Infrastructure"] 
 RUN dotnet restore "./UI/UI.csproj"
 COPY . .
 WORKDIR "/src/UI"

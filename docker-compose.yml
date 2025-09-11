@@ -1,14 +1,18 @@
 version: '3.8'
 services:
   api:
-    build: ./Api
+    build: 
+        dockerfile: Api/Dockerfile
+        context: .
     ports:
       - "5000:80"
     depends_on:
       - db
 
   ui:
-    build: ./UI
+    build:
+        dockerfile: UI/Dockerfile
+        context: .
     ports:
       - "3000:80"
 
