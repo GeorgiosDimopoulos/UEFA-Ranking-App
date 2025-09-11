@@ -1,14 +1,14 @@
 version: '3.8'
 services:
   api:
-    build: ./MyApi
+    build: ./Api
     ports:
       - "5000:80"
     depends_on:
       - db
 
   ui:
-    build: ./MyUI
+    build: ./UI
     ports:
       - "3000:80"
 
