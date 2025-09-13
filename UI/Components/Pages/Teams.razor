@@ -1,4 +1,5 @@
 ﻿@page "/teams"
+@using Core.Interfaces
 @using Core.Models
 @using Humanizer
 @using Infrastructure
@@ -56,13 +57,15 @@
 
 @code
 {
-	private Team[]? teams = default!;
+	private Team[] teams = default!;
+
+    [Inject]
+	protected ITeamRepository teamRepository { get; set; } = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var databasefeeder = new DatabaseFeeder();
-		teams = databasefeeder.GetTeams();
+		teams = (await teamRepository.GetAllTeams()).ToArray();
 	}
 
 	private void ShowMatches(Team t)

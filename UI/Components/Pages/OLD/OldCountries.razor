@@ -68,6 +68,7 @@
 	private HashSet<int> expanded = new();
 	private bool shownTeams;
     private ICountryRepository countryRepository = default!;
+    private IConfiguration configuration = default!;
     
 	protected override async Task OnInitializedAsync()
 	{
