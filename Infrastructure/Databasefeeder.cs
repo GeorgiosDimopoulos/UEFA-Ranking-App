@@ -17,10 +17,9 @@ public class DatabaseFeeder
     {
         countryRepository = countries;
         teamRepository = teams;
-        SeedAsync().Wait();
     }
 
-    public async Task SeedAsync()
+    public void SeedCountriesAndTeams()
     {
         try
         {

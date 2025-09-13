@@ -1,7 +1,6 @@
 using Core.Interfaces;
 using Infrastructure;
 using Infrastructure.DataAccess;
-using Microsoft.Data.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,9 +30,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.MapPost("/api/database/seed", async (DatabaseFeeder feeder) =>
+    app.MapPost("/api/database/seed", (DatabaseFeeder feeder) =>
     {
-        await feeder.SeedAsync();
+        feeder.SeedCountriesAndTeams();
         return Results.Ok("Database seeded successfully.");
     });
 }
