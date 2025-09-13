@@ -1,4 +1,5 @@
 using Core.Interfaces;
+using Infrastructure;
 using Infrastructure.DataAccess;
 using Microsoft.Data.Sqlite;
 
@@ -10,12 +11,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
-var connectionString = builder.Configuration.GetConnectionString("Default") 
+var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("Connection string is not set.");
 DatabaseInitializer.EnsureCountryTableExists(connectionString);
 
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<DatabaseFeeder>();
 
 SQLitePCL.Batteries_V2.Init();
 
@@ -28,6 +30,12 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.MapPost("/api/database/seed", async (DatabaseFeeder feeder) =>
+    {
+        await feeder.SeedAsync();
+        return Results.Ok("Database seeded successfully.");
+    });
 }
 
 app.UseHttpsRedirection();

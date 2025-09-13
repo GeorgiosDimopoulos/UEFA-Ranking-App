@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Infrastructure.DataAccess;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Infrastructure;
 
@@ -7,7 +9,18 @@ public class DatabaseFeeder
     public Country[] Countries { get; set; }
     public Team[]? Teams { get; set; }
 
-    public DatabaseFeeder()
+    private ICountryRepository teamRepository;
+    private ICountryRepository countryRepository;
+    private IConfiguration configuration;
+
+    public DatabaseFeeder(ICountryRepository countries, ICountryRepository teams)
+    {
+        countryRepository = countries;
+        teamRepository = teams;
+        SeedAsync().Wait();
+    }
+
+    public async Task SeedAsync()
     {
         try
         {
