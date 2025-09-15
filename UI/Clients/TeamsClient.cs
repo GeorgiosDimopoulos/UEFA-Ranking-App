@@ -11,8 +11,8 @@ public class TeamsClient
         _httpClient = httpClient;
     }
 
-    public Task<Team[]?> GetTeams()
+    public async Task<Team[]?> GetTeams()
     {
-        return _httpClient.GetFromJsonAsync<Team[]?>("teams");
+        return  await _httpClient.GetFromJsonAsync<Team[]?>("teams");
     }
 }

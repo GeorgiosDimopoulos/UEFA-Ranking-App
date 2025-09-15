@@ -11,8 +11,8 @@ public class CountriesClient
         _httpClient = httpClient;
     }
 
-    public Task<Country[]?> GetCountries()
+    public async Task<Country[]?> GetCountries()
     {
-        return _httpClient.GetFromJsonAsync<Country[]?>("countries");
+        return await _httpClient.GetFromJsonAsync<Country[]?>("countries");
     }
 }

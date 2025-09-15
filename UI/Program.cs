@@ -6,9 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddRazorPages();
 builder.Services.AddMudServices();
-builder.Services.AddServerSideBlazor();
 
 builder.Services.AddHttpClient<CountriesClient>(client =>
 {

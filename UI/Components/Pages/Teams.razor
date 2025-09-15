@@ -4,6 +4,10 @@
 @using Humanizer
 @using Infrastructure
 @using Infrastructure.DataAccess
+@using UI.Clients
+
+@inject TeamsClient TeamsClient
+@inject IDialogService DialogService
 
 <PageTitle>Teams</PageTitle>
 
@@ -57,15 +61,13 @@
 
 @code
 {
-	private Team[] teams = default!;
-
-    [Inject]
-	protected ITeamRepository teamRepository { get; set; } = default!;
+	private Team[]? teams = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		teams = (await teamRepository.GetAllTeams()).ToArray();
+		var teams = await TeamsClient.GetTeams() ?? Array.Empty<Team>();
+		teams = teams.OrderBy(t => t.Points).ToArray();
 	}
 
 	private void ShowMatches(Team t)

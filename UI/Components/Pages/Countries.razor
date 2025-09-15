@@ -1,8 +1,12 @@
 ﻿@page "/countries"
+
 @using Core.Interfaces
 @using Core.Models
 @using Infrastructure
 @using Infrastructure.DataAccess
+@using UI.Clients
+
+@inject CountriesClient CountriesClient
 @inject IDialogService DialogService
 
 <PageTitle>Countries Statistics</PageTitle>
@@ -58,16 +62,13 @@
 @code {
 	private Country[]? countries = default!;
 
-	[Inject]
-	protected ICountryRepository countryRepository { get; set; } = default!;
-
 	private HashSet<int> expanded = new();
-	private bool shownTeams;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		countries = (await countryRepository.GetAllCountries()).ToArray();
+		var countries = await CountriesClient.GetCountries();
+		countries = countries.OrderBy(c => c.Position).ToArray();
 	}
 
 	private void ToggleTeamId(int id)
