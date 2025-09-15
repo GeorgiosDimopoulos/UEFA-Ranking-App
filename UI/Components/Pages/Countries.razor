@@ -14,20 +14,21 @@
 <MudAlert Severity="Severity.Info">This component demonstrates showing countries football statistics data for 2025 - 2026</MudAlert>
 
 <div>
-	@if (countries == null)
+	@if (_countries == null)
 	{
 		<p><em>Loading countries...</em></p>
 	}
 	else
 	{
-		<MudTable Items="countries">
+		<MudTable Items="_countries">
 			<HeaderContent>
 				<MudTh>Id</MudTh>
 				<MudTh>Name</MudTh>
 				<MudTh>Initial Position</MudTh>
 				<MudTh>Active Position</MudTh>
 				<MudTh>Points</MudTh>
-				<MudTh>Teams Number</MudTh>
+				<MudTh>Initial Teams</MudTh>
+				<MudTh>Active Teams</MudTh>
 				<MudTh>Show Teams</MudTh>
 			</HeaderContent>
 			<RowTemplate>
@@ -60,15 +61,15 @@
 </div>
 
 @code {
-	private CountryDto[]? countries = default!;
+	private CountryDto[]? _countries = default!;
 
 	private HashSet<int> expanded = new();
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var countries = await CountriesClient.GetCountries() ?? Array.Empty<CountryDto>();
-		countries = countries.OrderBy(c => c.Position).ToArray();
+		var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryDto>();
+		_countries = data.OrderBy(c => c.Position).ToArray();
 	}
 
 	private void ToggleTeamId(int id)

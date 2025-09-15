@@ -1,6 +1,4 @@
-﻿using Infrastructure.DataAccess;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure;
 
@@ -9,11 +7,11 @@ public class DatabaseFeeder
     public Country[] Countries { get; set; }
     public Team[]? Teams { get; set; }
 
-    private ICountryRepository teamRepository;
+    private ITeamRepository teamRepository;
     private ICountryRepository countryRepository;
     private IConfiguration configuration;
 
-    public DatabaseFeeder(ICountryRepository countries, ICountryRepository teams)
+    public DatabaseFeeder(ICountryRepository countries, ITeamRepository teams)
     {
         countryRepository = countries;
         teamRepository = teams;
@@ -29,7 +27,7 @@ public class DatabaseFeeder
                 new() { ExternalId = 3, Id = 3, Name = "Germany", Position = 4 , TotalPoints = 75000},
                 new() { ExternalId = 4, Id = 4, Name = "Italy", Position = 2 , TotalPoints = 84000},
                 new() { ExternalId = 5, Id = 5, Name = "France", Position = 5 , TotalPoints = 68000},
-                new() { ExternalId = 6, Id = 6, Name = "Portugal", Position = 7 , TotalPoints = 57000},                                                                                                     
+                new() { ExternalId = 6, Id = 6, Name = "Portugal", Position = 7 , TotalPoints = 57000},
                 new() { ExternalId = 7, Id = 7, Name = "Netherlands", Position = 6 , TotalPoints = 62000},
                 new() { ExternalId = 8, Id = 8, Name = "Belgium", Position = 8 , TotalPoints = 55000},
                 new() { ExternalId = 9, Id =9, Name = "Turkey", Position = 9 , TotalPoints = 44000},
@@ -65,8 +63,17 @@ public class DatabaseFeeder
 
             foreach (var c in Countries)
             {
+                countryRepository.AddCountry(c);
                 c.Teams = Teams.Where(t => t.Country.Name.Equals(c.Name)).ToArray();
+
+                foreach (var t in Teams)
+                {
+                    teamRepository.AddTeam(t, c.Name);
+                }
+                
             }
+
+
         }
         catch (Exception e)
         {
