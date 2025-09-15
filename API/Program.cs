@@ -10,8 +10,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
-var connectionString = builder.Configuration.GetConnectionString("Default")
-    ?? throw new InvalidOperationException("Connection string is not set.");
+var dataDir = Path.Combine(builder.Environment.ContentRootPath, "Data");
+Directory.CreateDirectory(dataDir);
+
+var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
 DatabaseInitializer.EnsureCountryTableExists(connectionString);
 
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
