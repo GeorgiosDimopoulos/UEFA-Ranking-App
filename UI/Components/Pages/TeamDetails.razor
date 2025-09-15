@@ -1,6 +1,6 @@
 ﻿@page "/teams/{Id:guid}"
 
-@using Core.Models
+@using API.Data.DTOs
 @using Infrastructure.DataAccess
 
 <MudDialog>
@@ -12,5 +12,5 @@
 
 @code {
 	[Parameter] public Guid Id { get; set; }
-	[Parameter] public Team Team { get; set; } = default!;
+	[Parameter] public TeamDto Team { get; set; } = default!;
 }

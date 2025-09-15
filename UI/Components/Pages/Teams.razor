@@ -1,6 +1,5 @@
 ﻿@page "/teams"
-@using Core.Interfaces
-@using Core.Models
+@using API.Data.DTOs
 @using Humanizer
 @using Infrastructure
 @using Infrastructure.DataAccess
@@ -32,11 +31,11 @@
 				<MudTh>Matches:</MudTh>
 			</HeaderContent>
 			<RowTemplate>
-				<MudTd>@context.ExternalId</MudTd>
+				<MudTd>@context.Id</MudTd>
 				<MudTd>
 					<NavLink class="nav-link" href=@($"/teams/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
 				</MudTd>
-				<MudTd>@context.Country.Name</MudTd>
+				<MudTd>@context.CountryName</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
 				<MudTd>@context.Position</MudTd>
 				<MudTd>
@@ -61,16 +60,16 @@
 
 @code
 {
-	private Team[]? teams = default!;
+	private TeamDto[]? teams = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var teams = await TeamsClient.GetTeams() ?? Array.Empty<Team>();
+		var teams = await TeamsClient.GetTeams() ?? Array.Empty<TeamDto>();
 		teams = teams.OrderBy(t => t.Points).ToArray();
 	}
 
-	private void ShowMatches(Team t)
+	private void ShowMatches(TeamDto t)
 	{
 	}
 }

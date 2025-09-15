@@ -1,4 +1,4 @@
-﻿using Core.Models;
+﻿using API.Data.DTOs;
 
 namespace UI.Clients;
 
@@ -11,8 +11,8 @@ public class TeamsClient
         _httpClient = httpClient;
     }
 
-    public async Task<Team[]?> GetTeams()
+    public async Task<TeamDto[]?> GetTeams()
     {
-        return  await _httpClient.GetFromJsonAsync<Team[]?>("api/teams");
-    }
+        return  await _httpClient.GetFromJsonAsync<TeamDto[]?>("api/teams");
+    }                                                 
 }
