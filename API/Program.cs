@@ -16,6 +16,7 @@ DatabaseInitializer.EnsureCountryTableExists(connectionString);
 
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+
 builder.Services.AddScoped<DatabaseFeeder>();
 
 SQLitePCL.Batteries_V2.Init();
