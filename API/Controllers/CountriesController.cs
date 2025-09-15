@@ -26,7 +26,8 @@ public class CountriesController : ControllerBase
         {
             Name = c.Name,
             Position = c.Position,
-            NumberOfTeams = c.Teams?.Count() ?? 0,
+            NumberOfInitialTeams = c.Teams?.Count() ?? 0,
+            NumberOfActiveTeams = c.Teams?.Where(t => t.IsActive).Count() ?? 0,
             TotalPoints = c.Teams?.Sum(t => t.Points) ?? 0
         });
     }
@@ -45,7 +46,8 @@ public class CountriesController : ControllerBase
         {
             Name = country.Name,
             Position = country.Position,
-            NumberOfTeams = country.Teams?.Count() ?? 0,
+            NumberOfInitialTeams = country.Teams?.Count() ?? 0,
+            NumberOfActiveTeams = country.Teams?.Where(t => t.IsActive).Count() ?? 0,
             TotalPoints = country.Teams?.Sum(t => t.Points) ?? 0
         };
 
@@ -66,7 +68,8 @@ public class CountriesController : ControllerBase
         {
             Name = country.Name,
             Position = country.Position,
-            NumberOfTeams = country.Teams?.Count() ?? 0,
+            NumberOfInitialTeams = country.Teams?.Count() ?? 0,
+            NumberOfActiveTeams = country.Teams?.Where(t => t.IsActive).Count() ?? 0,
             TotalPoints = country.Teams?.Sum(t => t.Points) ?? 0
         };
 

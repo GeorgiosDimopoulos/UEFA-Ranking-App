@@ -2,55 +2,54 @@
 
 @inherits ComponentBase
 @inject IDialogService DialogService
+@using API.Data.DTOs
 @using MudBlazor
-@using Core.Models
 
 <MudDialog>
-    <DialogContent>
-        <MudForm @ref="editForm">
-            <MudTextField @bind-Value="country.Name" Label="Name"/>
-            <MudNumericField @bind-Value="country.Position" Label="Initial Position" />
-            <MudNumericField @bind-Value="country.Position" Label="Current Position"/>
-            <MudNumericField @bind-Value="country.TotalPoints" Label="Total Points" />
-            <MudNumericField Value="country.Teams.Count()" Label="Initial Teams" />
-            <MudNumericField Value="country.NumberOfActiveTeams" Label="Active Teams" />
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">Save</MudButton>
-    </DialogActions>
+	<DialogContent>
+		<MudForm @ref="editForm">
+			<MudTextField @bind-Value="country.Name" Label="Name" />
+			<MudNumericField @bind-Value="country.Position" Label="Initial Position" />
+			<MudNumericField @bind-Value="country.Position" Label="Current Position" />
+			<MudNumericField @bind-Value="country.TotalPoints" Label="Total Points" />
+			<MudNumericField Value="country.Teams.Count()" Label="Initial Teams" />
+			<MudNumericField Value="country.NumberOfActiveTeams" Label="Active Teams" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">Save</MudButton>
+	</DialogActions>
 </MudDialog>
 
 @code {
-    [Parameter] public Guid Id { get; set; }
-    [Parameter] public Country Country { get; set; } = default!;
-    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+	[Parameter] public Guid Id { get; set; }
+	[Parameter] public CountryDto Country { get; set; } = default!;
+	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
-    private MudForm editForm = default!;
-    private Country country = new();
+	private MudForm editForm = default!;
+	private CountryDto country = new();
 
-    protected override void OnParametersSet()
-    {
-        country = new Country
-        {
-            Position =Country.Position,
-            Id = Country.Id,
-            ExternalId = Country.ExternalId,
-            Name = Country.Name,
-            TotalPoints = Country.TotalPoints,
-            Teams = Country.Teams?.ToList() ?? new()
-        };
-    }
+	protected override void OnParametersSet()
+	{
+		country = new CountryDto
+		{
+			Position = Country.Position,
+			Id = Country.Id,
+			Name = Country.Name,
+			TotalPoints = Country.TotalPoints,
+			Teams = Country.Teams?.ToList() ?? new()
+		};
+	}
 
-    private void Save()
-    {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        MudDialog?.Close(DialogResult.Ok(country));
-    }    
+	private void Save()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		MudDialog?.Close(DialogResult.Ok(country));
+	}
 
-    private void Cancel()
-    {
-        MudDialog?.Close(DialogResult.Ok(country));
-    }
-}   
+	private void Cancel()
+	{
+		MudDialog?.Close(DialogResult.Ok(country));
+	}
+}

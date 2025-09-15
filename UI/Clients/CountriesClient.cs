@@ -1,4 +1,4 @@
-﻿using Core.Models;
+﻿using API.Data.DTOs;
 
 namespace UI.Clients;
 
@@ -11,8 +11,9 @@ public class CountriesClient
         _httpClient = httpClient;
     }
 
-    public async Task<Country[]?> GetCountries()
+    public async Task<CountryDto[]?> GetCountries()
     {
-        return await _httpClient.GetFromJsonAsync<Country[]?>("api/countries");
+        var countries = await _httpClient.GetFromJsonAsync<CountryDto[]?>("api/countries");
+        return countries;
     }
 }
