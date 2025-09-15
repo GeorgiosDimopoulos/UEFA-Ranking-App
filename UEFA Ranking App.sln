@@ -16,8 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Pr
 		.dockerignore = .dockerignore
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		docker-compose.yml = docker-compose.yml
-		Readme = Readme
+		API\Data\uefa.db = API\Data\uefa.db
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{59B8D2CB-634B-4F59-944F-E60FEFB9FDA4}"
