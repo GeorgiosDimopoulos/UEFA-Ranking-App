@@ -41,7 +41,15 @@ public class CountriesController : ControllerBase
             return NotFound();
         }
 
-        return Ok(country);
+        var countryDto = new CountryDto
+        {
+            Name = country.Name,
+            Position = country.Position,
+            NumberOfTeams = country.Teams?.Count() ?? 0,
+            TotalPoints = country.Teams?.Sum(t => t.Points) ?? 0
+        };
+
+        return Ok(countryDto);
     }
 
     [HttpGet("{name}")]
@@ -54,7 +62,15 @@ public class CountriesController : ControllerBase
             return NotFound();
         }
 
-        return Ok(country);
+        var countryDto = new CountryDto
+        {
+            Name = country.Name,
+            Position = country.Position,
+            NumberOfTeams = country.Teams?.Count() ?? 0,
+            TotalPoints = country.Teams?.Sum(t => t.Points) ?? 0
+        };
+
+        return Ok(countryDto);
     }
 
     [HttpPost()]

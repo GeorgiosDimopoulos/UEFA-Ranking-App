@@ -43,7 +43,17 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(team);
+        var teamDto = new TeamDto
+        {
+            Name = team.Name,
+            IsActive = team.IsActive,
+            Points = team.Points,
+            Position = team.Position,
+            CountryName = team.Country.Name,
+            Competition = (int)team.Competition
+        };
+
+        return Ok(teamDto);
     }
 
     [HttpGet("{name}")]
@@ -56,7 +66,17 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(team);
+        var teamDto = new TeamDto
+        {
+            Name = team.Name,
+            IsActive = team.IsActive,
+            Points = team.Points,
+            Position = team.Position,
+            CountryName = team.Country.Name,
+            Competition = (int)team.Competition
+        };
+
+        return Ok(teamDto);
     }
 
     [HttpPost(Name = "AddTeam")]

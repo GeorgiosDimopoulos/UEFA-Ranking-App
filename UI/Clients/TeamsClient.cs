@@ -13,6 +13,6 @@ public class TeamsClient
 
     public async Task<Team[]?> GetTeams()
     {
-        return  await _httpClient.GetFromJsonAsync<Team[]?>("teams");
+        return  await _httpClient.GetFromJsonAsync<Team[]?>("api/teams");
     }
 }

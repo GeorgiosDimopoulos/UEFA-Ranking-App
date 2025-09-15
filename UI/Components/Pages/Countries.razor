@@ -67,7 +67,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var countries = await CountriesClient.GetCountries();
+		var countries = await CountriesClient.GetCountries() ?? Array.Empty<Country>();
 		countries = countries.OrderBy(c => c.Position).ToArray();
 	}
 
