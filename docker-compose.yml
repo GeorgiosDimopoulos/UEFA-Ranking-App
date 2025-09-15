@@ -16,7 +16,7 @@ services:
         dockerfile: UI/Dockerfile
         context: .
     ports:
-      - "3000:80"
+      - "3000:8080"
 
   db:
     image: postgres
