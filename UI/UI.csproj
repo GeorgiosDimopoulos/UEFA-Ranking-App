@@ -16,4 +16,9 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<Content Remove="..\API\appsettings.json" />
+		<Content Remove="..\API\appsettings.Development.json" />
+	</ItemGroup>
+
 </Project>
