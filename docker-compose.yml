@@ -5,9 +5,11 @@ services:
         dockerfile: Api/Dockerfile
         context: .
     ports:
-      - "5000:80"
+      - "5000:8080"
     depends_on:
       - db
+    volumes:
+      - ./uefa.db:/app/Data/uefa.db
 
   ui:
     build:
