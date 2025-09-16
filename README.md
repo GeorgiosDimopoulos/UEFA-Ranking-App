@@ -6,5 +6,6 @@ FootballRankings tracks rankings based on European UEFA club matches across the 
 
 ### ToDo:
 - [x] Set child components for Countries(Teams) and Teams (matches)
+- [ ] Connect Core -> Infra -> API -> UI
 - [ ] Update Dapper with more rules, like ON DELETE etc
 - [ ] Set some first validators
