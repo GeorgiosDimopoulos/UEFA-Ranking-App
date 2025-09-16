@@ -116,4 +116,17 @@ public class CountriesController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteCountries()
+    {
+        var result = await countryRepository.DeleteCountries();
+        if (result == false)
+        {
+            _logger.LogWarning("Could not delete some countries");
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

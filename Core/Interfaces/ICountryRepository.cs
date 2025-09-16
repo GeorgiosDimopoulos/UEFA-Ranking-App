@@ -10,4 +10,5 @@ public interface ICountryRepository
     public Task<bool> AddCountry(Country c);
     public Task<bool> UpdateCountry(Country c, int id);
     public Task<bool> DeleteCountry(int id);
+    public Task<bool> DeleteCountries();
 }

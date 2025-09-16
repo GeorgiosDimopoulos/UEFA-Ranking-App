@@ -1,5 +1,4 @@
-﻿using Core.Models;
-using Dapper;
+﻿using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -50,6 +49,8 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
+        var currentCountriesNumber = (await GetAllCountries()).Count;
+
         var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
         if (availableCountry != null)
         {
@@ -64,8 +65,15 @@ public class CountryRepository : ICountryRepository
             TotalPoints = c.TotalPoints
         };
 
-        var insertCountryQuery = "INSERT INTO Countries (Name, Position, NumberOfTeams, TotalPoints) VALUES(@Name, @Position, @NumberOfTeams, @TotalPoints)";
+        var insertCountryQuery = "INSERT INTO Countries (Name, Position, ExternalId, TotalPoints) VALUES(@Name, @Position, @ExternalId, @TotalPoints)";
         var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
+
+        var newCountriesNumber = (await GetAllCountries()).Count;
+        if (newCountriesNumber == currentCountriesNumber)
+        {
+
+        }
+
         return result > 0;
     }
 
@@ -83,9 +91,21 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
+        var deleteTeamsQuery = "DELETE FROM Teams WHERE CountryId = @CountryId";
+        var result = await connection.ExecuteAsync(deleteTeamsQuery, new { CountryId = id });
+
         var deleteCountryQuery = "DELETE FROM Countries WHERE Id = @Id";
 
-        var result = await connection.ExecuteAsync(deleteCountryQuery, new { Id = id });
-        return result > 0;
+        var result2 = await connection.ExecuteAsync(deleteCountryQuery, new { Id = id });
+        return result > 0 && result2 > 0;
+    }
+
+    public async Task<bool> DeleteCountries()
+    {
+        using var connection = new SqliteConnection(_connectionString);
+
+        var result = await connection.ExecuteAsync("DELETE FROM Teams");
+        var result2 = await connection.ExecuteAsync("DELETE FROM Countries");
+        return result > 0 && result2 > 0;
     }
 }

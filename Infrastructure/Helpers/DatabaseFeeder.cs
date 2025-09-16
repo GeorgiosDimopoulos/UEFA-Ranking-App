@@ -22,7 +22,7 @@ public class DatabaseFeeder
         var countries = connection.ExecuteScalar<int>("SELECT * FROM Countries ORDER BY Position ASC");
         var teams = connection.ExecuteScalar<int>("SELECT * FROM Teams ORDER BY Position ASC");
 
-        return countries > 0 && teams > 0;
+        return countries > 5 && teams > 10;
     }
 
     public void SeedCountriesAndTeams()
@@ -48,6 +48,8 @@ public class DatabaseFeeder
             {
                 countryRepository.AddCountry(c);
             }
+
+            var test = countryRepository.GetAllCountries();
 
             var teams = new[]
         {
