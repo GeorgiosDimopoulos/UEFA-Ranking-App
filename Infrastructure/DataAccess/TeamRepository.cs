@@ -19,7 +19,7 @@ public class TeamRepository : ITeamRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.Position, t.CountryId, t.Competition, c.Id, c.Name, c.Position FROM Teams t JOIN Countries c ON t.CountryId = c.Id"; 
+        var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.Position, t.CountryId, t.Competition, c.Id, c.Name, c.Position FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
         var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) => { team.Country = country; return team; }, splitOn: "Id");
         return teams.ToList();
     }
@@ -54,6 +54,12 @@ public class TeamRepository : ITeamRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
+        var teamExists = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { team.Name });
+        if (teamExists != null)
+        {
+            return false;
+        }
+
         var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = country })
             ?? throw new InvalidOperationException("Country does not exist in the database.");
 
@@ -62,6 +68,7 @@ public class TeamRepository : ITeamRepository
             Name = team.Name,
             Country = availableCountry,
             CountryId = availableCountry.Id,
+            ExternalId = team.ExternalId,
             Competition = team.Competition,
             Points = 0,
             Position = team.Position,
@@ -69,17 +76,12 @@ public class TeamRepository : ITeamRepository
         };
 
         if (team.Competition != Competition.None)
-        {
             newTeam.IsActive = true;
-        }
         else
-        {
             newTeam.IsActive = false;
-        }
 
         var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, Points, Position, CountryId, Competition) VALUES (@Name, @IsActive, @Points, @Position, @CountryId, @Competition)";
         var result = await connection.ExecuteAsync(insertTeamQuery, newTeam);
-
         return result > 0;
     }
 

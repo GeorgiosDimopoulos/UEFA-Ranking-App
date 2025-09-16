@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Core.Models;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -49,10 +50,18 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
+        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
+        if (availableCountry != null)
+        {
+            return false;
+        }
+
         var newCountry = new Country
         {
             Name = c.Name,
-            Position = c.Position
+            Position = c.Position,
+            ExternalId = c.ExternalId,
+            TotalPoints = c.TotalPoints
         };
 
         var insertCountryQuery = "INSERT INTO Countries (Name, Position, NumberOfTeams, TotalPoints) VALUES(@Name, @Position, @NumberOfTeams, @TotalPoints)";
@@ -66,7 +75,7 @@ public class CountryRepository : ICountryRepository
 
         var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position, NumberOfInitialTeams= @NumberOfInitialTeams WHERE Id = @Id";
 
-        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, c.Position, Id = id, c.TotalPoints, c.NumberOfInitialTeams});
+        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, c.Position, Id = id, c.TotalPoints, c.NumberOfInitialTeams });
         return result > 0;
     }
 
