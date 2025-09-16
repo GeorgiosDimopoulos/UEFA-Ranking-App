@@ -1,6 +1,6 @@
 using Core.Interfaces;
-using Infrastructure;
 using Infrastructure.DataAccess;
+using Infrastructure.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,17 +13,29 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAn
 var dataDir = Path.Combine(builder.Environment.ContentRootPath, "Data");
 Directory.CreateDirectory(dataDir);
 
-var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
-DatabaseInitializer.EnsureCountryTableExists(connectionString);
-
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 
 builder.Services.AddScoped<DatabaseFeeder>();
+builder.Services.AddScoped<DatabaseInitializer>();
 
 SQLitePCL.Batteries_V2.Init();
 
 var app = builder.Build();
+
+var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
+using (var scope = app.Services.CreateScope())
+{
+    var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+    var databaseFeeder = scope.ServiceProvider.GetRequiredService<DatabaseFeeder>();
+
+    databaseInitializer.EnsureCountryTableExists(connectionString);
+    var recordsExist = databaseFeeder.EnsureRecordsExist(connectionString);
+    if (!recordsExist)
+    {
+        databaseFeeder.SeedCountriesAndTeams();
+    }
+}
 
 app.UseCors();
 
@@ -33,11 +45,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.MapPost("/api/database/seed", (DatabaseFeeder feeder) =>
-    {
-        feeder.SeedCountriesAndTeams();
-        return Results.Ok("Database seeded successfully.");
-    });
+    //app.MapPost("/api/database/seed", (DatabaseFeeder feeder) =>
+    //{
+    //    feeder.SeedCountriesAndTeams();
+    //    return Results.Ok("Database seeded successfully.");
+    //});
 }
 
 app.UseHttpsRedirection();

@@ -1,20 +1,36 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Dapper;
+using Microsoft.Data.Sqlite;
 
-namespace Infrastructure;
+namespace Infrastructure.Helpers;
 
 public class DatabaseFeeder
 {
-    public Country[] Countries { get; set; }
+    public Country[]? Countries { get; set; }
     public Team[]? Teams { get; set; }
 
     private ITeamRepository teamRepository;
     private ICountryRepository countryRepository;
-    private IConfiguration configuration;
 
-    public DatabaseFeeder(ICountryRepository countries, ITeamRepository teams)
+    public DatabaseFeeder(ICountryRepository countryRepository, ITeamRepository teamRepository)
     {
-        countryRepository = countries;
-        teamRepository = teams;
+        this.countryRepository = countryRepository;
+        this.teamRepository = teamRepository;
+    }
+
+    public bool EnsureRecordsExist(string connectionString)
+    {
+        using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+
+        var countries = connection.Query<Country>("SELECT * FROM Countries ORDER BY Position ASC").ToList();
+        var teams = connection.Query<Team>("SELECT * FROM Teams ORDER BY Position ASC").ToList();
+
+        if (countries.Count > 0 && teams.Count > 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public void SeedCountriesAndTeams()
@@ -70,7 +86,7 @@ public class DatabaseFeeder
                 {
                     teamRepository.AddTeam(t, c.Name);
                 }
-                
+
             }
 
 

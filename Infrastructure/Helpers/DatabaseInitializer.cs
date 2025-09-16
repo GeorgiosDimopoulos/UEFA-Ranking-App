@@ -1,10 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace Infrastructure.DataAccess;
+namespace Infrastructure.Helpers;
 
-public static class DatabaseInitializer
+public class DatabaseInitializer
 {
-    public static void EnsureCountryTableExists(string connectionString)
+    public void EnsureCountryTableExists(string connectionString)
     {
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
@@ -30,11 +30,17 @@ public static class DatabaseInitializer
         ExecuteNonQuery(connection, createTeamsTableQuery);
     }
 
-    private static void ExecuteNonQuery(SqliteConnection connection, string createCountriesTableQuery)
+    private bool ExecuteNonQuery(SqliteConnection connection, string createCountriesTableQuery)
     {
         using var command = connection.CreateCommand();
 
         command.CommandText = createCountriesTableQuery;
         var result = command.ExecuteNonQuery();
+        
+        if (result != 0)
+        {
+            return true;
+        }
+        return false;
     }
 }
