@@ -5,11 +5,8 @@ namespace Infrastructure.Helpers;
 
 public class DatabaseFeeder
 {
-    public Country[]? Countries { get; set; }
-    public Team[]? Teams { get; set; }
-
-    private ITeamRepository teamRepository;
-    private ICountryRepository countryRepository;
+    private readonly ITeamRepository teamRepository;
+    private readonly ICountryRepository countryRepository;
 
     public DatabaseFeeder(ICountryRepository countryRepository, ITeamRepository teamRepository)
     {
@@ -22,22 +19,18 @@ public class DatabaseFeeder
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
 
-        var countries = connection.Query<Country>("SELECT * FROM Countries ORDER BY Position ASC").ToList();
-        var teams = connection.Query<Team>("SELECT * FROM Teams ORDER BY Position ASC").ToList();
+        var countries = connection.ExecuteScalar<int>("SELECT * FROM Countries ORDER BY Position ASC");
+        var teams = connection.ExecuteScalar<int>("SELECT * FROM Teams ORDER BY Position ASC");
 
-        if (countries.Count > 0 && teams.Count > 0)
-        {
-            return true;
-        }
-
-        return false;
+        return countries > 0 && teams > 0;
     }
 
     public void SeedCountriesAndTeams()
     {
         try
         {
-            Countries = [
+            var countries = new Country[]
+            {
                 new() { ExternalId = 1, Id = 1, Name = "England", Position = 1, TotalPoints = 95000 },
                 new() { ExternalId = 2, Id = 2, Name = "Spain", Position = 3 , TotalPoints = 79000},
                 new() { ExternalId = 3, Id = 3, Name = "Germany", Position = 4 , TotalPoints = 75000},
@@ -48,14 +41,21 @@ public class DatabaseFeeder
                 new() { ExternalId = 8, Id = 8, Name = "Belgium", Position = 8 , TotalPoints = 55000},
                 new() { ExternalId = 9, Id =9, Name = "Turkey", Position = 9 , TotalPoints = 44000},
                 new() { ExternalId = 10, Id = 10, Name = "Czech", Position = 10 , TotalPoints = 40500},
-                new() { ExternalId = 11, Id = 11, Name = "Greece", Position = 11 , TotalPoints = 37500}];
+                new() { ExternalId = 11, Id = 11, Name = "Greece", Position = 11 , TotalPoints = 37500}
+            };
 
-            Teams = [
-                new Team {
+            foreach (var c in countries)
+            {
+                countryRepository.AddCountry(c);
+            }
+
+            var teams = new[]
+        {
+                 new Team {
                     Id =1,
                     Name = "AEK",
                     Competition = Competition.ConferenceLeague,
-                    Country = Countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found"),
+                    Country = countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found"),
                     IsActive = true,
                     ExternalId = 1,
                     Points = 2 },
@@ -63,7 +63,7 @@ public class DatabaseFeeder
                     Id = 2,
                     Name = "Vfb",
                     Competition = Competition.EuropaLeague,
-                    Country = Countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found"),
+                    Country = countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found"),
                     IsActive = false,
                     ExternalId = 2,
                     Points = 0 },
@@ -71,40 +71,23 @@ public class DatabaseFeeder
                     Id = 3,
                     Name = "Sevilla",
                     Competition = Competition.None,
-                    Country = Countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found"),
+                    Country = countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found"),
                     IsActive = false,
                     ExternalId = 3,
                     Points = 0
-                }];
-
-            foreach (var c in Countries)
-            {
-                countryRepository.AddCountry(c);
-                c.Teams = Teams.Where(t => t.Country.Name.Equals(c.Name)).ToArray();
-
-                foreach (var t in Teams)
-                {
-                    teamRepository.AddTeam(t, c.Name);
                 }
+            };
 
+
+            foreach (var t in teams)
+            {
+                teamRepository.AddTeam(t, t.Country.Name);
             }
-
-
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
-    }
-
-    public Team[]? GetTeams()
-    {
-        return Teams;
-    }
-
-    public Country[]? GetCountries()
-    {
-        return Countries;
     }
 }

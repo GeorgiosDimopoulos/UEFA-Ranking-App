@@ -9,12 +9,16 @@ public class DatabaseInitializer
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
 
+        using var command = connection.CreateCommand();
+
         var createCountriesTableQuery = @"CREATE TABLE IF NOT EXISTS Countries(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
                 Position INTEGER NOT NULL,
                 NumberOfTeams INTEGER NOT NULL,
                 TotalPoints REAL)";
+        command.CommandText = createCountriesTableQuery;
+        var result = command.ExecuteNonQuery();
 
         var createTeamsTableQuery = @"CREATE TABLE IF NOT EXISTS Teams(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,22 +29,7 @@ public class DatabaseInitializer
                 Position INTEGER NOT NULL,
                 Points INTEGER NOT NULL,
                 FOREIGN KEY (CountryId) REFERENCES Countries(Id))";
-
-        ExecuteNonQuery(connection, createCountriesTableQuery);
-        ExecuteNonQuery(connection, createTeamsTableQuery);
-    }
-
-    private bool ExecuteNonQuery(SqliteConnection connection, string createCountriesTableQuery)
-    {
-        using var command = connection.CreateCommand();
-
-        command.CommandText = createCountriesTableQuery;
-        var result = command.ExecuteNonQuery();
-        
-        if (result != 0)
-        {
-            return true;
-        }
-        return false;
+        command.CommandText = createTeamsTableQuery;
+        var result2 = command.ExecuteNonQuery();
     }
 }
