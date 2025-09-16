@@ -49,6 +49,9 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
+        await connection.OpenAsync();
+        // connection.Open();
+        
         var currentCountriesNumber = (await GetAllCountries()).Count;
 
         var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });

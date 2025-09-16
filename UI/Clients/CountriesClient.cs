@@ -16,4 +16,10 @@ public class CountriesClient
         var countries = await _httpClient.GetFromJsonAsync<CountryDto[]?>("api/countries");
         return countries;
     }
+
+    public async Task<CountryDto?> GetCountry(int id)
+    {
+        var country = await _httpClient.GetFromJsonAsync<CountryDto?>($"api/countries/{id}");
+        return country;
+    }
 }

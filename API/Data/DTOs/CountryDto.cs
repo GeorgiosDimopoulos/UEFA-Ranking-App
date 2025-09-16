@@ -8,6 +8,4 @@ public class CountryDto
     public int NumberOfActiveTeams { get; set; }
     public int NumberOfInitialTeams { get; set; }
     public double TotalPoints { get; set; }
-
-    public List<TeamDto> Teams { get; set; } = [];
 }
