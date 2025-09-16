@@ -19,7 +19,7 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var countries = await connection.QueryAsync<Country>("SELECT * FROM Countries ORDER BY Position ASC");
+        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, ExternalId, TotalPoints, NumberOfTeams As NumberOfActiveTeams FROM Countries ORDER BY Position ASC");
         return countries.ToList();
     }
 
@@ -62,10 +62,12 @@ public class CountryRepository : ICountryRepository
             Name = c.Name,
             Position = c.Position,
             ExternalId = c.ExternalId,
-            TotalPoints = c.TotalPoints
+            TotalPoints = c.TotalPoints,
+            Id = c.Id,
+            Teams = c.Teams
         };
 
-        var insertCountryQuery = "INSERT INTO Countries (Name, Position, ExternalId, TotalPoints) VALUES(@Name, @Position, @ExternalId, @TotalPoints)";
+        var insertCountryQuery = @"INSERT INTO Countries (Name, Position, ExternalId, TotalPoints) VALUES(@Name, @Position, @ExternalId, @TotalPoints) ON CONFLICT(Name) DO NOTHING";
         var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
 
         var newCountriesNumber = (await GetAllCountries()).Count;

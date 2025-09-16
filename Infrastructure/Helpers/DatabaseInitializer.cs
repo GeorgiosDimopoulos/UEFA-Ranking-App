@@ -15,10 +15,14 @@ public class DatabaseInitializer
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
                 Position INTEGER NOT NULL,
-                ExternalId INTEGER NOT NULL,
+                ExternalId INTEGER,
                 TotalPoints REAL)";
         command.CommandText = createCountriesTableQuery;
         var result = command.ExecuteNonQuery();
+
+        var createIndexQuery = "CREATE UNIQUE INDEX IF NOT EXISTS IX_Countries_Name ON Countries(Name)";
+        command.CommandText = createIndexQuery;
+        command.ExecuteNonQuery();
 
         var createTeamsTableQuery = @"CREATE TABLE IF NOT EXISTS Teams(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +30,7 @@ public class DatabaseInitializer
                 IsActive INTEGER NOT NULL,
                 Competition INTEGER NOT NULL,
                 CountryId INTEGER NOT NULL,
-                ExternalId INTEGER NOT NULL,
+                ExternalId INTEGER,
                 Position INTEGER NOT NULL,
                 Points INTEGER NOT NULL,
                 FOREIGN KEY (CountryId) REFERENCES Countries(Id) ON DELETE CASCADE)";

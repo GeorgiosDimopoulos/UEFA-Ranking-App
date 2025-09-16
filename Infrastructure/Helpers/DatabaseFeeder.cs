@@ -31,7 +31,7 @@ public class DatabaseFeeder
         {
             var countries = new Country[]
             {
-                new() { ExternalId = 1, Id = 1, Name = "England", Position = 1, TotalPoints = 95000 },
+                new() { ExternalId = 1, Id = 1, Name = "England", Position = 1, TotalPoints = 95000},
                 new() { ExternalId = 2, Id = 2, Name = "Spain", Position = 3 , TotalPoints = 79000},
                 new() { ExternalId = 3, Id = 3, Name = "Germany", Position = 4 , TotalPoints = 75000},
                 new() { ExternalId = 4, Id = 4, Name = "Italy", Position = 2 , TotalPoints = 84000},
@@ -48,8 +48,6 @@ public class DatabaseFeeder
             {
                 countryRepository.AddCountry(c);
             }
-
-            var test = countryRepository.GetAllCountries();
 
             var teams = new[]
         {
