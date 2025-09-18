@@ -21,7 +21,6 @@
 	{
 		<MudTable Items="teams">
 			<HeaderContent>
-				<MudTh>Id</MudTh>
 				<MudTh>Name</MudTh>
 				<MudTh>Country</MudTh>
 				<MudTh>Competition</MudTh>
@@ -31,9 +30,8 @@
 				<MudTh>Matches:</MudTh>
 			</HeaderContent>
 			<RowTemplate>
-				<MudTd>@context.Id</MudTd>
 				<MudTd>
-					<NavLink class="nav-link" href=@($"/teams/{context.Id}") style="text-decoration:underline">@context.Name</NavLink>
+					<NavLink class="nav-link" href=@($"/teams/{context.Name}") style="text-decoration:underline">@context.Name</NavLink>
 				</MudTd>
 				<MudTd>@context.CountryName</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>

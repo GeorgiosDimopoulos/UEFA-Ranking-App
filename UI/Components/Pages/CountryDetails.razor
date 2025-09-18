@@ -23,7 +23,6 @@
 </MudDialog>
 
 @code {
-	[Parameter] public Guid Id { get; set; }
 	[Parameter] public CountryDto Country { get; set; } = default!;
 	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
@@ -35,7 +34,6 @@
 		country = new CountryDto
 		{
 			Position = Country.Position,
-			Id = Country.Id,
 			Name = Country.Name,
 			TotalPoints = Country.TotalPoints
 		};

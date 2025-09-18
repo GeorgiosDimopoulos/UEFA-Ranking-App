@@ -33,7 +33,6 @@
 				<MudTh>Show Teams</MudTh>
 			</HeaderContent>
 			<RowTemplate>
-				<MudTd>@context.Id</MudTd>
 				<MudTd>
 					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenCountryAsync(context)">
 						<span style="text-decoration:underline"> @context.Name </span>
@@ -45,11 +44,11 @@
 				<MudTd>@context.NumberOfInitialTeams</MudTd>
 				<MudTd>@context.NumberOfActiveTeams</MudTd>
 				<MudTd>
-					<MudCheckBox T="bool" @onclick="@(() => ToggleTeamId(context.Id))" />
+					<MudCheckBox T="bool" @onclick="@(() => ToggleTeamId(context.Name))" />
 				</MudTd>
 			</RowTemplate>
 			<ChildRowContent>
-				@if (expanded.Contains(context.Id) && _countryTeams != null)
+				@if (expanded.Contains(context.Name) && _countryTeams != null)
 				{
 					foreach (var team in _countryTeams)
 					{
@@ -65,7 +64,7 @@
 	private CountryDto[]? _countries = default!;
 	private TeamDto[]? _countryTeams = default!;
 
-	private HashSet<int> expanded = new();
+	private HashSet<string> expanded = new();
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -74,13 +73,13 @@
 		_countries = data.OrderBy(c => c.Position).ToArray();
 	}
 
-	private void ToggleTeamId(int id)
+	private void ToggleTeamId(string n)
 	{
-		var selectedCountry = CountriesClient.GetCountry(id).Result;
-		_countryTeams = TeamsClient.GetTeamsByCountry(id).Result;
+		var selectedCountry = CountriesClient.GetCountry(n).Result;
+		_countryTeams = TeamsClient.GetTeamsByCountry(n).Result;
 
-		if (!expanded.Add(id))
-			expanded.Remove(id);
+		if (!expanded.Add(n))
+			expanded.Remove(n);
 	}
 
 	private async Task OpenCountryAsync(CountryDto country)

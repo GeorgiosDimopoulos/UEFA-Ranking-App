@@ -17,9 +17,9 @@ public class CountriesClient
         return countries;
     }
 
-    public async Task<CountryDto?> GetCountry(int id)
+    public async Task<CountryDto?> GetCountry(string n)
     {
-        var country = await _httpClient.GetFromJsonAsync<CountryDto?>($"api/countries/{id}");
+        var country = await _httpClient.GetFromJsonAsync<CountryDto?>($"api/countries/{n}");
         return country;
     }
 }

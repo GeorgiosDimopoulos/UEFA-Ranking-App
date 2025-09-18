@@ -44,11 +44,11 @@
 						<td>@c.NumberOfInitialTeams</td>
 						<td>@c.NumberOfActiveTeams</td>
 						<td>
-							<input type="checkbox" @onclick="() => ToggleTeamId(c.ExternalId)" />
+							<input type="checkbox" @onclick="() => ToggleTeamId(c.Name)" />
 						</td>
 					</tr>
 					<tr>
-						@if (c.Teams.Count() > 0 && expanded.Contains(c.ExternalId))
+						@if (c.Teams.Count() > 0 && expanded.Contains(c.Name))
 						{
 							@foreach (var t in c.Teams)
 							{
@@ -65,7 +65,7 @@
 
 @code {
 	private Country[]? countries;
-	private HashSet<int> expanded = new();
+	private HashSet<string> expanded = new();
 	private bool shownTeams;
     private ICountryRepository countryRepository = default!;
     private IConfiguration configuration = default!;
@@ -77,10 +77,10 @@
 		countries = (await countryRepository.GetAllCountries()).ToArray();
 	}
 
-	private void ToggleTeamId(int id)
+	private void ToggleTeamId(string n)
 	{
-		if (!expanded.Add(id))
-			expanded.Remove(id);
+		if (!expanded.Add(n))
+			expanded.Remove(n);
 	}
 
 	private Task OpenCountryAsync()

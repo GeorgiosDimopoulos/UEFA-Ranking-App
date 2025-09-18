@@ -16,9 +16,9 @@ public class TeamsClient
         return await _httpClient.GetFromJsonAsync<TeamDto[]?>("api/teams");
     }
 
-    public async Task<TeamDto[]?> GetTeamsByCountry(int id)
+    public async Task<TeamDto[]?> GetTeamsByCountry(string n)
     {
-        return await _httpClient.GetFromJsonAsync<TeamDto[]?>($"api/teams/{id}");
+        return await _httpClient.GetFromJsonAsync<TeamDto[]?>($"api/teams/{n}");
     }
 
     public async Task<TeamDto?> GetTeam(int id)

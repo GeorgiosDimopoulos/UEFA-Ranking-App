@@ -50,35 +50,38 @@ public class CountryRepository : ICountryRepository
         using var connection = new SqliteConnection(_connectionString);
 
         await connection.OpenAsync();
-        // connection.Open();
-        
+        await using var tx = await connection.BeginTransactionAsync();
+
         var currentCountriesNumber = (await GetAllCountries()).Count;
 
-        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
+        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT COUNT(1) FROM Countries WHERE Name = @Name", new { c.Name });
         if (availableCountry != null)
         {
+            await tx.RollbackAsync();
             return false;
         }
 
         var newCountry = new Country
         {
             Name = c.Name,
-            Position = c.Position,
-            ExternalId = c.ExternalId,
             TotalPoints = c.TotalPoints,
-            Id = c.Id,
-            Teams = c.Teams
         };
 
-        var insertCountryQuery = @"INSERT INTO Countries (Name, Position, ExternalId, TotalPoints) VALUES(@Name, @Position, @ExternalId, @TotalPoints) ON CONFLICT(Name) DO NOTHING";
+        var countries = (await GetAllCountries()).OrderByDescending(c => c.TotalPoints);
+        int position = 1;
+        foreach (var dbCountry in countries)
+        {
+            if (c.TotalPoints < dbCountry.TotalPoints)
+                position++;
+            else
+                break;
+        }
+        newCountry.Position = position;
+
+        var insertCountryQuery = @"INSERT INTO Countries (Name, Position, TotalPoints) VALUES(@Name, @Position, @TotalPoints)";
         var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
 
         var newCountriesNumber = (await GetAllCountries()).Count;
-        if (newCountriesNumber == currentCountriesNumber)
-        {
-
-        }
-
         return result > 0;
     }
 

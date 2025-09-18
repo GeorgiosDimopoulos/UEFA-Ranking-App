@@ -77,13 +77,13 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPost()]
-    public async Task<ActionResult> AddCountry([FromQuery] CountryDto c)
+    public async Task<ActionResult> AddCountry(string name, int points)
     {
-        var country = new Country { Name = c.Name, Position = c.Position };
+        var country = new Country { Name = name, TotalPoints = points };
         var result = await countryRepository.AddCountry(country);
         if (result == false)
         {
-            _logger.LogWarning("Could not add country {Country}", c.Name);
+            _logger.LogWarning("Could not add country {Country}", name);
             return BadRequest();
         }
 

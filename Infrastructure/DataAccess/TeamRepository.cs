@@ -73,7 +73,6 @@ public class TeamRepository : ITeamRepository
             Name = team.Name,
             Country = availableCountry,
             CountryId = availableCountry.Id,
-            ExternalId = team.ExternalId,
             Competition = team.Competition,
             Points = 0,
             Position = team.Position,
