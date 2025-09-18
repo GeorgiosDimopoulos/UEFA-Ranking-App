@@ -10,9 +10,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
-var dataDir = Path.Combine(builder.Environment.ContentRootPath, "Data");
-Directory.CreateDirectory(dataDir);
-
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 
@@ -21,12 +18,20 @@ builder.Services.AddScoped<DatabaseInitializer>();
 
 SQLitePCL.Batteries_V2.Init();
 
-var app = builder.Build();
+var dataDir = Path.Combine(builder.Environment.ContentRootPath, "Data");
+Directory.CreateDirectory(dataDir);
 
-var dbPath = Path.Combine(AppContext.BaseDirectory, "Data", "uefa.db");
-// var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
+var dbPath = Path.Combine(dataDir, "uefa.db");
+if(string.IsNullOrEmpty(dbPath))
+{
+    throw new InvalidOperationException("Connection string is not set.");
+}
+ 
 var connectionString = $"Data Source={dbPath}";
 builder.Configuration["ConnectionStrings:Default"] = connectionString;
+
+var app = builder.Build();
+app.Logger.LogInformation("SQLite DB: {DbPath}", dbPath);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -48,12 +53,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    //app.MapPost("/api/database/seed", (DatabaseFeeder feeder) =>
-    //{
-    //    feeder.SeedCountriesAndTeams();
-    //    return Results.Ok("Database seeded successfully.");
-    //});
 }
 
 app.UseHttpsRedirection();
@@ -61,7 +60,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapGet("/", () => "Welcome to UEFA Ranking API");
 
 app.Run();
