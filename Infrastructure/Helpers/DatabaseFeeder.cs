@@ -22,10 +22,10 @@ public class DatabaseFeeder
         var countries = connection.ExecuteScalar<int>("SELECT * FROM Countries ORDER BY Position ASC");
         var teams = connection.ExecuteScalar<int>("SELECT * FROM Teams ORDER BY Position ASC");
 
-        return countries > 5 && teams > 10;
+        return countries > 22 && teams > 22;
     }
 
-    public void SeedCountriesAndTeams()
+    public async Task SeedCountriesAndTeams()
     {
         try
         {
@@ -46,7 +46,7 @@ public class DatabaseFeeder
 
             foreach (var c in countries)
             {
-                countryRepository.AddCountry(c);
+                await countryRepository.AddCountry(c);
             }
 
             var teams = new[]
@@ -78,7 +78,7 @@ public class DatabaseFeeder
 
             foreach (var t in teams)
             {
-                teamRepository.AddTeam(t, t.Country.Name);
+                await teamRepository.AddTeam(t, t.Country.Name);
             }
         }
         catch (Exception e)

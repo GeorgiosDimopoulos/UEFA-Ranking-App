@@ -42,7 +42,7 @@ using (var scope = app.Services.CreateScope())
     var recordsExist = databaseFeeder.EnsureRecordsExist(connectionString);
     if (!recordsExist)
     {
-        databaseFeeder.SeedCountriesAndTeams();
+        await databaseFeeder.SeedCountriesAndTeams();
     }
 }
 

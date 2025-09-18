@@ -48,18 +48,11 @@ public class CountryRepository : ICountryRepository
     public async Task<bool> AddCountry(Country c)
     {
         using var connection = new SqliteConnection(_connectionString);
-
-        await connection.OpenAsync();
-        Console.WriteLine($"[SQLite] Opened DB file: {connection.DataSource}");
-
-        await using var tx = await connection.BeginTransactionAsync();
-
-        var currentCountriesNumber = (await GetAllCountries()).Count;
+        await connection.OpenAsync();        
 
         var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
         if (availableCountry != null)
         {
-            await tx.RollbackAsync();
             return false;
         }
 
@@ -84,6 +77,7 @@ public class CountryRepository : ICountryRepository
         var insertCountryQuery = @"INSERT INTO Countries (Name, Position, TotalPoints) VALUES(@Name, @Position, @TotalPoints)";
         var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
 
+        Console.WriteLine($"New country added: {newCountry.Name}");
         return result > 0;
     }
 
