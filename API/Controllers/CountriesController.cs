@@ -25,13 +25,22 @@ public class CountriesController : ControllerBase
     {
         var countries = await countryRepository.GetAllCountries();
         var teams = await teamRepository.GetAllTeams();
+
+        var teamsByCountry = teams.GroupBy(t => t.CountryId)
+                                  .ToDictionary(g => g.Key, g => g.ToList());
+                
+        foreach (var c in countries)
+        {
+            c.Teams = teamsByCountry.TryGetValue(c.Id, out var list) ? list : [];
+        }
+
         return countries.Select(c => new CountryDto
         {
             Name = c.Name,
             Position = c.Position,
-            NumberOfInitialTeams = c.Teams?.Count() ?? 0,
+            NumberOfInitialTeams = c.Teams?.Count ?? 0,
             NumberOfActiveTeams = c.Teams?.Where(t => t.IsActive).Count() ?? 0,
-            TotalPoints = c.Teams?.Sum(t => t.Points) ?? 0
+            TotalPoints = c.TotalPoints
         });
     }
 

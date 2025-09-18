@@ -7,5 +7,5 @@ public class Country
     public int Position { get; set; }
     public int TotalPoints { get; set; }
     
-    public IEnumerable<Team> Teams { get; set; } = [];
+    public List<Team> Teams { get; set; } = new();
 }
