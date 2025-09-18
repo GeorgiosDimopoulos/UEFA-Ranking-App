@@ -8,7 +8,4 @@ public class Country
     public int TotalPoints { get; set; }
     
     public IEnumerable<Team> Teams { get; set; } = [];
-
-    public int NumberOfInitialTeams => Teams.Count();
-    public int NumberOfActiveTeams => Teams.Where(t => t.IsActive).Count();    
 }

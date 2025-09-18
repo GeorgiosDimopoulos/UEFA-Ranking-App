@@ -11,17 +11,20 @@ public class CountriesController : ControllerBase
 {
     private readonly ILogger<CountriesController> _logger;
     private readonly ICountryRepository countryRepository;
+    private readonly ITeamRepository teamRepository;
 
-    public CountriesController(ILogger<CountriesController> logger, ICountryRepository countryRepository)
+    public CountriesController(ILogger<CountriesController> logger, ICountryRepository countryRepository, ITeamRepository teamRepository)
     {
         _logger = logger;
         this.countryRepository = countryRepository;
+        this.teamRepository = teamRepository;
     }
 
     [HttpGet(Name = "Countries")]
     public async Task<IEnumerable<CountryDto>> GetCountries()
     {
         var countries = await countryRepository.GetAllCountries();
+        var teams = await teamRepository.GetAllTeams();
         return countries.Select(c => new CountryDto
         {
             Name = c.Name,
