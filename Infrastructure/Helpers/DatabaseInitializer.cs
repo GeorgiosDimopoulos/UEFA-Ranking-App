@@ -15,7 +15,8 @@ public class DatabaseInitializer
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
                 Position INTEGER NOT NULL,
-                ExternalId INTEGER,
+                NumberOfInitialTeams INTEGER NOT NULL DEFAULT 0,
+                NumberOfActiveTeams INTEGER NOT NULL DEFAULT 0,
                 TotalPoints REAL)";
         command.CommandText = createCountriesTableQuery;
         var result = command.ExecuteNonQuery();
@@ -30,7 +31,6 @@ public class DatabaseInitializer
                 IsActive INTEGER NOT NULL,
                 Competition INTEGER NOT NULL,
                 CountryId INTEGER NOT NULL,
-                ExternalId INTEGER,
                 Position INTEGER NOT NULL,
                 Points INTEGER NOT NULL,
                 FOREIGN KEY (CountryId) REFERENCES Countries(Id) ON DELETE CASCADE)";

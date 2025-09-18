@@ -19,7 +19,7 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, ExternalId, TotalPoints, NumberOfTeams As NumberOfActiveTeams FROM Countries ORDER BY Position ASC");
+        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, ExternalId, TotalPoints, NumberOfActiveTeams FROM Countries ORDER BY Position ASC");
         return countries.ToList();
     }
 
@@ -54,7 +54,7 @@ public class CountryRepository : ICountryRepository
 
         var currentCountriesNumber = (await GetAllCountries()).Count;
 
-        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT COUNT(1) FROM Countries WHERE Name = @Name", new { c.Name });
+        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
         if (availableCountry != null)
         {
             await tx.RollbackAsync();
@@ -65,6 +65,7 @@ public class CountryRepository : ICountryRepository
         {
             Name = c.Name,
             TotalPoints = c.TotalPoints,
+            Teams = []
         };
 
         var countries = (await GetAllCountries()).OrderByDescending(c => c.TotalPoints);
