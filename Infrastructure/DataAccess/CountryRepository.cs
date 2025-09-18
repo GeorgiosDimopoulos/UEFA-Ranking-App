@@ -50,6 +50,8 @@ public class CountryRepository : ICountryRepository
         using var connection = new SqliteConnection(_connectionString);
 
         await connection.OpenAsync();
+        Console.WriteLine($"[SQLite] Opened DB file: {connection.DataSource}");
+
         await using var tx = await connection.BeginTransactionAsync();
 
         var currentCountriesNumber = (await GetAllCountries()).Count;

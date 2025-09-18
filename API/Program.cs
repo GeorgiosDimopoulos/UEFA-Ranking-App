@@ -23,7 +23,11 @@ SQLitePCL.Batteries_V2.Init();
 
 var app = builder.Build();
 
-var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
+var dbPath = Path.Combine(AppContext.BaseDirectory, "Data", "uefa.db");
+// var connectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string is not set.");
+var connectionString = $"Data Source={dbPath}";
+builder.Configuration["ConnectionStrings:Default"] = connectionString;
+
 using (var scope = app.Services.CreateScope())
 {
     var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
