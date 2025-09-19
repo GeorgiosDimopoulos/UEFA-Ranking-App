@@ -49,37 +49,38 @@ public class DatabaseFeeder
                 await countryRepository.AddCountry(c);
             }
 
-            var teams = new[]        
+            var team = new Team
             {
-                 new Team {
-                    Id =1,
-                    Name = "AEK",
-                    Competition = Competition.ConferenceLeague,
-                    CountryId =(countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found")).Id,
-                    IsActive = true,
-                    Points = 2 },
-                new Team {
-                    Id = 2,
-                    Name = "Vfb",
-                    Competition = Competition.EuropaLeague,
-                    CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found")).Id,
-                    IsActive = false,
-                    Points = 0 },
-                new Team {
-                    Id = 3,
-                    Name = "Sevilla",
-                    Competition = Competition.None,
-                    CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found")).Id,
-                    IsActive = false,
-                    Points = 0
-                }
+                Id = 1,
+                Name = "AEK",
+                Competition = Competition.ConferenceLeague,
+                CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found")).Id,
+                IsActive = true,
+                Points = 2
             };
+            await teamRepository.AddTeam(team, "Greece");
 
-
-            foreach (var t in teams)
+            team = new Team
             {
-                await teamRepository.AddTeam(t, t.CountryId);
-            }
+                Id = 2,
+                Name = "Vfb",
+                Competition = Competition.EuropaLeague,
+                CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found")).Id,
+                IsActive = false,
+                Points = 0
+            };
+            await teamRepository.AddTeam(team, "Germany");
+
+            team = new Team
+            {
+                Id = 3,
+                Name = "Sevilla",
+                Competition = Competition.None,
+                CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found")).Id,
+                IsActive = false,
+                Points = 0
+            };
+            await teamRepository.AddTeam(team, "Spain");
         }
         catch (Exception e)
         {
