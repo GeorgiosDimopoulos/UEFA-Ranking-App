@@ -21,7 +21,10 @@ public class TeamRepository : ITeamRepository
         connection.Open();
 
         var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.Position, t.CountryId, t.Competition, c.Id, c.Name, c.Position FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
-        var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) => { team.Country = country; return team; }, splitOn: "Id");
+        var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) => 
+        { 
+            team.CountryId = country.Id; return team; 
+        }, splitOn: "Id");
         return teams.ToList();
     }
 
@@ -71,7 +74,6 @@ public class TeamRepository : ITeamRepository
         var newTeam = new Team
         {
             Name = team.Name,
-            Country = availableCountry,
             CountryId = availableCountry.Id,
             Competition = team.Competition,
             Points = 0,
@@ -86,6 +88,7 @@ public class TeamRepository : ITeamRepository
 
         var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, Points, Position, CountryId, Competition) VALUES (@Name, @IsActive, @Points, @Position, @CountryId, @Competition)";
         var result = await connection.ExecuteAsync(insertTeamQuery, newTeam);
+
         return result > 0;
     }
 

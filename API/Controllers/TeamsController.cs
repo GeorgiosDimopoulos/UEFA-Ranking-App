@@ -1,6 +1,7 @@
 using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
+using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -11,24 +12,28 @@ public class TeamsController : ControllerBase
 {
     private readonly ILogger<TeamsController> _logger;
     private readonly ITeamRepository teamRepository;
+    private readonly ICountryRepository countryRepository;
 
-    public TeamsController(ILogger<TeamsController> logger, ITeamRepository teamRepository)
+    public TeamsController(ILogger<TeamsController> logger, ITeamRepository teamRepository, ICountryRepository countryRepository)
     {
         _logger = logger;
         this.teamRepository = teamRepository;
+        this.countryRepository = countryRepository;
     }
 
     [HttpGet()]
     public async Task<IEnumerable<TeamDto>> GetTeams()
     {
         var teams = await teamRepository.GetAllTeams();
+        var countries = await countryRepository.GetAllCountries();
+
         return teams.Select(t => new TeamDto
         {
             Name = t.Name,
             IsActive = t.IsActive,
             Points = t.Points,
             Position = t.Position,
-            CountryName = t.Country.Name,
+            CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = (int)t.Competition
         });
     }
@@ -43,13 +48,15 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
+        var teamCountry = await teamRepository.GetTeamById(id);
+
         var teamDto = new TeamDto
         {
             Name = team.Name,
             IsActive = team.IsActive,
             Points = team.Points,
             Position = team.Position,
-            CountryName = team.Country.Name,
+            CountryName = teamCountry!.Name,
             Competition = (int)team.Competition
         };
 
@@ -66,13 +73,15 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
+        var teamCountry = await teamRepository.GetTeamByName(n);
+
         var teamDto = new TeamDto
         {
             Name = team.Name,
             IsActive = team.IsActive,
             Points = team.Points,
             Position = team.Position,
-            CountryName = team.Country.Name,
+            CountryName = teamCountry.Name,
             Competition = (int)team.Competition
         };
 

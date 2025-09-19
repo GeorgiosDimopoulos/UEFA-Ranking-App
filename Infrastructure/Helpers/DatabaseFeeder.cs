@@ -22,7 +22,7 @@ public class DatabaseFeeder
         var countries = connection.ExecuteScalar<int>("SELECT * FROM Countries ORDER BY Position ASC");
         var teams = connection.ExecuteScalar<int>("SELECT * FROM Teams ORDER BY Position ASC");
 
-        return countries > 22 && teams > 22;
+        return countries > 1 && teams > 1;
     }
 
     public async Task SeedCountriesAndTeams()
@@ -49,27 +49,27 @@ public class DatabaseFeeder
                 await countryRepository.AddCountry(c);
             }
 
-            var teams = new[]
-        {
+            var teams = new[]        
+            {
                  new Team {
                     Id =1,
                     Name = "AEK",
                     Competition = Competition.ConferenceLeague,
-                    Country = countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found"),
+                    CountryId =(countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found")).Id,
                     IsActive = true,
                     Points = 2 },
                 new Team {
                     Id = 2,
                     Name = "Vfb",
                     Competition = Competition.EuropaLeague,
-                    Country = countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found"),
+                    CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found")).Id,
                     IsActive = false,
                     Points = 0 },
                 new Team {
                     Id = 3,
                     Name = "Sevilla",
                     Competition = Competition.None,
-                    Country = countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found"),
+                    CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found")).Id,
                     IsActive = false,
                     Points = 0
                 }
@@ -78,7 +78,7 @@ public class DatabaseFeeder
 
             foreach (var t in teams)
             {
-                await teamRepository.AddTeam(t, t.Country.Name);
+                await teamRepository.AddTeam(t, t.CountryId);
             }
         }
         catch (Exception e)

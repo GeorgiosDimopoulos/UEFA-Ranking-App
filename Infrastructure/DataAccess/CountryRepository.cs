@@ -30,7 +30,7 @@ public class CountryRepository : ICountryRepository
 
         using var connection = new SqliteConnection(_connectionString);
 
-        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Id = @Id", new { Id = id });
+        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, Position, TotalPoints FROM Countries WHERE Id = @Id", new { Id = id });
         return country;
     }
 
@@ -41,7 +41,7 @@ public class CountryRepository : ICountryRepository
 
         using var connection = new SqliteConnection(_connectionString);
 
-        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = name });
+        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, Position, TotalPoints FROM Countries WHERE Name = @Name", new { Name = name });
         return country;
     }
 
@@ -60,7 +60,6 @@ public class CountryRepository : ICountryRepository
         {
             Name = c.Name,
             TotalPoints = c.TotalPoints,
-            Teams = []
         };
 
         var countries = (await GetAllCountries()).OrderByDescending(c => c.TotalPoints);

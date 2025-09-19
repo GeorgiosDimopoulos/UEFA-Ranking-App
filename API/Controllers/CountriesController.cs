@@ -2,6 +2,7 @@ using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Metrics;
 
 namespace API.Controllers;
 
@@ -28,18 +29,13 @@ public class CountriesController : ControllerBase
 
         var teamsByCountry = teams.GroupBy(t => t.CountryId)
                                   .ToDictionary(g => g.Key, g => g.ToList());
-                
-        foreach (var c in countries)
-        {
-            c.Teams = teamsByCountry.TryGetValue(c.Id, out var list) ? list : [];
-        }
 
         return countries.Select(c => new CountryDto
         {
             Name = c.Name,
             Position = c.Position,
-            NumberOfInitialTeams = c.Teams?.Count ?? 0,
-            NumberOfActiveTeams = c.Teams?.Where(t => t.IsActive).Count() ?? 0,
+            NumberOfInitialTeams = teams.Count(t => t.CountryId == c.Id),
+            NumberOfActiveTeams = teams.Count(t => t.CountryId == c.Id && t.IsActive),
             TotalPoints = c.TotalPoints
         });
     }
@@ -54,13 +50,15 @@ public class CountriesController : ControllerBase
             return NotFound();
         }
 
+        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id);
+
         var countryDto = new CountryDto
         {
             Name = country.Name,
             Position = country.Position,
-            NumberOfInitialTeams = country.Teams?.Count() ?? 0,
-            NumberOfActiveTeams = country.Teams?.Where(t => t.IsActive).Count() ?? 0,
-            TotalPoints = country.Teams?.Sum(t => t.Points) ?? 0
+            NumberOfInitialTeams = countryTeams?.Count() ?? 0,
+            NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
+            TotalPoints = countryTeams?.Sum(t => t.Points) ?? 0
         };
 
         return Ok(countryDto);
@@ -76,13 +74,15 @@ public class CountriesController : ControllerBase
             return NotFound();
         }
 
+        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id);
+
         var countryDto = new CountryDto
         {
             Name = country.Name,
             Position = country.Position,
-            NumberOfInitialTeams = country.Teams?.Count() ?? 0,
-            NumberOfActiveTeams = country.Teams?.Where(t => t.IsActive).Count() ?? 0,
-            TotalPoints = country.Teams?.Sum(t => t.Points) ?? 0
+            NumberOfInitialTeams = countryTeams?.Count() ?? 0, // country.Teams
+            NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
+            TotalPoints = countryTeams?.Sum(t => t.Points) ?? 0
         };
 
         return Ok(countryDto);
