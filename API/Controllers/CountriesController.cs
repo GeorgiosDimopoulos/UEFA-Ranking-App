@@ -31,6 +31,7 @@ public class CountriesController : ControllerBase
 
         return countries.Select(c => new CountryResponse
         {
+            Id = c.Id,
             Name = c.Name,
             Position = c.Position,
             NumberOfInitialTeams = teams.Count(t => t.CountryId == c.Id),
@@ -45,7 +46,7 @@ public class CountriesController : ControllerBase
         var country = await countryRepository.GetCountryById(id) ?? new();
         if (country == null)
         {
-            _logger.LogWarning("Country with id {Id} not found", id);
+            _logger.LogWarning($"Country with id {id} not found");
             return NotFound();
         }
 
@@ -53,6 +54,7 @@ public class CountriesController : ControllerBase
 
         var countryDto = new CountryResponse
         {
+            Id = country.Id,
             Name = country.Name,
             Position = country.Position,
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
@@ -69,7 +71,7 @@ public class CountriesController : ControllerBase
         var country = await countryRepository.GetCountryByName(name) ?? new();
         if (country == null)
         {
-            _logger.LogWarning("Country with name {name} not found", name);
+            _logger.LogWarning($"Country with name {name} not found");
             return NotFound();
         }
 
@@ -77,6 +79,7 @@ public class CountriesController : ControllerBase
 
         var countryDto = new CountryResponse
         {
+            Id = country.Id,
             Name = country.Name,
             Position = country.Position,
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
@@ -94,7 +97,7 @@ public class CountriesController : ControllerBase
         var result = await countryRepository.AddCountry(country);
         if (result == false)
         {
-            _logger.LogWarning("Could not add country {Country}", name);
+            _logger.LogWarning($"Could not add country {name}");
             return BadRequest();
         }
 
@@ -108,11 +111,11 @@ public class CountriesController : ControllerBase
         var result = await countryRepository.UpdateCountry(country, id);
         if (result == false)
         {
-            _logger.LogWarning("Could not update country {Country}", c.Name);
+            _logger.LogWarning($"Could not update country {c.Name}");
             return NotFound();
         }
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("{id:int}")]
@@ -121,7 +124,20 @@ public class CountriesController : ControllerBase
         var result = await countryRepository.DeleteCountry(id);
         if (result == false)
         {
-            _logger.LogWarning("Could not delete country with id {Id}", id);
+            _logger.LogWarning($"Could not delete country with id {id}");
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpDelete("{n:string}")]
+    public async Task<ActionResult> DeleteCountryByName(string n)
+    {
+        var result = await countryRepository.DeleteCountryByName(n);
+        if (result == false)
+        {
+            _logger.LogWarning($"Could not delete country with name {n}");
             return NotFound();
         }
 

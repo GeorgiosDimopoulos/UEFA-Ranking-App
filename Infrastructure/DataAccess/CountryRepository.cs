@@ -84,7 +84,7 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position WHERE Id = @Id";
+        var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position, @TotalPoints = TotalPoints WHERE Id = @Id";
 
         var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, c.Position, Id = id, c.TotalPoints});
         return result > 0;
@@ -95,12 +95,26 @@ public class CountryRepository : ICountryRepository
         using var connection = new SqliteConnection(_connectionString);
 
         var deleteTeamsQuery = "DELETE FROM Teams WHERE CountryId = @CountryId";
-        var result = await connection.ExecuteAsync(deleteTeamsQuery, new { CountryId = id });
+        await connection.ExecuteAsync(deleteTeamsQuery, new { CountryId = id });
 
         var deleteCountryQuery = "DELETE FROM Countries WHERE Id = @Id";
 
-        var result2 = await connection.ExecuteAsync(deleteCountryQuery, new { Id = id });
-        return result > 0 && result2 > 0;
+        var result = await connection.ExecuteAsync(deleteCountryQuery, new { Id = id });
+        return result > 0;
+    }
+
+    public async Task<bool> DeleteCountryByName(string name)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+
+        var countryId = "SELECT Id FROM Countries WHERE Id = @Id";
+        var deleteTeamsQuery = "DELETE FROM Teams WHERE CountryId = @countryId";
+        await connection.ExecuteAsync(deleteTeamsQuery, new { CountryId = countryId });
+
+        var deleteCountryQuery = "DELETE FROM Countries WHERE Id = @countryId";
+
+        var result = await connection.ExecuteAsync(deleteCountryQuery, new { Id = name });
+        return result > 0;
     }
 
     public async Task<bool> DeleteCountries()

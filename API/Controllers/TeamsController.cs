@@ -29,6 +29,7 @@ public class TeamsController : ControllerBase
 
         return teams.Select(t => new TeamResponse
         {
+            Id = t.Id,
             Name = t.Name,
             IsActive = t.IsActive,
             Points = t.Points,
@@ -52,6 +53,7 @@ public class TeamsController : ControllerBase
 
         var teamDto = new TeamResponse
         {
+            Id = team.Id,
             Name = team.Name,
             IsActive = team.IsActive,
             Points = team.Points,
@@ -81,7 +83,7 @@ public class TeamsController : ControllerBase
             IsActive = team.IsActive,
             Points = team.Points,
             Position = team.Position,
-            CountryName = teamCountry.Name,
+            CountryName = teamCountry!.Name,
             Competition = (int)team.Competition
         };
 
