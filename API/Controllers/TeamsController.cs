@@ -65,17 +65,17 @@ public class TeamsController : ControllerBase
         return Ok(teamDto);
     }
 
-    [HttpGet("{name}")]
-    public async Task<ActionResult<TeamResponse>> GetTeamById(string n)
+    [HttpGet("by-name/{name}")]
+    public async Task<ActionResult<TeamResponse>> GetTeamByName(string name)
     {
-        var team = await teamRepository.GetTeamByName(n);
+        var team = await teamRepository.GetTeamByName(name);
         if (team == null)
         {
-            _logger.LogWarning("Team with name: {n} not found", n);
+            _logger.LogWarning("Team with name: {n} not found", name);
             return NotFound();
         }
 
-        var teamCountry = await teamRepository.GetTeamByName(n);
+        var teamCountry = await teamRepository.GetTeamByName(name);
 
         var teamDto = new TeamResponse
         {
@@ -130,4 +130,17 @@ public class TeamsController : ControllerBase
 
         return NoContent();
     }
+
+    //[HttpDelete("by-name/{name}")]
+    //public async Task<ActionResult> DeleteTeamByName(string n)
+    //{
+    //    var result = await teamRepository.DeleteTeamByName(n);
+    //    if (result == false)
+    //    {
+    //        _logger.LogWarning($"Could not delete country with name {n}");
+    //        return NotFound();
+    //    }
+
+    //    return NoContent();
+    //}
 }

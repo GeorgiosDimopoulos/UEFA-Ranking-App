@@ -65,7 +65,7 @@ public class CountriesController : ControllerBase
         return Ok(countryDto);
     }
 
-    [HttpGet("{name}")]
+    [HttpGet("by-name/{name}")]
     public async Task<ActionResult<CountryResponse>> GetCountryByName(string name)
     {
         var country = await countryRepository.GetCountryByName(name) ?? new();
@@ -131,7 +131,7 @@ public class CountriesController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{n:string}")]
+    [HttpDelete("by-name/{name}")]
     public async Task<ActionResult> DeleteCountryByName(string n)
     {
         var result = await countryRepository.DeleteCountryByName(n);

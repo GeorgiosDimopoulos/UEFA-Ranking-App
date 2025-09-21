@@ -76,7 +76,7 @@ public class TeamRepository : ITeamRepository
             Name = team.Name,
             CountryId = availableCountry.Id,
             Competition = team.Competition,
-            Points = 0,
+            Points = team.Points,
             Position = team.Position,
             Matches = [],
         };
