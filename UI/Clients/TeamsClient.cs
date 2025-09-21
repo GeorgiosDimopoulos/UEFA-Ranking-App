@@ -11,19 +11,19 @@ public class TeamsClient
         _httpClient = httpClient;
     }
 
-    public async Task<TeamDto[]?> GetTeams()
+    public async Task<TeamResponse[]?> GetTeams()
     {
-        return await _httpClient.GetFromJsonAsync<TeamDto[]?>("api/teams");
+        return await _httpClient.GetFromJsonAsync<TeamResponse[]?>("api/teams");
     }
 
-    public async Task<TeamDto[]?> GetTeamsByCountry(string n)
+    public async Task<TeamResponse[]?> GetTeamsByCountry(string n)
     {
-        return await _httpClient.GetFromJsonAsync<TeamDto[]?>($"api/teams/{n}");
+        return await _httpClient.GetFromJsonAsync<TeamResponse[]?>($"api/teams/{n}");
     }
 
-    public async Task<TeamDto?> GetTeam(int id)
+    public async Task<TeamResponse?> GetTeam(int id)
     {
-        var t = await _httpClient.GetFromJsonAsync<TeamDto?>($"api/teams/{id}");
+        var t = await _httpClient.GetFromJsonAsync<TeamResponse?>($"api/teams/{id}");
         return t;
     }
 }

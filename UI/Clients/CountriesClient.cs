@@ -11,15 +11,15 @@ public class CountriesClient
         _httpClient = httpClient;
     }
 
-    public async Task<CountryDto[]?> GetCountries()
+    public async Task<CountryResponse[]?> GetCountries()
     {
-        var countries = await _httpClient.GetFromJsonAsync<CountryDto[]?>("api/countries");
+        var countries = await _httpClient.GetFromJsonAsync<CountryResponse[]?>("api/countries");
         return countries;
     }
 
-    public async Task<CountryDto?> GetCountry(string n)
+    public async Task<CountryResponse?> GetCountry(string n)
     {
-        var country = await _httpClient.GetFromJsonAsync<CountryDto?>($"api/countries/{n}");
+        var country = await _httpClient.GetFromJsonAsync<CountryResponse?>($"api/countries/{n}");
         return country;
     }
 }

@@ -58,16 +58,16 @@
 
 @code
 {
-	private TeamDto[]? teams = default!;
+	private TeamResponse[]? teams = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var teams = await TeamsClient.GetTeams() ?? Array.Empty<TeamDto>();
+		var teams = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
 		teams = teams.OrderBy(t => t.Points).ToArray();
 	}
 
-	private void ShowMatches(TeamDto t)
+	private void ShowMatches(TeamResponse t)
 	{
 	}
 }

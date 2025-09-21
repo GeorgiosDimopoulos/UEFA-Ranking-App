@@ -22,12 +22,12 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet()]
-    public async Task<IEnumerable<TeamDto>> GetTeams()
+    public async Task<IEnumerable<TeamResponse>> GetTeams()
     {
         var teams = await teamRepository.GetAllTeams();
         var countries = await countryRepository.GetAllCountries();
 
-        return teams.Select(t => new TeamDto
+        return teams.Select(t => new TeamResponse
         {
             Name = t.Name,
             IsActive = t.IsActive,
@@ -39,7 +39,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<TeamDto>> GetTeamById(int id)
+    public async Task<ActionResult<TeamResponse>> GetTeamById(int id)
     {
         var team = await teamRepository.GetTeamById(id);
         if (team == null)
@@ -50,7 +50,7 @@ public class TeamsController : ControllerBase
 
         var teamCountry = await teamRepository.GetTeamById(id);
 
-        var teamDto = new TeamDto
+        var teamDto = new TeamResponse
         {
             Name = team.Name,
             IsActive = team.IsActive,
@@ -64,7 +64,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet("{name}")]
-    public async Task<ActionResult<TeamDto>> GetTeamById(string n)
+    public async Task<ActionResult<TeamResponse>> GetTeamById(string n)
     {
         var team = await teamRepository.GetTeamByName(n);
         if (team == null)
@@ -75,7 +75,7 @@ public class TeamsController : ControllerBase
 
         var teamCountry = await teamRepository.GetTeamByName(n);
 
-        var teamDto = new TeamDto
+        var teamDto = new TeamResponse
         {
             Name = team.Name,
             IsActive = team.IsActive,
@@ -89,9 +89,9 @@ public class TeamsController : ControllerBase
     }
 
     [HttpPost(Name = "AddTeam")]
-    public async Task<ActionResult<TeamDto>> AddTeam([FromQuery] TeamDto t)
+    public async Task<ActionResult<TeamRequest>> AddTeam([FromQuery] TeamRequest t)
     {
-        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points, Position = t.Position };
+        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points };
         team.Competition = (Competition)t.Competition;
         var result = await teamRepository.AddTeam(team, t.CountryName);
         if (result == false)
@@ -103,9 +103,9 @@ public class TeamsController : ControllerBase
     }
 
     [HttpPut("{id:int}", Name = "UpdateTeam")]
-    public async Task<ActionResult> UpdateTeam([FromQuery] TeamDto t, int id)
+    public async Task<ActionResult> UpdateTeam([FromQuery] TeamRequest t, int id)
     {
-        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points, Position = t.Position };
+        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points }; // ToDo: add or not Position = t.Position
         var result = await teamRepository.UpdateTeam(team, id);
         if (result == false)
         {

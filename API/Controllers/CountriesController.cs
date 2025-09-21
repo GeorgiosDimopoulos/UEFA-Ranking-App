@@ -2,7 +2,6 @@ using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.Metrics;
 
 namespace API.Controllers;
 
@@ -22,7 +21,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet(Name = "Countries")]
-    public async Task<IEnumerable<CountryDto>> GetCountries()
+    public async Task<IEnumerable<CountryResponse>> GetCountries()
     {
         var countries = await countryRepository.GetAllCountries();
         var teams = await teamRepository.GetAllTeams();
@@ -30,7 +29,7 @@ public class CountriesController : ControllerBase
         var teamsByCountry = teams.GroupBy(t => t.CountryId)
                                   .ToDictionary(g => g.Key, g => g.ToList());
 
-        return countries.Select(c => new CountryDto
+        return countries.Select(c => new CountryResponse
         {
             Name = c.Name,
             Position = c.Position,
@@ -41,7 +40,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<CountryDto>> GetCountryById(int id)
+    public async Task<ActionResult<CountryResponse>> GetCountryById(int id)
     {
         var country = await countryRepository.GetCountryById(id) ?? new();
         if (country == null)
@@ -52,7 +51,7 @@ public class CountriesController : ControllerBase
 
         var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id);
 
-        var countryDto = new CountryDto
+        var countryDto = new CountryResponse
         {
             Name = country.Name,
             Position = country.Position,
@@ -65,7 +64,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet("{name}")]
-    public async Task<ActionResult<CountryDto>> GetCountryByName(string name)
+    public async Task<ActionResult<CountryResponse>> GetCountryByName(string name)
     {
         var country = await countryRepository.GetCountryByName(name) ?? new();
         if (country == null)
@@ -76,11 +75,11 @@ public class CountriesController : ControllerBase
 
         var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id);
 
-        var countryDto = new CountryDto
+        var countryDto = new CountryResponse
         {
             Name = country.Name,
             Position = country.Position,
-            NumberOfInitialTeams = countryTeams?.Count() ?? 0, // country.Teams
+            NumberOfInitialTeams = countryTeams?.Count() ?? 0,
             NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
             TotalPoints = countryTeams?.Sum(t => t.Points) ?? 0
         };
@@ -103,7 +102,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> UpdateCountry([FromQuery] CountryDto c, int id)
+    public async Task<ActionResult> UpdateCountry([FromQuery] CountryRequest c, int id)
     {
         var country = new Country { Name = c.Name, Position = c.Position };
         var result = await countryRepository.UpdateCountry(country, id);

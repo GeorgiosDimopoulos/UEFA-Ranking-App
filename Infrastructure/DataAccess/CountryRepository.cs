@@ -19,7 +19,7 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, TotalPoints, NumberOfActiveTeams FROM Countries ORDER BY Position ASC");
+        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, TotalPoints, Position, NumberOfActiveTeams FROM Countries ORDER BY Position ASC");
         return countries.ToList();
     }
 

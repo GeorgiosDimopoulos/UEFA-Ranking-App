@@ -12,7 +12,9 @@
 
 <PageTitle>Countries Statistics</PageTitle>
 
-<MudAlert Severity="Severity.Info">This component demonstrates showing countries football statistics data for 2025 - 2026</MudAlert>
+<MudAlert Severity="Severity.Info">
+    This component demonstrates showing countries football statistics data for 2025 - 2026
+</MudAlert>
 
 <div>
     @if (_countries is null)
@@ -61,15 +63,15 @@
 </div>
 
 @code {
-    private CountryDto[]? _countries = default!;
-    private TeamDto[]? _countryTeams = default!;
+    private CountryResponse[]? _countries = default!;
+    private TeamResponse[]? _countryTeams = default!;
 
     private HashSet<string> expanded = new();
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
-        var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryDto>();
+        var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
         _countries = data.OrderBy(c => c.Position).ToArray();
     }
 
@@ -82,7 +84,7 @@
             expanded.Remove(n);
     }
 
-    private async Task OpenCountryAsync(CountryDto country)
+    private async Task OpenCountryAsync(CountryResponse country)
     {
         var parameters = new DialogParameters
         {
@@ -91,7 +93,7 @@
 
         var dialogRef = await DialogService.ShowAsync<CountryDetails>(country.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
         var result = await dialogRef.Result;
-        if (result != null && !result!.Canceled && result.Data is CountryDto updatedCountry)
+        if (result != null && !result!.Canceled && result.Data is CountryResponse updatedCountry)
         {
             StateHasChanged();
         }

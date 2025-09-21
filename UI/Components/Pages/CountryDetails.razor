@@ -23,15 +23,15 @@
 </MudDialog>
 
 @code {
-	[Parameter] public CountryDto Country { get; set; } = default!;
+	[Parameter] public CountryResponse Country { get; set; } = default!;
 	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
 	private MudForm editForm = default!;
-	private CountryDto country = new();
+	private CountryResponse country = new();
 
 	protected override void OnParametersSet()
 	{
-		country = new CountryDto
+		country = new CountryResponse
 		{
 			Position = Country.Position,
 			Name = Country.Name,
