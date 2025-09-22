@@ -29,7 +29,7 @@ public class CountryRepository : ICountryRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var countriesNamesAndPoints = await connection.QueryAsync<(string Name, int Points)>("SELECT Name, TotalPointsFROM Countries");
+        var countriesNamesAndPoints = await connection.QueryAsync<(string Name, int Points)>("SELECT Name, TotalPoints FROM Countries");
         return countriesNamesAndPoints.ToDictionary(c => c.Name, c => c.Points);
     }
 
