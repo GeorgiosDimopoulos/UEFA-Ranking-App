@@ -1,6 +1,7 @@
 using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
+using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -21,7 +22,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet(Name = "Countries")]
-    public async Task<IEnumerable<CountryResponse>> GetCountries()
+    public async Task<IEnumerable<CountryResponse>> GetCountries([FromQuery] CountryQueryParameters queryParameters)
     {
         var countries = await countryRepository.GetAllCountries();
         var teams = await teamRepository.GetAllTeams();
@@ -45,7 +46,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<CountryResponse>> GetCountryById(int id)
+    public async Task<ActionResult<CountryResponse>> GetCountryById(int id, [FromQuery] CountryQueryParameters queryParameters)
     {
         var country = await countryRepository.GetCountryById(id) ?? new();
         if (country == null)
@@ -70,7 +71,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet("by-name/{name}")]
-    public async Task<ActionResult<CountryResponse>> GetCountryByName(string name)
+    public async Task<ActionResult<CountryResponse>> GetCountryByName(string name, [FromQuery] CountryQueryParameters queryParameters)
     {
         var country = await countryRepository.GetCountryByName(name) ?? new();
         if (country == null)

@@ -1,9 +1,8 @@
 using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
-using Infrastructure.DataAccess;
+using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Immutable;
 
 namespace API.Controllers;
 
@@ -47,7 +46,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<TeamResponse>> GetTeamById(int id)
+    public async Task<ActionResult<TeamResponse>> GetTeamById(int id, [FromQuery] TeamQueryParameters queryParameters)
     {
         var team = await teamRepository.GetTeamById(id);
         if (team == null)
@@ -69,11 +68,16 @@ public class TeamsController : ControllerBase
             Competition = (int)team.Competition
         };
 
+        if(queryParameters.IncludeCountry)
+        {
+            // ToDo: show the Country information too
+        }
+
         return Ok(teamDto);
     }
 
     [HttpGet("by-name/{name}")]
-    public async Task<ActionResult<TeamResponse>> GetTeamByName(string name)
+    public async Task<ActionResult<TeamResponse>> GetTeamByName(string name, [FromQuery] TeamQueryParameters queryParameters)
     {
         var team = await teamRepository.GetTeamByName(name);
         if (team == null)
@@ -94,6 +98,10 @@ public class TeamsController : ControllerBase
             Competition = (int)team.Competition
         };
 
+        if (queryParameters.IncludeCountry)
+        {
+            // ToDo: show the Country information too
+        }
         return Ok(teamDto);
     }
 
