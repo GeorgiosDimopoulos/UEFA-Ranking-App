@@ -107,7 +107,7 @@ public class CountriesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateCountry([FromQuery] CountryRequest c, int id)
     {
-        var country = new Country { Name = c.Name, Position = c.Position };
+        var country = new Country { Name = c.Name};
         var result = await countryRepository.UpdateCountry(country, id);
         if (result == false)
         {

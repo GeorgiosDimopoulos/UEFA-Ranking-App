@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.Models;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Immutable;
 
 namespace API.Controllers;
 
@@ -22,10 +23,16 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet()]
-    public async Task<IEnumerable<TeamResponse>> GetTeams()
+    public async Task<List<TeamResponse>> GetTeams()
     {
         var teams = await teamRepository.GetAllTeams();
         var countries = await countryRepository.GetAllCountries();
+
+        var teamsPositions = teams.Select(t => t.Points)
+                                  .Distinct()
+                                  .OrderByDescending(p => p)
+                                  .Select((p, i) => new { p, pos = i + 1 })
+                                  .ToDictionary(x => x.p, x => x.pos);
 
         return teams.Select(t => new TeamResponse
         {
@@ -33,10 +40,10 @@ public class TeamsController : ControllerBase
             Name = t.Name,
             IsActive = t.IsActive,
             Points = t.Points,
-            Position = t.Position,
+            Position = teamsPositions[t.Points],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = (int)t.Competition
-        });
+        }).ToList();
     }
 
     [HttpGet("{id:int}")]
@@ -57,7 +64,7 @@ public class TeamsController : ControllerBase
             Name = team.Name,
             IsActive = team.IsActive,
             Points = team.Points,
-            Position = team.Position,
+            Position = await GetTeamPosition(team.Points),
             CountryName = teamCountry!.Name,
             Competition = (int)team.Competition
         };
@@ -82,8 +89,8 @@ public class TeamsController : ControllerBase
             Name = team.Name,
             IsActive = team.IsActive,
             Points = team.Points,
-            Position = team.Position,
-            CountryName = teamCountry!.Name,
+            Position = await GetTeamPosition(team.Points),
+            CountryName = teamCountry!.Name, // ToDo: include via JOIN in GetTeamByName
             Competition = (int)team.Competition
         };
 
@@ -131,16 +138,22 @@ public class TeamsController : ControllerBase
         return NoContent();
     }
 
-    //[HttpDelete("by-name/{name}")]
-    //public async Task<ActionResult> DeleteTeamByName(string n)
-    //{
-    //    var result = await teamRepository.DeleteTeamByName(n);
-    //    if (result == false)
-    //    {
-    //        _logger.LogWarning($"Could not delete country with name {n}");
-    //        return NotFound();
-    //    }
+    [HttpDelete("by-name/{name}")]
+    public async Task<ActionResult> DeleteTeamByName(string n)
+    {
+        var result = await teamRepository.DeleteTeamByName(n);
+        if (result == false)
+        {
+            _logger.LogWarning($"Could not delete country with name {n}");
+            return NotFound();
+        }
 
-    //    return NoContent();
-    //}
+        return NoContent();
+    }
+
+    private async Task<int> GetTeamPosition(int points)
+    {
+        var teamsPoints = await teamRepository.GetTeamsNamesAndPoints();
+        return 1 + teamsPoints.Values.Count(p => p > points);
+    }
 }

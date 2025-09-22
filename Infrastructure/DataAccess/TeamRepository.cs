@@ -28,6 +28,17 @@ public class TeamRepository : ITeamRepository
         return teams.ToList();
     }
 
+    public async Task<Dictionary<string ,int>> GetTeamsNamesAndPoints() 
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var sql = @"SELECT Name, Points FROM Teams";
+        var teams = await connection.QueryAsync<(string Name, int Points)>(sql);
+
+        return teams.ToDictionary(t => t.Name, t => t.Points);
+    }
+
     public async Task<Team?> GetTeamById(int id)
     {
         using var connection = new SqliteConnection(_connectionString);
@@ -46,7 +57,7 @@ public class TeamRepository : ITeamRepository
         return team;
     }
 
-    public async Task<IEnumerable<Team?>> GetTeamsByCountryId(int countryId)
+    public async Task<List<Team?>> GetTeamsByCountryId(int countryId)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
@@ -54,7 +65,7 @@ public class TeamRepository : ITeamRepository
         var countryTeams = await connection.QueryAsync<Team>("SELECT * FROM Teams WHERE CountryId = @CountryId", new { CountryId = countryId });
         if (!countryTeams.Any())
             throw new InvalidOperationException("No teams found for the given country ID.");
-        return countryTeams;
+        return countryTeams.ToList()!;
     }
 
     public async Task<bool> AddTeam(Team team, string country)
@@ -77,7 +88,6 @@ public class TeamRepository : ITeamRepository
             CountryId = availableCountry.Id,
             Competition = team.Competition,
             Points = team.Points,
-            Position = team.Position,
             Matches = [],
         };
 
@@ -98,7 +108,7 @@ public class TeamRepository : ITeamRepository
         connection.Open();
 
         var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points, Position = @Position WHERE Id = @Id";
-        var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, t.Position, Id = id, t.Competition });
+        var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, Id = id, t.Competition });
 
         return result > 0;
     }
@@ -110,6 +120,17 @@ public class TeamRepository : ITeamRepository
 
         var deleteQuery = "DELETE FROM Teams WHERE Id = @Id";
         var result = await connection.ExecuteAsync(deleteQuery, new { Id = id });
+
+        return result > 0;
+    }
+
+    public async Task<bool> DeleteTeamByName(string Name)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var deleteQuery = "DELETE FROM Teams WHERE Name = @Name";
+        var result = await connection.ExecuteAsync(deleteQuery, new { Name });
 
         return result > 0;
     }

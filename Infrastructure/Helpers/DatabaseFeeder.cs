@@ -31,17 +31,17 @@ public class DatabaseFeeder
         {
             var countries = new Country[]
             {
-                new() { Id = 1, Name = "England", Position = 1, TotalPoints = 95000},
-                new() { Id = 2, Name = "Spain", Position = 3 , TotalPoints = 79000},
-                new() { Id = 3, Name = "Germany", Position = 4 , TotalPoints = 75000},
-                new() { Id = 4, Name = "Italy", Position = 2 , TotalPoints = 84000},
-                new() { Id = 5, Name = "France", Position = 5 , TotalPoints = 68000},
-                new() { Id = 6, Name = "Portugal", Position = 7 , TotalPoints = 57000},
-                new() { Id = 7, Name = "Netherlands", Position = 6 , TotalPoints = 62000},
-                new() { Id = 8, Name = "Belgium", Position = 8 , TotalPoints = 55000},
-                new() { Id =9, Name = "Turkey", Position = 9 , TotalPoints = 44000},
-                new() { Id = 10, Name = "Czech", Position = 10 , TotalPoints = 40500},
-                new() { Id = 11, Name = "Greece", Position = 11 , TotalPoints = 37500}
+                new() { Id = 1, Name = "England", TotalPoints = 95000},
+                new() { Id = 2, Name = "Spain" , TotalPoints = 79000},
+                new() { Id = 3, Name = "Germany" , TotalPoints = 75000},
+                new() { Id = 4, Name = "Italy" , TotalPoints = 84000},
+                new() { Id = 5, Name = "France" , TotalPoints = 68000},
+                new() { Id = 6, Name = "Portugal" , TotalPoints = 57000},
+                new() { Id = 7, Name = "Netherlands" , TotalPoints = 62000},
+                new() { Id = 8, Name = "Belgium" , TotalPoints = 55000},
+                new() { Id =9, Name = "Turkey" , TotalPoints = 44000},
+                new() { Id = 10, Name = "Czech" , TotalPoints = 40500},
+                new() { Id = 11, Name = "Greece" , TotalPoints = 37500}
             };
 
             foreach (var c in countries)
