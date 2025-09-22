@@ -13,13 +13,13 @@
 <div class="col-12">
 	<MudAlert Severity="Severity.Info">This component demonstrates showing football teams statistics for 2025 - 2026</MudAlert>
 
-	@if (teams == null)
+	@if (_teams == null)
 	{
 		<p><em>Loading teams...</em></p>
 	}
 	else
 	{
-		<MudTable Items="teams">
+		<MudTable Items="_teams">
 			<HeaderContent>
 				<MudTh>Name</MudTh>
 				<MudTh>Country</MudTh>
@@ -31,7 +31,10 @@
 			</HeaderContent>
 			<RowTemplate>
 				<MudTd>
-					<NavLink class="nav-link" href=@($"/teams/{context.Name}") style="text-decoration:underline">@context.Name</NavLink>
+					@* <NavLink class="nav-link" href=@($"/teams/{context.Name}") style="text-decoration:underline">@context.Name</NavLink> *@
+					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
+						<span style="text-decoration:underline"> @context.Name </span>
+					</MudButton>
 				</MudTd>
 				<MudTd>@context.CountryName</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
@@ -58,16 +61,32 @@
 
 @code
 {
-	private TeamResponse[]? teams = default!;
+	private TeamResponse[]? _teams = default!;
+	private CountryResponse[]? _countries = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var teams = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
-		teams = teams.OrderBy(t => t.Points).ToArray();
+		var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
+		_teams = data.OrderBy(t => t.Points).ToArray();
 	}
 
 	private void ShowMatches(TeamResponse t)
 	{
+	}
+
+	private async Task OpenTeamAsync(TeamResponse t)
+	{
+		var parameters = new DialogParameters
+		{
+			["Team"] = t
+		};
+
+		var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+		var result = await dialogRef.Result;
+		if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
+		{
+			StateHasChanged();
+		}
 	}
 }

@@ -55,7 +55,7 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        var teamCountry = await teamRepository.GetTeamById(id);
+        var teamCountry = await countryRepository.GetCountryById(team.CountryId);
 
         var teamDto = new TeamResponse
         {
@@ -68,9 +68,9 @@ public class TeamsController : ControllerBase
             Competition = (int)team.Competition
         };
 
-        if(queryParameters.IncludeCountry)
+        if(queryParameters.IncludeMatches)
         {
-            // ToDo: show the Country information too
+            // ToDo: show all the matches information too
         }
 
         return Ok(teamDto);
@@ -86,7 +86,7 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        var teamCountry = await teamRepository.GetTeamByName(name);
+        var teamCountry = await countryRepository.GetCountryById(team.CountryId);
 
         var teamDto = new TeamResponse
         {
@@ -98,10 +98,11 @@ public class TeamsController : ControllerBase
             Competition = (int)team.Competition
         };
 
-        if (queryParameters.IncludeCountry)
+        if (queryParameters.IncludeMatches)
         {
-            // ToDo: show the Country information too
+            // ToDo: show all the matches information too
         }
+
         return Ok(teamDto);
     }
 
