@@ -37,8 +37,6 @@
                 {
                     <tr>
                         <MudButton @onclick="OpenCountryAsync" Variant="Variant.Filled" Color="Color.Primary">@c.Name</MudButton>
-                        <td>@c.Position</td>
-                        <td>@c.Position</td>
                         <td>@c.TotalPoints</td>
                         <td>
                             <input type="checkbox" @onclick="() => ToggleTeamId(c.Name)" />

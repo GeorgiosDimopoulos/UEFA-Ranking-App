@@ -26,14 +26,18 @@ public class CountriesController : ControllerBase
         var countries = await countryRepository.GetAllCountries();
         var teams = await teamRepository.GetAllTeams();
 
-        var teamsByCountry = teams.GroupBy(t => t.CountryId)
-                                  .ToDictionary(g => g.Key, g => g.ToList());
+        //var teamsByCountry = teams.GroupBy(t => t.CountryId).ToDictionary(g => g.Key, g => g.ToList());
+        var countriesPositions = countries.Select(c => c.TotalPoints)
+                                          .Distinct()
+                                          .OrderByDescending(p => p)
+                                          .Select((p, i) => new { p, pos = i + 1 })
+                                          .ToDictionary(x => x.p, x => x.pos);
 
         return countries.Select(c => new CountryResponse
         {
             Id = c.Id,
             Name = c.Name,
-            Position = c.Position,
+            Position = countriesPositions[c.TotalPoints],
             NumberOfInitialTeams = teams.Count(t => t.CountryId == c.Id),
             NumberOfActiveTeams = teams.Count(t => t.CountryId == c.Id && t.IsActive),
             TotalPoints = c.TotalPoints
@@ -56,7 +60,7 @@ public class CountriesController : ControllerBase
         {
             Id = country.Id,
             Name = country.Name,
-            Position = country.Position,
+            Position = await GetCountryPosition(country.TotalPoints),
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
             NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
             TotalPoints = countryTeams?.Sum(t => t.Points) ?? 0
@@ -81,7 +85,7 @@ public class CountriesController : ControllerBase
         {
             Id = country.Id,
             Name = country.Name,
-            Position = country.Position,
+            Position = await GetCountryPosition(country.TotalPoints),
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
             NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
             TotalPoints = countryTeams?.Sum(t => t.Points) ?? 0
@@ -107,7 +111,7 @@ public class CountriesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateCountry([FromQuery] CountryRequest c, int id)
     {
-        var country = new Country { Name = c.Name};
+        var country = new Country { Name = c.Name };
         var result = await countryRepository.UpdateCountry(country, id);
         if (result == false)
         {
@@ -155,5 +159,11 @@ public class CountriesController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    private async Task<int> GetCountryPosition(int points)
+    {
+        var teamsPoints = await countryRepository.GetCountriesNamesAndPoints();
+        return 1 + teamsPoints.Values.Count(p => p > points);
     }
 }

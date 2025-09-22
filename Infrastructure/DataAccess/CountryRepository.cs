@@ -18,9 +18,19 @@ public class CountryRepository : ICountryRepository
     public async Task<List<Country>> GetAllCountries()
     {
         using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
 
         var countries = await connection.QueryAsync<Country>("SELECT Id, Name, TotalPoints, Position, NumberOfActiveTeams FROM Countries ORDER BY Position ASC");
         return countries.ToList();
+    }
+
+    public async Task<Dictionary<string, int>> GetCountriesNamesAndPoints()
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var countriesNamesAndPoints = await connection.QueryAsync<(string Name, int Points)>("SELECT Name, TotalPointsFROM Countries");
+        return countriesNamesAndPoints.ToDictionary(c => c.Name, c => c.Points);
     }
 
     public async Task<Country?> GetCountryById(int id)
@@ -29,6 +39,7 @@ public class CountryRepository : ICountryRepository
             return null;
 
         using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
 
         var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, Position, TotalPoints FROM Countries WHERE Id = @Id", new { Id = id });
         return country;
@@ -40,6 +51,7 @@ public class CountryRepository : ICountryRepository
             return null;
 
         using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
 
         var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, Position, TotalPoints FROM Countries WHERE Name = @Name", new { Name = name });
         return country;
@@ -48,7 +60,7 @@ public class CountryRepository : ICountryRepository
     public async Task<bool> AddCountry(Country c)
     {
         using var connection = new SqliteConnection(_connectionString);
-        await connection.OpenAsync();        
+        await connection.OpenAsync();
 
         var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
         if (availableCountry != null)
@@ -71,7 +83,6 @@ public class CountryRepository : ICountryRepository
             else
                 break;
         }
-        newCountry.Position = position;
 
         var insertCountryQuery = @"INSERT INTO Countries (Name, Position, TotalPoints) VALUES(@Name, @Position, @TotalPoints)";
         var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
@@ -86,7 +97,7 @@ public class CountryRepository : ICountryRepository
 
         var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position, @TotalPoints = TotalPoints WHERE Id = @Id";
 
-        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, c.Position, Id = id, c.TotalPoints});
+        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, Id = id, c.TotalPoints });
         return result > 0;
     }
 
