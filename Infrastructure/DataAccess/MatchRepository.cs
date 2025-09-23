@@ -16,15 +16,25 @@ public class MatchRepository : IMatchRepository
             throw new InvalidOperationException("Connection string is not set.");
     }
 
+    public async Task<List<Match>> GetAllMatches()
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var query = @"SELECT * FROM Matches Order By Date";
+        var matches = await connection.QueryAsync<Match>(query);
+
+        return matches.ToList();
+    }
+
     public async Task<Dictionary<int, List<Match>>> GetMatchesByTeams(int[] id)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        // ToDo: fix the query
-        var query = @"SELECT * FROM Matches GROUP BY TeamId";
+        var query = @"SELECT * FROM Matches GROUP BY HomeTeamId";
         var matches = await connection.QueryAsync<Match>(query);
-        
+
         // return matches.ToDictionary(m => m.HomeTeamId, m=>m);
         return null;
     }
