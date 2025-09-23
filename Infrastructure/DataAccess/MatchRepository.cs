@@ -2,6 +2,7 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
 
 namespace Infrastructure.DataAccess;
 
@@ -57,5 +58,11 @@ public class MatchRepository : IMatchRepository
         var sqlQuery = @"SELECT * FROM Matches WHERE TeamId = @tid";
         var matches = await connection.QueryAsync<Match>(sqlQuery, new { id = tid });
         return matches.ToList();
+    }
+
+    public Task<List<Match>> GetMatchesByRound(int r)
+    {
+        // ToDo: not yet implemented
+        return null;
     }
 }

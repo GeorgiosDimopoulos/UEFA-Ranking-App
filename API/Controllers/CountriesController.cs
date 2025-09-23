@@ -27,7 +27,6 @@ public class CountriesController : ControllerBase
         var countries = await countryRepository.GetAllCountries();
         var teams = await teamRepository.GetAllTeams();
 
-        //var teamsByCountry = teams.GroupBy(t => t.CountryId).ToDictionary(g => g.Key, g => g.ToList());
         var countriesPositions = countries.Select(c => c.TotalPoints)
                                           .Distinct()
                                           .OrderByDescending(p => p)

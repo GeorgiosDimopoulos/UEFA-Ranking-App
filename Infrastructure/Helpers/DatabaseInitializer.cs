@@ -35,6 +35,16 @@ public class DatabaseInitializer
                 Points INTEGER NOT NULL,
                 FOREIGN KEY (CountryId) REFERENCES Countries(Id) ON DELETE CASCADE)";
         command.CommandText = createTeamsTableQuery;
-        var result2 = command.ExecuteNonQuery();
+        command.ExecuteNonQuery();
+
+        var createMatchesTableQuery = @"CREATE TABLE IF NOT EXISTS Matches(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                HomeTeam TEXT NOT NULL,
+                AwayTeam TEXT NOT NULL,
+                Result INTEGER NOT NULL,
+                MatchDate TEXT NOT NULL,
+                Competition INTEGER NOT NULL";
+        command.CommandText = createMatchesTableQuery;
+        command.ExecuteNonQuery();
     }
 }

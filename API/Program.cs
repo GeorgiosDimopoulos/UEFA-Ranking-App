@@ -12,6 +12,7 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAn
 
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 
 builder.Services.AddScoped<DatabaseFeeder>();
 builder.Services.AddScoped<DatabaseInitializer>();
