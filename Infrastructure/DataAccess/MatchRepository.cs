@@ -21,7 +21,7 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var query = @"SELECT * FROM Matches Order By Date";
+        var query = @"SELECT * FROM Matches Order By Round DESC";
         var matches = await connection.QueryAsync<Match>(query);
 
         return matches.ToList();
@@ -75,7 +75,7 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var updateQuery = @"UPDATE Matches SET Result = @Result, Date = @Date, HomeTeamId = @HomeTeamId, AwayTeamId = @AwayTeamId WHERE Id = @Id";
+        var updateQuery = @"UPDATE Matches SET Result = @Result, Round = @Round, HomeTeamId = @HomeTeamId, AwayTeamId = @AwayTeamId WHERE Id = @Id";
         var result = await connection.ExecuteAsync(updateQuery, new
         {
             m.Result,

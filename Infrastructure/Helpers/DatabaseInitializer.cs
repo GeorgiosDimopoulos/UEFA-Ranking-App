@@ -43,7 +43,7 @@ public class DatabaseInitializer
                 AwayTeam TEXT NOT NULL,
                 Result INTEGER NOT NULL,
                 MatchDate TEXT NOT NULL,
-                Competition INTEGER NOT NULL";
+                Competition INTEGER NOT NULL)";
         command.CommandText = createMatchesTableQuery;
         command.ExecuteNonQuery();
     }
