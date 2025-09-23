@@ -22,7 +22,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet()]
-    public async Task<List<TeamResponse>> GetTeams()
+    public async Task<List<TeamResponse>> GetTeams([FromQuery] TeamQueryParameters queryParameters)
     {
         var teams = await teamRepository.GetAllTeams();
         var countries = await countryRepository.GetAllCountries();
@@ -33,6 +33,11 @@ public class TeamsController : ControllerBase
                                   .Select((p, i) => new { p, pos = i + 1 })
                                   .ToDictionary(x => x.p, x => x.pos);
 
+        // ToDo: implement the following scenario
+        //if (queryParameters.IncludeMatches)
+        //{
+        //    teamDto.Matches = team.Matches.ToList();
+        //}
         return teams.Select(t => new TeamResponse
         {
             Id = t.Id,
@@ -68,11 +73,11 @@ public class TeamsController : ControllerBase
             Competition = (int)team.Competition
         };
 
-        if(queryParameters.IncludeMatches)
+        if (queryParameters.IncludeMatches)
         {
-            // ToDo: show all the matches information too
+            teamDto.Matches = team.Matches.ToList();
         }
-
+        
         return Ok(teamDto);
     }
 
@@ -100,7 +105,7 @@ public class TeamsController : ControllerBase
 
         if (queryParameters.IncludeMatches)
         {
-            // ToDo: show all the matches information too
+            teamDto.Matches = team.Matches.ToList();
         }
 
         return Ok(teamDto);

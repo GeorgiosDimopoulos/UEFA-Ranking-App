@@ -1,4 +1,6 @@
-﻿namespace API.Data.DTOs;
+﻿using Core.Models;
+
+namespace API.Data.DTOs;
 
 public class TeamResponse
 {
@@ -9,6 +11,8 @@ public class TeamResponse
     public int Position { get; set; }
     public string CountryName { get; set; } = string.Empty;
     public int Competition { get; set; }
+
+    public List<Match>? Matches { get; set; }
 }
 
 public class TeamRequest
