@@ -53,18 +53,53 @@ public class MatchRepository : IMatchRepository
         return null;
     }
 
-    public Task<bool> AddMatch(Match match)
+    public async Task<bool> AddMatch(Match m)
     {
-        throw new NotImplementedException();
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var createQuery = @"INSERT INTO Matches (Result, Round, HomeTeamId, Competition, AwayTeamId) VALUES (@Result, @Round, @HomeTeamId, @Competition, @AwayTeamId);SELECT last_insert_rowid()";
+        var id = await connection.ExecuteScalarAsync<long>(createQuery, new
+        {
+            m.Result,
+            m.Round,
+            m.HomeTeamId,
+            m.AwayTeamId
+        });
+
+        return id > 0;
     }
 
-    public Task<bool> UpdateMatch(Match t, int id)
+    public async Task<bool> UpdateMatch(Match m, int id)
     {
-        throw new NotImplementedException();
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var updateQuery = @"UPDATE Matches SET Result = @Result, Date = @Date, HomeTeamId = @HomeTeamId, AwayTeamId = @AwayTeamId WHERE Id = @Id";
+        var result = await connection.ExecuteAsync(updateQuery, new
+        {
+            m.Result,
+            m.Round,
+            m.HomeTeamId,
+            m.AwayTeamId,
+            Id = id
+        });
+
+        // ToDo: update both teams points
+
+        return result > 0;
     }
 
-    public Task<bool> DeleteMatch(int id)
+    public async Task<bool> DeleteMatch(int id)
     {
-        throw new NotImplementedException();
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var deleteQuery = @"DELETE Matches WHERE Id = @Id";
+        var result = await connection.ExecuteAsync(deleteQuery, id);
+
+        // ToDo: remove the match from both teams
+
+        return result > 0;
     }
 }

@@ -38,8 +38,8 @@ public class TeamsController : ControllerBase
         var countriesNameAndIds = countries.ToDictionary(c => c.Id, c => c.Name);
 
         var teamsIds = teams.Select(t => t.Id).ToArray();
-        var matchesByTeamsId = await matchRepository.GetMatchesByTeams(teamsIds);
-
+        
+        // var matchesByTeamsId = await matchRepository.GetMatchesByTeams(teamsIds);
         return teams.Select(t => new TeamResponse
         {
             Id = t.Id,
@@ -49,7 +49,7 @@ public class TeamsController : ControllerBase
             Position = teamsPositions[t.Points],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = (int)t.Competition,
-            Matches = (t.IsActive && queryParameters.IncludeMatches && matchesByTeamsId.TryGetValue(t.Id, out var teamMatchesList)) ? teamMatchesList : [],
+            //Matches = (t.IsActive && queryParameters.IncludeMatches && matchesByTeamsId.TryGetValue(t.Id, out var teamMatchesList)) ? teamMatchesList : [],
         }).ToList();
     }
 
