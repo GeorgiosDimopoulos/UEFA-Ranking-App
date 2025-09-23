@@ -13,12 +13,14 @@ public class TeamsController : ControllerBase
     private readonly ILogger<TeamsController> _logger;
     private readonly ITeamRepository teamRepository;
     private readonly ICountryRepository countryRepository;
+    private readonly IMatchRepository matchRepository;
 
-    public TeamsController(ILogger<TeamsController> logger, ITeamRepository teamRepository, ICountryRepository countryRepository)
+    public TeamsController(ILogger<TeamsController> logger, ITeamRepository teamRepository, ICountryRepository countryRepository, IMatchRepository matchRepository)
     {
         _logger = logger;
         this.teamRepository = teamRepository;
         this.countryRepository = countryRepository;
+        this.matchRepository = matchRepository;
     }
 
     [HttpGet()]
@@ -33,12 +35,7 @@ public class TeamsController : ControllerBase
                                   .Select((p, i) => new { p, pos = i + 1 })
                                   .ToDictionary(x => x.p, x => x.pos);
 
-        // ToDo: implement the following scenario
-        //if (queryParameters.IncludeMatches)
-        //{
-        //    teamDto.Matches = team.Matches.ToList();
-        //}
-        return teams.Select(t => new TeamResponse
+        return teams.Select(async t => new TeamResponse
         {
             Id = t.Id,
             Name = t.Name,
@@ -46,7 +43,8 @@ public class TeamsController : ControllerBase
             Points = t.Points,
             Position = teamsPositions[t.Points],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
-            Competition = (int)t.Competition
+            Competition = (int)t.Competition,
+            Matches = queryParameters.IncludeMatches ? await matchRepository.GetMatchesByTeamId(t.Id) : [],
         }).ToList();
     }
 

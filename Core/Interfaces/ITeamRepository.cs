@@ -11,5 +11,6 @@ public interface ITeamRepository
     public Task<bool> AddTeam(Team team, string country);
     public Task<bool> UpdateTeam(Team t, int id);
     public Task<bool> DeleteTeam(int id);
-    public Task<bool> DeleteTeamByName(string n); 
+    public Task<bool> DeleteTeamByName(string n);
+    Task<List<Match>> GetMatchesByTeamId(int id);
 }
