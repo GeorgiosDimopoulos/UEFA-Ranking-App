@@ -2,7 +2,6 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
-using System.Security.Cryptography;
 
 namespace Infrastructure.DataAccess;
 
@@ -26,18 +25,6 @@ public class MatchRepository : IMatchRepository
         var matches = await connection.QueryAsync<Match>(query);
 
         return matches.ToList();
-    }
-
-    public async Task<Dictionary<int, List<Match>>> GetMatchesByTeams(int[] id)
-    {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var query = @"SELECT * FROM Matches GROUP BY HomeTeamId";
-        var matches = await connection.QueryAsync<Match>(query);
-
-        // return matches.ToDictionary(m => m.HomeTeamId, m=>m);
-        return null;
     }
 
     public async Task<List<Match>> GetMatchesByCountryId(int cid)
@@ -64,5 +51,20 @@ public class MatchRepository : IMatchRepository
     {
         // ToDo: not yet implemented
         return null;
+    }
+
+    public Task<bool> AddMatch(Match match)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> UpdateMatch(Match t, int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DeleteMatch(int id)
+    {
+        throw new NotImplementedException();
     }
 }
