@@ -109,12 +109,17 @@ public class TeamsController : ControllerBase
     [HttpPost(Name = "AddTeam")]
     public async Task<ActionResult<TeamRequest>> AddTeam([FromQuery] TeamRequest t)
     {
-        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points };
-        team.Competition = (Competition)t.Competition;
+        var team = new Team
+        {
+            IsActive = t.IsActive,
+            Name = t.Name,
+            Points = t.Points,
+            Competition = (Competition)t.Competition
+        };
         var result = await teamRepository.AddTeam(team, t.CountryName);
         if (result == false)
         {
-            _logger.LogWarning("Could not add team {Team}", t.Name);
+            _logger.LogWarning($"Could not add team {t.Name}");
             return BadRequest();
         }
         return Ok();
@@ -123,11 +128,11 @@ public class TeamsController : ControllerBase
     [HttpPut("{id:int}", Name = "UpdateTeam")]
     public async Task<ActionResult> UpdateTeam([FromQuery] TeamRequest t, int id)
     {
-        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points }; // ToDo: add or not Position = t.Position
+        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points };
         var result = await teamRepository.UpdateTeam(team, id);
         if (result == false)
         {
-            _logger.LogWarning("Could not update team {Team}", t.Name);
+            _logger.LogWarning($"Could not update team {t.Name}");
             return NotFound();
         }
 
@@ -140,7 +145,7 @@ public class TeamsController : ControllerBase
         var result = await teamRepository.DeleteTeam(id);
         if (result == false)
         {
-            _logger.LogWarning("Could not delete team with id {Id}", id);
+            _logger.LogWarning($"Could not delete team with id {id}");
             return NotFound();
         }
 

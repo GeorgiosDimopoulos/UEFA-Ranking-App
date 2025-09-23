@@ -96,13 +96,13 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPost()]
-    public async Task<ActionResult> AddCountry(string name, int points)
+    public async Task<ActionResult> AddCountry([FromQuery] CountryRequest c)
     {
-        var country = new Country { Name = name, TotalPoints = points };
+        var country = new Country { Name = c.Name, TotalPoints = c.TotalPoints };
         var result = await countryRepository.AddCountry(country);
         if (result == false)
         {
-            _logger.LogWarning($"Could not add country {name}");
+            _logger.LogWarning($"Could not add country {c.Name}");
             return BadRequest();
         }
 
@@ -112,7 +112,7 @@ public class CountriesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateCountry([FromQuery] CountryRequest c, int id)
     {
-        var country = new Country { Name = c.Name };
+        var country = new Country { Name = c.Name, TotalPoints = c.TotalPoints };
         var result = await countryRepository.UpdateCountry(country, id);
         if (result == false)
         {
