@@ -1,5 +1,4 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -32,8 +31,9 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var sqlQuery = @"SELECT * FROM Matches WHERE CountryId  = @cid";
-        var matches = await connection.QueryAsync<Match>(sqlQuery, new { id = cid });
+        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamId IN (SELECT * FROM Teams WHERE CountryId  = @cid) @cid OR 
+                       HomeTeamId IN (SELECT * FROM Teams WHERE CountryId  = @cid);";
+        var matches = await connection.QueryAsync<Match>(sqlQuery, new { cid });
         return matches.ToList();
     }
 
@@ -42,15 +42,19 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var sqlQuery = @"SELECT * FROM Matches WHERE TeamId = @tid";
-        var matches = await connection.QueryAsync<Match>(sqlQuery, new { id = tid });
+        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamId = @tid OR AwayTeamId = @tid";
+        var matches = await connection.QueryAsync<Match>(sqlQuery, new { tid });
         return matches.ToList();
     }
 
-    public Task<List<Match>> GetMatchesByRound(int r)
+    public async Task<List<Match>> GetMatchesByRound(int r)
     {
-        // ToDo: not yet implemented
-        return null;
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var sqlQuery = @"SELECT * FROM Matches WHERE Round = @r";
+        var matches = await connection.QueryAsync<Match>(sqlQuery, new { r });
+        return matches.ToList();
     }
 
     public async Task<bool> AddMatch(Match m)
@@ -64,8 +68,11 @@ public class MatchRepository : IMatchRepository
             m.Result,
             m.Round,
             m.HomeTeamId,
-            m.AwayTeamId
+            m.AwayTeamId,
+            m.Competition
         });
+
+        // ToDo: update both teams matches played and points
 
         return id > 0;
     }
@@ -82,6 +89,7 @@ public class MatchRepository : IMatchRepository
             m.Round,
             m.HomeTeamId,
             m.AwayTeamId,
+            m.Competition,
             Id = id
         });
 
