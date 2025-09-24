@@ -5,8 +5,6 @@ public class Match
     public string HomeTeamName { get; set; } = default!;
     public string AwayTeamName { get; set; } = default!;
     public int Round { get; set; }
-
-    // public DateTime Date { get; set; }
     public required Competition Competition { get; set; }
     public required MatchResult Result { get; set; }
 }
