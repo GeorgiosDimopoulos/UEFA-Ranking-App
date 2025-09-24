@@ -35,8 +35,8 @@ public class MatchesController : ControllerBase
         var matchesResponses = matches.Select(m => new MatchResponse
         {
             Id = m.Id,
-            HomeTeamName = m.HomeTeamId, // ToDo: set the Name not the Id
-            AwayTeamName = m.AwayTeamId,
+            HomeTeamName = m.HomeTeamName,
+            AwayTeamName = m.AwayTeamName,
             Round = m.Round,
             Competition = m.Competition,
             Result = (int)m.Result
@@ -60,8 +60,8 @@ public class MatchesController : ControllerBase
         var matchesResponses = matches.Select(m => new MatchResponse
         {
             Id = m.Id,
-            HomeTeamName = m.HomeTeamId, // ToDo: set the Name not the Id
-            AwayTeamName = m.AwayTeamId,
+            HomeTeamName = m.HomeTeamName,
+            AwayTeamName = m.AwayTeamName,
             Competition = m.Competition,
             Round = m.Round,
             Result = (int)m.Result
@@ -72,9 +72,9 @@ public class MatchesController : ControllerBase
 
     [HttpGet("by-team")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
-    public async Task<List<MatchResponse>> GetMatchesByTeam(int id)
+    public async Task<List<MatchResponse>> GetMatchesByTeam(string n)
     {
-        var matches = await matchRepository.GetMatchesByTeamId(id);
+        var matches = await matchRepository.GetMatchesByTeamName(n);
 
         if (matches is null)
         {
@@ -85,8 +85,8 @@ public class MatchesController : ControllerBase
         var matchesResponses = matches.Select(m => new MatchResponse
         {
             Id = m.Id,
-            HomeTeamName = m.HomeTeamId, // ToDo: set the Name not the Id
-            AwayTeamName = m.AwayTeamId,
+            HomeTeamName = m.HomeTeamName,
+            AwayTeamName = m.AwayTeamName,
             Round = m.Round,
             Competition = m.Competition,
             Result = (int)m.Result
@@ -110,8 +110,8 @@ public class MatchesController : ControllerBase
         var matchesResponses = matches.Select(m => new MatchResponse
         {
             Id = m.Id,
-            HomeTeamName = m.HomeTeamId, // ToDo: set the Name not the Id
-            AwayTeamName = m.AwayTeamId,
+            HomeTeamName = m.HomeTeamName,
+            AwayTeamName = m.AwayTeamName,
             Round = m.Round,
             Competition = m.Competition,
             Result = (int)m.Result
@@ -130,8 +130,8 @@ public class MatchesController : ControllerBase
         }
         var match = new Match
         {
-            HomeTeamId = matchRequest.HomeTeamName, // ToDo: set the Name not the Id
-            AwayTeamId = matchRequest.AwayTeamName,
+            HomeTeamName = matchRequest.HomeTeamName,
+            AwayTeamName = matchRequest.AwayTeamName,
             Round = matchRequest.Round,
             Result = (MatchResult)matchRequest.Result,
             Competition = matchRequest.Competition
@@ -155,8 +155,8 @@ public class MatchesController : ControllerBase
         }
         var match = new Match
         {
-            HomeTeamId = matchRequest.HomeTeamName, // ToDo: set the Name not the Id
-            AwayTeamId = matchRequest.AwayTeamName,
+            HomeTeamName = matchRequest.HomeTeamName,
+            AwayTeamName = matchRequest.AwayTeamName,
             Round = matchRequest.Round,
             Result = (MatchResult)matchRequest.Result,
             Competition = matchRequest.Competition

@@ -31,19 +31,19 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamId IN (SELECT * FROM Teams WHERE CountryId  = @cid) @cid OR 
-                       HomeTeamId IN (SELECT * FROM Teams WHERE CountryId  = @cid);";
+        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamName IN (SELECT * FROM Teams WHERE CountryId = @cid) OR 
+                       AwayTeamName IN (SELECT * FROM Teams WHERE CountryId = @cid)";
         var matches = await connection.QueryAsync<Match>(sqlQuery, new { cid });
         return matches.ToList();
     }
 
-    public async Task<List<Match>> GetMatchesByTeamId(int tid)
+    public async Task<List<Match>> GetMatchesByTeamName(string n)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamId = @tid OR AwayTeamId = @tid";
-        var matches = await connection.QueryAsync<Match>(sqlQuery, new { tid });
+        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamName = @tid OR AwayTeamName = @n";
+        var matches = await connection.QueryAsync<Match>(sqlQuery, new { n });
         return matches.ToList();
     }
 
@@ -62,13 +62,13 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var createQuery = @"INSERT INTO Matches (Result, Round, HomeTeamId, Competition, AwayTeamId) VALUES (@Result, @Round, @HomeTeamId, @Competition, @AwayTeamId);SELECT last_insert_rowid()";
+        var createQuery = @"INSERT INTO Matches (Result, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@Result, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
         var id = await connection.ExecuteScalarAsync<long>(createQuery, new
         {
             m.Result,
             m.Round,
-            m.HomeTeamId,
-            m.AwayTeamId,
+            m.HomeTeamName,
+            m.AwayTeamName,
             m.Competition
         });
 
@@ -82,13 +82,13 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var updateQuery = @"UPDATE Matches SET Result = @Result, Round = @Round, HomeTeamId = @HomeTeamId, AwayTeamId = @AwayTeamId WHERE Id = @Id";
+        var updateQuery = @"UPDATE Matches SET Result = @Result, Round = @Round, HomeTeamName = @HomeTeamName, AwayTeamName = @AwayTeamName WHERE Id = @Id";
         var result = await connection.ExecuteAsync(updateQuery, new
         {
             m.Result,
             m.Round,
-            m.HomeTeamId,
-            m.AwayTeamId,
+            m.HomeTeamName,
+            m.AwayTeamName,
             m.Competition,
             Id = id
         });
