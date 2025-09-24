@@ -31,8 +31,8 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamName IN (SELECT * FROM Teams WHERE CountryId = @cid) OR 
-                       AwayTeamName IN (SELECT * FROM Teams WHERE CountryId = @cid)";
+        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamName IN (SELECT Name FROM Teams WHERE CountryId = @cid) OR 
+                       AwayTeamName IN (SELECT Name FROM Teams WHERE CountryId = @cid)";
         var matches = await connection.QueryAsync<Match>(sqlQuery, new { cid });
         return matches.ToList();
     }
@@ -44,6 +44,16 @@ public class MatchRepository : IMatchRepository
 
         var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamName = @tid OR AwayTeamName = @n";
         var matches = await connection.QueryAsync<Match>(sqlQuery, new { n });
+        return matches.ToList();
+    }
+
+    public async Task<List<Match>> GetMatchesByCompetition(int c)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        var sqlQuery = @"SELECT * FROM Matches WHERE Competition = @c";
+        var matches = await connection.QueryAsync<Match>(sqlQuery, new { c });
         return matches.ToList();
     }
 
@@ -73,7 +83,6 @@ public class MatchRepository : IMatchRepository
         });
 
         // ToDo: update both teams matches played and points
-
         return id > 0;
     }
 
@@ -94,7 +103,6 @@ public class MatchRepository : IMatchRepository
         });
 
         // ToDo: update both teams points
-
         return result > 0;
     }
 
@@ -107,7 +115,6 @@ public class MatchRepository : IMatchRepository
         var result = await connection.ExecuteAsync(deleteQuery, id);
 
         // ToDo: remove the match from both teams
-
         return result > 0;
     }
 }

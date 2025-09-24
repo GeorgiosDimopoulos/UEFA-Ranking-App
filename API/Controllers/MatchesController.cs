@@ -48,7 +48,7 @@ public class MatchesController : ControllerBase
     [HttpGet("by-country/")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
     public async Task<List<MatchResponse>> GetMatchesByCountry(int id)
-    {
+    {                                    
         var matches = await matchRepository.GetMatchesByCountryId(id);
 
         if (matches is null)
@@ -104,6 +104,31 @@ public class MatchesController : ControllerBase
         if (matches is null)
         {
             _logger.LogWarning("No matches found in the database.");
+            return [];
+        }
+
+        var matchesResponses = matches.Select(m => new MatchResponse
+        {
+            Id = m.Id,
+            HomeTeamName = m.HomeTeamName,
+            AwayTeamName = m.AwayTeamName,
+            Round = m.Round,
+            Competition = m.Competition,
+            Result = (int)m.Result
+        });
+
+        return matchesResponses.ToList();
+    }
+
+    [HttpGet("by-competition")]
+    [SwaggerOperation(Tags = new[] { "Matches - Get" })]
+    public async Task<List<MatchResponse>> GetMatchesByCompetition(int r)
+    {
+        var matches = await matchRepository.GetMatchesByCompetition(r);
+
+        if (matches is null)
+        {
+            _logger.LogWarning("No matches found for that competition in the database.");
             return [];
         }
 
