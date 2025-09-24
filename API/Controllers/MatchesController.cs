@@ -122,7 +122,7 @@ public class MatchesController : ControllerBase
 
     [HttpPost]
     [SwaggerOperation(Tags = new[] { "Matches - Post" })]
-    public async Task<ActionResult> AddMatch(MatchRequest matchRequest)
+    public async Task<ActionResult> AddMatch([FromQuery] MatchRequest matchRequest)
     {
         if (matchRequest is null)
         {
@@ -147,7 +147,7 @@ public class MatchesController : ControllerBase
 
     [HttpPut]
     [SwaggerOperation(Tags = new[] { "Matches - Put" })]
-    public async Task<ActionResult> UpdateMatch(MatchRequest matchRequest)
+    public async Task<ActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
     {
         if (matchRequest is null)
         {
