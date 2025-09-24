@@ -33,19 +33,31 @@ builder.Configuration["ConnectionStrings:Default"] = connectionString;
 
 builder.Services.AddSwaggerGen(opt =>
 {
+    opt.EnableAnnotations();
     opt.SwaggerDoc("v1", new() { Title = "UEFA API Endpoints", Version = "v1" });
     opt.DocInclusionPredicate((docName, apiDesc) => true);
 
     opt.OrderActionsBy(apiDesc =>
     {
         var group = apiDesc.GroupName ?? apiDesc.ActionDescriptor.RouteValues["controller"];
-        return group switch
+        var groupPrefix = group switch
         {
-            "Countries" => "1-",
-            "Teams" => "2-",
-            "Matches" => "3-",
-            _ => "-",
+            "Countries" => "01-",
+            "Teams" => "02-",
+            "Matches" => "03-",
+            _ => "99-",
         };
+
+        var methodPrefix = apiDesc.HttpMethod switch
+        {
+            "GET" => "01-",
+            "POST" => "02-",
+            "PUT" => "03-",
+            "PATCH" => "04-",
+            "DELETE" => "05-",
+            _ => "99-",
+        };
+        return $"{groupPrefix}{methodPrefix}-{apiDesc.RelativePath}";
     });
 
 });
@@ -72,7 +84,12 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+        c.ConfigObject.AdditionalItems["operationsSorter"] = "(a,b)=>{const o={get:1,post:2,put:3,patch:4,delete:5};return o[a.get('method')]-o[b.get('method')];}";
+        c.ConfigObject.AdditionalItems["tagsSorter"] = "(a,b)=>{const order=['Countries','Teams','Matches'];return order.indexOf(a)-order.indexOf(b);}";
+    });
 }
 
 app.UseHttpsRedirection();

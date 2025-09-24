@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.Models;
 using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers;
 
@@ -23,6 +24,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet(Name = "Countries")]
+    [SwaggerOperation(Tags = new[] {"Countries - GET"})]
     public async Task<IEnumerable<CountryResponse>> GetCountries([FromQuery] CountryQueryParameters queryParameters)
     {
         var countries = await countryRepository.GetAllCountries();
@@ -46,6 +48,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [SwaggerOperation(Tags = new[] { "Countries - GET" })]
     public async Task<ActionResult<CountryResponse>> GetCountryById(int id, [FromQuery] CountryQueryParameters queryParameters)
     {
         var country = await countryRepository.GetCountryById(id) ?? new();
@@ -70,7 +73,8 @@ public class CountriesController : ControllerBase
         return Ok(countryDto);
     }
 
-    [HttpGet("by-name/{name}")]
+    [HttpGet("{name}")]
+    [SwaggerOperation(Tags = new[] { "Countries - GET" })]
     public async Task<ActionResult<CountryResponse>> GetCountryByName(string name, [FromQuery] CountryQueryParameters queryParameters)
     {
         var country = await countryRepository.GetCountryByName(name) ?? new();
@@ -96,6 +100,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPost()]
+    [SwaggerOperation(Tags = new[] { "Countries – POST" })]
     public async Task<ActionResult> AddCountry([FromQuery] CountryRequest c)
     {
         var country = new Country { Name = c.Name, TotalPoints = c.TotalPoints };
@@ -110,6 +115,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [SwaggerOperation(Tags = new[] { "Countries – PUT" })]
     public async Task<ActionResult> UpdateCountry([FromQuery] CountryRequest c, int id)
     {
         var country = new Country { Name = c.Name, TotalPoints = c.TotalPoints };
@@ -124,6 +130,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [SwaggerOperation(Tags = new[] { "Countries – DELETE" })]
     public async Task<ActionResult> DeleteCountry(int id)
     {
         var result = await countryRepository.DeleteCountry(id);
@@ -136,7 +143,8 @@ public class CountriesController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("by-name/{name}")]
+    [HttpDelete("{name}")]
+    [SwaggerOperation(Tags = new[] { "Countries – DELETE" })]
     public async Task<ActionResult> DeleteCountryByName(string n)
     {
         var result = await countryRepository.DeleteCountryByName(n);
@@ -150,6 +158,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpDelete]
+    [SwaggerOperation(Tags = new[] { "Countries – DELETE" })]
     public async Task<ActionResult> DeleteCountries()
     {
         var result = await countryRepository.DeleteCountries();

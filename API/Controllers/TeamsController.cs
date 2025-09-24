@@ -85,7 +85,7 @@ public class TeamsController : ControllerBase
         return Ok(teamDto);
     }
 
-    [HttpGet("by-name/{name}")]
+    [HttpGet("{name}")]
     public async Task<ActionResult<TeamResponse>> GetTeamByName(string name, [FromQuery] TeamQueryParameters queryParameters)
     {
         var team = await teamRepository.GetTeamByName(name);
@@ -134,7 +134,7 @@ public class TeamsController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{id:int}", Name = "UpdateTeam")]
+    [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateTeam([FromQuery] TeamRequest t, int id)
     {
         var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points };
@@ -148,7 +148,7 @@ public class TeamsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id:int}", Name = "DeleteTeam")]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteTeam(int id)
     {
         var result = await teamRepository.DeleteTeam(id);
@@ -161,7 +161,7 @@ public class TeamsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("by-name/{name}")]
+    [HttpDelete("{name}")]
     public async Task<ActionResult> DeleteTeamByName(string n)
     {
         var result = await teamRepository.DeleteTeamByName(n);
