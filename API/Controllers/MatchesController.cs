@@ -6,6 +6,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ApiExplorerSettings(GroupName = "Matches")]
 public class MatchesController : ControllerBase
 {
     private readonly ILogger<MatchesController> _logger;

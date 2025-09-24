@@ -8,6 +8,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ApiExplorerSettings(GroupName ="Teams")]
 public class TeamsController : ControllerBase
 {
     private readonly ILogger<TeamsController> _logger;

@@ -8,6 +8,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ApiExplorerSettings(GroupName = "Countries")]
 public class CountriesController : ControllerBase
 {
     private readonly ILogger<CountriesController> _logger;
