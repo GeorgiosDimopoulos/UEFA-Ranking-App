@@ -45,7 +45,11 @@
                 <MudTd>@context.NumberOfInitialTeams</MudTd>
                 <MudTd>@context.NumberOfActiveTeams</MudTd>
                 <MudTd>
-                    <MudCheckBox T="bool" @onclick="@(() => ToggleTeamId(context.Name))" />
+                    <MudCheckBox T="bool" 
+                                 Checked="expanded.Contains(context.Name)"
+                                 CheckedChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
+                    csharp
+                    Copy code
                 </MudTd>
             </RowTemplate>
             <ChildRowContent>
@@ -74,13 +78,17 @@
         _countries = data.OrderBy(c => c.Position).ToArray();
     }
 
-    private async Task ToggleTeamId(string n)
+    private async Task ToggleTeamId(string countryName, bool isChecked)
     {
-        var selectedCountry = await CountriesClient.GetCountry(n);
-        _countryTeams = await TeamsClient.GetTeamsByCountry(n);
-
-        if (!expanded.Add(n))
-            expanded.Remove(n);
+        if (isChecked)
+        {
+            _countryTeams = await TeamsClient.GetTeamsByCountry(countryName);
+            expanded.Add(countryName);
+        }
+        else
+        {
+            expanded.Remove(countryName);
+        }
     }
 
     private async Task OpenCountryAsync(CountryResponse country)
