@@ -9,7 +9,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[ApiExplorerSettings(GroupName ="Teams")]
+[ApiExplorerSettings(GroupName = "Teams")]
 public class TeamsController : ControllerBase
 {
     private readonly ILogger<TeamsController> _logger;
@@ -26,7 +26,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet()]
-    [SwaggerOperation(Tags = new[] { "Teams - GET" })]
+    [SwaggerOperation(Tags = new[] { "Teams - Get" })]
     public async Task<List<TeamResponse>> GetTeams([FromQuery] TeamQueryParameters queryParameters)
     {
         var teams = await teamRepository.GetAllTeams();
@@ -41,7 +41,13 @@ public class TeamsController : ControllerBase
         var countriesNameAndIds = countries.ToDictionary(c => c.Id, c => c.Name);
 
         var teamsIds = teams.Select(t => t.Id).ToArray();
-        
+
+        if (teams is null || teams.Count == 0)
+        {
+            _logger.LogWarning("No teams found in the database.");
+            return [];
+        }
+
         // var matchesByTeamsId = await matchRepository.GetMatchesByTeams(teamsIds);
         return teams.Select(t => new TeamResponse
         {
@@ -57,7 +63,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [SwaggerOperation(Tags = new[] { "Teams - GET" })]
+    [SwaggerOperation(Tags = new[] { "Teams - Get" })]
     public async Task<ActionResult<TeamResponse>> GetTeamById(int id, [FromQuery] TeamQueryParameters queryParameters)
     {
         var team = await teamRepository.GetTeamById(id);
@@ -89,7 +95,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet("{name}")]
-    [SwaggerOperation(Tags = new[] { "Teams - GET" })]
+    [SwaggerOperation(Tags = new[] { "Teams - Get" })]
     public async Task<ActionResult<TeamResponse>> GetTeamByName(string name, [FromQuery] TeamQueryParameters queryParameters)
     {
         var team = await teamRepository.GetTeamByName(name);
@@ -120,7 +126,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpPost(Name = "AddTeam")]
-    [SwaggerOperation(Tags = new[] { "Teams - POST" })]
+    [SwaggerOperation(Tags = new[] { "Teams - Post" })]
     public async Task<ActionResult<TeamRequest>> AddTeam([FromQuery] TeamRequest t)
     {
         var team = new Team
@@ -140,7 +146,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    [SwaggerOperation(Tags = new[] { "Teams - PUT" })]
+    [SwaggerOperation(Tags = new[] { "Teams - Put" })]
     public async Task<ActionResult> UpdateTeam([FromQuery] TeamRequest t, int id)
     {
         var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points };
@@ -155,7 +161,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    [SwaggerOperation(Tags = new[] { "Teams - DELETE" })]
+    [SwaggerOperation(Tags = new[] { "Teams - Delete" })]
     public async Task<ActionResult> DeleteTeam(int id)
     {
         var result = await teamRepository.DeleteTeam(id);
@@ -169,7 +175,7 @@ public class TeamsController : ControllerBase
     }
 
     [HttpDelete("{name}")]
-    [SwaggerOperation(Tags = new[] { "Teams - DELETE" })]                                                                                              
+    [SwaggerOperation(Tags = new[] { "Teams - Delete" })]
     public async Task<ActionResult> DeleteTeamByName(string n)
     {
         var result = await teamRepository.DeleteTeamByName(n);
