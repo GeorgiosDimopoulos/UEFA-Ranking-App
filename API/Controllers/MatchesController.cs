@@ -1,6 +1,7 @@
 ﻿using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers;
 
@@ -19,6 +20,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet()]
+    [SwaggerOperation(Tags = new[] { "Matches - GET" })]
     public async Task<List<Match>> GetAllMatches()
     {
         var matches = await matchRepository.GetAllMatches();
@@ -26,6 +28,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("by-country/")]
+    [SwaggerOperation(Tags = new[] { "Matches - GET" })]
     public async Task<List<Match>> GetMatchesByCountry(int id)
     {
         var matches = await matchRepository.GetMatchesByCountryId(id);
@@ -33,6 +36,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("by-team")]
+    [SwaggerOperation(Tags = new[] { "Matches - GET" })]
     public async Task<List<Match>> GetMatchesByTeam(int id)
     {
         var matches = await matchRepository.GetMatchesByTeamId(id);
@@ -40,6 +44,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("by-round")]
+    [SwaggerOperation(Tags = new[] { "Matches - GET" })]
     public async Task<List<Match>> GetMatchesByRound(int r)
     {
         var matches = await matchRepository.GetMatchesByRound(r);
