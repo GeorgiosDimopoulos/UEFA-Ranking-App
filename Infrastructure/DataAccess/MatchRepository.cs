@@ -42,7 +42,7 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamName = @tid OR AwayTeamName = @n";
+        var sqlQuery = @"SELECT * FROM Matches WHERE HomeTeamName = @n OR AwayTeamName = @n";
         var matches = await connection.QueryAsync<Match>(sqlQuery, new { n });
         return matches.ToList();
     }
@@ -83,6 +83,34 @@ public class MatchRepository : IMatchRepository
         });
 
         // ToDo: update both teams matches played and points
+        int newHomeTeamPoints = 0;
+        int newAwayTeamPoints = 0;
+
+        string homeTeamName;
+        string awayTeamName;
+
+        if (m.Result == MatchResult.HomeWin)
+        {
+            newHomeTeamPoints = 3;
+            newAwayTeamPoints = 0;
+        }
+        else if (m.Result == MatchResult.AwayWin)
+        {
+            newHomeTeamPoints = 0;
+            newAwayTeamPoints = 3;
+        }
+        else
+        {
+            newHomeTeamPoints = 1;
+            newAwayTeamPoints = 1;
+        }   
+        
+        var homeTeamPoints = @"SELECT Points FROM Teams WHERE Name =@homeTeamName";
+        var awayTeamPoints = @"SELECT Points FROM Teams WHERE Name = @awayTeamName";
+
+        var finalHomeTeamPoints = newHomeTeamPoints + homeTeamPoints;
+        var finalAwayTeamPoints = newAwayTeamPoints + awayTeamPoints;
+
         return id > 0;
     }
 

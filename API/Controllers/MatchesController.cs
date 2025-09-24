@@ -47,13 +47,13 @@ public class MatchesController : ControllerBase
 
     [HttpGet("by-country/")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
-    public async Task<List<MatchResponse>> GetMatchesByCountry(int id)
+    public async Task<List<MatchResponse>> GetMatchesByCountry(int countryId)
     {                                    
-        var matches = await matchRepository.GetMatchesByCountryId(id);
+        var matches = await matchRepository.GetMatchesByCountryId(countryId);
 
         if (matches is null)
         {
-            _logger.LogWarning("No matches found in the database.");
+            _logger.LogWarning($"No matches found for country with id: {countryId} in the database.");
             return [];
         }
 
@@ -72,13 +72,13 @@ public class MatchesController : ControllerBase
 
     [HttpGet("by-team")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
-    public async Task<List<MatchResponse>> GetMatchesByTeam(string n)
+    public async Task<List<MatchResponse>> GetMatchesByTeam(string team)
     {
-        var matches = await matchRepository.GetMatchesByTeamName(n);
+        var matches = await matchRepository.GetMatchesByTeamName(team);
 
         if (matches is null)
         {
-            _logger.LogWarning("No matches found in the database.");
+            _logger.LogWarning($"No matches found for {team} team in the database.");
             return [];
         }
 
@@ -97,13 +97,13 @@ public class MatchesController : ControllerBase
 
     [HttpGet("by-round")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
-    public async Task<List<MatchResponse>> GetMatchesByRound(int r)
+    public async Task<List<MatchResponse>> GetMatchesByRound(int round)
     {
-        var matches = await matchRepository.GetMatchesByRound(r);
+        var matches = await matchRepository.GetMatchesByRound(round);
 
         if (matches is null)
         {
-            _logger.LogWarning("No matches found in the database.");
+            _logger.LogWarning($"No matches found for {round} in the database.");
             return [];
         }
 
@@ -122,13 +122,13 @@ public class MatchesController : ControllerBase
 
     [HttpGet("by-competition")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
-    public async Task<List<MatchResponse>> GetMatchesByCompetition(int r)
+    public async Task<List<MatchResponse>> GetMatchesByCompetition(int competition)
     {
-        var matches = await matchRepository.GetMatchesByCompetition(r);
+        var matches = await matchRepository.GetMatchesByCompetition(competition);
 
         if (matches is null)
         {
-            _logger.LogWarning("No matches found for that competition in the database.");
+            _logger.LogWarning($"No matches found for that {competition} in the database.");
             return [];
         }
 
