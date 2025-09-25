@@ -1,16 +1,54 @@
 ﻿@page "/teams/{Id:guid}"
 
+@inherits ComponentBase
 @using API.Data.DTOs
 @using Infrastructure.DataAccess
+@using MudBlazor
+@inject IDialogService DialogService
 
 <MudDialog>
 	<DialogContent>
-		<EditForm>
-		</EditForm>
+		<MudForm>
+			<MudTextField @bind-Value="Team.Name" Label="Name" />
+			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" @bind-Value="Team.Position" Label="Initial Position" />
+            <MudNumericField T="int" @bind-Value="Team.Position" Label="Current Position" />
+			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" Value="Team.Matches.Count" Label="Matches" />
+            <MudNumericField T="int" Value="Team.Points" Label="Points" />
+		</MudForm>
 	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">Save</MudButton>
+	</DialogActions>
 </MudDialog>
 
 @code {
-	[Parameter] public Guid Id { get; set; }
 	[Parameter] public TeamResponse Team { get; set; } = default!;
+	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+	private TeamResponse team = new();
+
+	protected override void OnParametersSet()
+	{
+		team= new TeamResponse
+		{
+			Position = Team.Position,
+			Name = Team.Name,
+			Points = Team.Points,
+			Matches = Team.Matches,
+            Competition = Team.Competition,
+            CountryName = Team.CountryName
+        };
+	}
+
+	private void Save()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		MudDialog?.Close(DialogResult.Ok(Team));
+	}
+
+	private void Cancel()
+	{
+        MudDialog?.Close(DialogResult.Ok(Team));
+	}
 }
