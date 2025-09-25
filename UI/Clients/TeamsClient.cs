@@ -13,7 +13,17 @@ public class TeamsClient
 
     public async Task<TeamResponse[]?> GetTeams()
     {
-        return await _httpClient.GetFromJsonAsync<TeamResponse[]?>("api/teams");
+
+        try
+        {
+            var teams = await _httpClient.GetFromJsonAsync<TeamResponse[]?>("api/teams");
+            return teams;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching teams: {ex.Message}");
+            throw new Exception();       
+        }
     }
 
     public async Task<TeamResponse[]?> GetTeamsByCountry(string n)
