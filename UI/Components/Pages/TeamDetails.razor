@@ -12,7 +12,7 @@
 			<MudTextField @bind-Value="Team.Name" Label="Name" />
 			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" @bind-Value="Team.Position" Label="Initial Position" />
             <MudNumericField T="int" @bind-Value="Team.Position" Label="Current Position" />
-			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" Value="Team.Matches.Count" Label="Matches" />
+			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" Value="Team.Matches?.Count ?? 0" Label="Matches" />
             <MudNumericField T="int" Value="Team.Points" Label="Points" />
 		</MudForm>
 	</DialogContent>
