@@ -48,7 +48,16 @@ public class TeamsController : ControllerBase
             return [];
         }
 
-        // var matchesByTeamsId = await matchRepository.GetMatchesByTeams(teamsIds);
+        Dictionary<Team, List<Match>> matchesByTeams = [];
+        if (queryParameters.IncludeMatches)
+        {
+            foreach (var t in teams)
+            {
+                var matchByTeam = await matchRepository.GetMatchesByTeamName(t.Name);
+                matchesByTeams[t] = matchByTeam;
+            }
+        }
+
         return teams.Select(t => new TeamResponse
         {
             Id = t.Id,
@@ -58,7 +67,7 @@ public class TeamsController : ControllerBase
             Position = teamsPositions[t.Points],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = (int)t.Competition,
-            //Matches = (t.IsActive && queryParameters.IncludeMatches && matchesByTeamsId.TryGetValue(t.Id, out var teamMatchesList)) ? teamMatchesList : [],
+            Matches = t.IsActive ? matchesByTeams[t] : null
         }).ToList();
     }
 
