@@ -9,11 +9,11 @@
 	<DialogContent>
 		<MudForm @ref="editForm">
 			<MudTextField @bind-Value="country.Name" Label="Name" />
-			<MudNumericField @bind-Value="country.Position" Label="Initial Position" />
-			<MudNumericField @bind-Value="country.Position" Label="Current Position" />
-			<MudNumericField @bind-Value="country.TotalPoints" Label="Total Points" />
-			<MudNumericField Value="country.NumberOfInitialTeams" Label="Initial Teams" />
-			<MudNumericField Value="country.NumberOfActiveTeams" Label="Active Teams" />
+			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" @bind-Value="country.Position" Label="Initial Position" />
+			<MudNumericField T="int" @bind-Value="country.Position" Label="Current Position" />
+			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" Value="country.NumberOfInitialTeams" Label="Initial Teams" />
+			<MudNumericField T="int" Value="country.NumberOfActiveTeams" Label="Active Teams" />
+			<MudNumericField T="int" @bind-Value="country.TotalPoints" Label="Total Points" />
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
