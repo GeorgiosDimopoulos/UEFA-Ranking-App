@@ -73,7 +73,7 @@ public class MatchRepository : IMatchRepository
         connection.Open();
 
         var createQuery = @"INSERT INTO Matches (Result, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@Result, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
-        var id = await connection.ExecuteScalarAsync<long>(createQuery, new
+        var insertMatchesResult = await connection.ExecuteScalarAsync<long>(createQuery, new
         {
             m.Result,
             m.Round,
@@ -82,13 +82,14 @@ public class MatchRepository : IMatchRepository
             m.Competition
         });
 
-        // ToDo: update both teams matches played and points
+        if (insertMatchesResult <= 0)
+        {
+            return false;
+        }
+
         int newHomeTeamPoints = 0;
         int newAwayTeamPoints = 0;
-
-        string homeTeamName;
-        string awayTeamName;
-
+        
         if (m.Result == MatchResult.HomeWin)
         {
             newHomeTeamPoints = 3;
@@ -103,15 +104,25 @@ public class MatchRepository : IMatchRepository
         {
             newHomeTeamPoints = 1;
             newAwayTeamPoints = 1;
-        }   
-        
-        var homeTeamPoints = @"SELECT Points FROM Teams WHERE Name =@homeTeamName";
-        var awayTeamPoints = @"SELECT Points FROM Teams WHERE Name = @awayTeamName";
+        }
+
+        var homeTeamPoints = await connection.ExecuteScalarAsync<int>(@"SELECT Points FROM Teams WHERE Name =@homeTeamName", new { homeTeamName = m.HomeTeamName });
+        var awayTeamPoints = await connection.ExecuteScalarAsync<int>(@"SELECT Points FROM Teams WHERE Name = @awayTeamName", new { awayTeamName = m.AwayTeamName });
 
         var finalHomeTeamPoints = newHomeTeamPoints + homeTeamPoints;
         var finalAwayTeamPoints = newAwayTeamPoints + awayTeamPoints;
 
-        return id > 0;
+        var updateHomeTeamPointsResult = await connection.ExecuteAsync(@"UPDATE TEAM SET Points = @Points WHERE Name = @Name", new { Points = homeTeamPoints, Name = m.HomeTeamName});
+        var updateAwayTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = @Points WHERE Name = @Name", new { Points = finalAwayTeamPoints, Name = m.AwayTeamName });
+
+        if (updateHomeTeamPointsResult <= 0 || updateAwayTeamPointsResult <= 0)
+        {
+            return false;
+        }
+
+        // ToDo: update also teams' countries points
+
+        return true;
     }
 
     public async Task<bool> UpdateMatch(Match m, int id)

@@ -48,7 +48,6 @@ public class TeamsController : ControllerBase
             return [];
         }
 
-        TODO: check Udemy video
         // var matchesByTeamsId = await matchRepository.GetMatchesByTeams(teamsIds);
         return teams.Select(t => new TeamResponse
         {
