@@ -3,10 +3,21 @@
 
 @inject IDialogService DialogService
 
+<MudDialog>
+	<DialogContent>
+		<MudForm @ref="editForm">
+			<MudTextField @bind-Value="match.HomeTeamName" Label="Home Team" />
+			<MudTextField @bind-Value="match.AwayTeamName" Label="Away Team" />
+			<MudTextField @bind-Value="match.Result" Label="Result" />
+		</MudForm>
+	</DialogContent>
+</MudDialog>
+
 @code {
-	[Parameter]	public MatchResponse Match { get; set; } = default!;
+	[Parameter] public MatchResponse Match { get; set; } = default!;
 
 	private MatchResponse match = new();
+	private MudForm editForm = default!;
 
 	protected override void OnParametersSet()
 	{
