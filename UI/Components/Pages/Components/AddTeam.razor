@@ -1,12 +1,23 @@
 ﻿@page "/newTeam"
 @using API.Data.DTOs
 
-<h3>New Team</h3>
-
 <MudDialog>
     <DialogContent>
         <MudForm @ref="addForm">
-
+            <MudTextField @bind-Value="team.Name" Label="Team Name" />
+            <MudTextField @bind-Value="team.CountryName" Label="Country" />
+            <MudTextField @bind-Value="team.Points" Label="Points" />
+            <MudTextField @bind-Value="team.IsActive" Label="Active" />
+            <MudMenu Color="Color.Primary"
+                     Variant="Variant.Filled"
+                     Label="Competition"
+                     StartIcon="@Icons.Material.Filled.Add"
+                     Dense="true"
+                     Class="m-1">
+                <MudMenuItem OnClick="@(args => AddCompetition(args, 1))">Champions League</MudMenuItem>
+                <MudMenuItem OnClick="@(args => AddCompetition(args, 2))">Europa League</MudMenuItem>
+                <MudMenuItem OnClick="@(args => AddCompetition(args, 3))">Conference League</MudMenuItem>
+            </MudMenu>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -17,7 +28,11 @@
 
 @code {
     private MudForm addForm = default!;
-    private TeamResponse country = new();
+    private TeamResponse team = new();
+
+    protected override void OnParametersSet()
+    {
+    }
 
     private void Cancel(MouseEventArgs args)
     {
@@ -25,6 +40,11 @@
     }
 
     private void Save(MouseEventArgs args)
+    {
+
+    }
+
+    private void AddCompetition(MouseEventArgs args, int i)
     {
 
     }

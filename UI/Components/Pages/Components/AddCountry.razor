@@ -1,12 +1,13 @@
 ﻿@page "/newCountry"
 @using API.Data.DTOs
 
-<h3>New Country</h3>
-
 <MudDialog>
     <DialogContent>
         <MudForm @ref="addForm">
-
+            <MudTextField @bind-Value="country.Name" Label="Home Team" />
+            <MudTextField @bind-Value="country.NumberOfInitialTeams" Label="Initial Teams" />
+            <MudTextField @bind-Value="country.NumberOfActiveTeams" Label="Active Teams" />
+            <MudTextField @bind-Value="country.TotalPoints" Label="Points" />                       
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -18,13 +19,22 @@
 @code {
     private MudForm addForm = default!;
     private CountryResponse country = new();
-    
+
+    protected override void OnParametersSet()
+    {
+    }
+
     private void Cancel(MouseEventArgs args)
     {
-        
+
     }
 
     private void Save(MouseEventArgs args)
+    {
+
+    }
+
+    private void AddCompetition(MouseEventArgs args, int i)
     {
 
     }
