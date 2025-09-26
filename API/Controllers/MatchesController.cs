@@ -13,10 +13,12 @@ public class MatchesController : ControllerBase
 {
     private readonly ILogger<MatchesController> _logger;
     private readonly IMatchRepository matchRepository;
+    private readonly ITeamRepository teamRepository;
 
-    public MatchesController(IMatchRepository matchRepository, ILogger<MatchesController> logger)
+    public MatchesController(IMatchRepository matchRepository, ILogger<MatchesController> logger, ITeamRepository teamRepository)
     {
         this.matchRepository = matchRepository;
+        this.teamRepository = teamRepository;
         _logger = logger;
     }
 
@@ -168,11 +170,15 @@ public class MatchesController : ControllerBase
             AwayTeamGoals = awayGoals,
             Competition = matchRequest.Competition
         };
+        
         var result = await matchRepository.AddMatch(match);
         if (!result)
-        {
-            return StatusCode(500, "A problem happened while handling your request.");
-        }
+            return StatusCode(500, "Could not insert match into DB");
+
+        result = await teamRepository.UpdateTeamPoints(match);
+        if (!result)
+            return StatusCode(500, "Could not update match's teams points");
+
         return Ok("Match added successfully.");
     }
 

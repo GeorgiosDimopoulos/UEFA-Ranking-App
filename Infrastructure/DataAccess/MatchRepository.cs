@@ -72,7 +72,14 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var createQuery = @"INSERT INTO Matches (Result, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@Result, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
+        var homeTeamExists = await connection.ExecuteScalarAsync<int>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.HomeTeamName });
+        var awayTeamExists = await connection.ExecuteScalarAsync<int>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.AwayTeamName });
+        if (homeTeamExists <= 0 || awayTeamExists <= 0)
+        {
+            return false;
+        }
+
+        var createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
         var insertMatchesResult = await connection.ExecuteScalarAsync<long>(createQuery, new
         {
             m.HomeTeamGoals,
@@ -83,21 +90,13 @@ public class MatchRepository : IMatchRepository
             m.Competition
         });
 
-        var homeTeamPoints = await connection.ExecuteScalarAsync<int>(@"SELECT Points FROM Teams WHERE Name =@homeTeamName", new { homeTeamName = m.HomeTeamName });
-        var awayTeamPoints = await connection.ExecuteScalarAsync<int>(@"SELECT Points FROM Teams WHERE Name = @awayTeamName", new { awayTeamName = m.AwayTeamName });
-
-        var finalHomeTeamPoints = m.HomeTeamGoals + homeTeamPoints;
-        var finalAwayTeamPoints = m.AwayTeamGoals + awayTeamPoints;
-
-        var updateHomeTeamPointsResult = await connection.ExecuteAsync(@"UPDATE TEAM SET Points = @Points WHERE Name = @Name", new { Points = homeTeamPoints, Name = m.HomeTeamName});
-        var updateAwayTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = @Points WHERE Name = @Name", new { Points = finalAwayTeamPoints, Name = m.AwayTeamName });
-
-        if (updateHomeTeamPointsResult <= 0 || updateAwayTeamPointsResult <= 0)
+        if (insertMatchesResult <= 0)
         {
             return false;
         }
 
         // ToDo: update also teams' countries points
+
         return true;
     }
 

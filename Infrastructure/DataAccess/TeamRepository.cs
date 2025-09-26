@@ -18,7 +18,7 @@ public class TeamRepository : ITeamRepository
     public async Task<List<Team>> GetAllTeams()
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.Position, t.CountryId, t.Competition, c.Id, c.Name, c.Position FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
         var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) => 
@@ -31,7 +31,7 @@ public class TeamRepository : ITeamRepository
     public async Task<Dictionary<string ,int>> GetTeamsNamesAndPoints() 
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var sql = @"SELECT Name, Points FROM Teams";
         var teams = await connection.QueryAsync<(string Name, int Points)>(sql);
@@ -42,7 +42,7 @@ public class TeamRepository : ITeamRepository
     public async Task<Team?> GetTeamById(int id)
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var team = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Id = @Id", new { Id = id });
         return team;
@@ -51,7 +51,7 @@ public class TeamRepository : ITeamRepository
     public async Task<Team?> GetTeamByName(string name)
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var team = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { Name = name });
         return team;
@@ -60,7 +60,7 @@ public class TeamRepository : ITeamRepository
     public async Task<List<Team?>> GetTeamsByCountryId(int countryId)
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var countryTeams = await connection.QueryAsync<Team>("SELECT * FROM Teams WHERE CountryId = @CountryId", new { CountryId = countryId });
         if (!countryTeams.Any())
@@ -71,7 +71,7 @@ public class TeamRepository : ITeamRepository
     public async Task<bool> AddTeam(Team team, string country)
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var teamExists = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { team.Name });
         if (teamExists != null)
@@ -105,7 +105,7 @@ public class TeamRepository : ITeamRepository
     public async Task<bool> UpdateTeam(Team t, int id)
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points, Position = @Position WHERE Id = @Id";
         var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, Id = id, t.Competition });
@@ -113,10 +113,32 @@ public class TeamRepository : ITeamRepository
         return result > 0;
     }
 
+    public async Task<bool> UpdateTeamPoints(Match m)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var homeTeamPoints = m.AwayTeamGoals < m.HomeTeamGoals ? 3 : m.AwayTeamGoals == m.HomeTeamGoals ? 1 : 0;
+        var awayTeamPoints = m.AwayTeamGoals > m.HomeTeamGoals ? 3 : m.AwayTeamGoals == m.HomeTeamGoals ? 1 : 0;
+
+        using var transaction = connection.BeginTransaction();
+
+        var updateHomeTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = Points + @NewPoints WHERE Name = @Name", new { NewPoints = homeTeamPoints, Name = m.HomeTeamName });
+        var updateAwayTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = Points + @NewPoints WHERE Name = @Name", new { NewPoints = awayTeamPoints, Name = m.AwayTeamName });
+        if (updateHomeTeamPointsResult == 0 || updateAwayTeamPointsResult == 0)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }            
+
+        await transaction.CommitAsync();
+        return true;
+    }
+
     public async Task<bool> DeleteTeam(int id)
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var deleteQuery = "DELETE FROM Teams WHERE Id = @Id";
         var result = await connection.ExecuteAsync(deleteQuery, new { Id = id });
@@ -127,7 +149,7 @@ public class TeamRepository : ITeamRepository
     public async Task<bool> DeleteTeamByName(string Name)
     {
         using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        await connection.OpenAsync();
 
         var deleteQuery = "DELETE FROM Teams WHERE Name = @Name";
         var result = await connection.ExecuteAsync(deleteQuery, new { Name });
