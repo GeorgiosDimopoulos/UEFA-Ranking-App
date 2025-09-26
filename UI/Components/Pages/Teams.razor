@@ -50,7 +50,7 @@
 					<MudButton Color="Color.Success"
 							   Variant="Variant.Filled"
 							   Style="min-width:40px; width:40px; height:30px; padding:0;"
-							   OnClick="@(() => ShowMatches(context))">
+							   OnClick="@(() => OpenTeamAsync(context))">
 						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
 					</MudButton>
 				</MudTd>
@@ -70,21 +70,6 @@
 		await Task.Delay(500);
 		var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
 		_teams = data.OrderBy(t => t.Points).ToArray();
-	}
-
-	private void ShowMatches(TeamResponse t)
-	{
-		var parameters = new DialogParameters
-		{
-			["Team"] = t
-		};
-
-		var dialog = DialogService.ShowAsync<TeamMatches>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
-        var result = dialog.Result;
-		if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
-		{
-			StateHasChanged();
-		}
 	}
 
 	private async Task OpenTeamAsync(TeamResponse t)

@@ -1,9 +1,43 @@
-﻿@page "/calendar"
+﻿@page "/schedule"
+@using API.Data.DTOs
+@using UI.Clients
+
+@inject MatchesClient MatchesClient
+@inject IDialogService DialogService
 
 <h3>Schedule - Matches</h3>
 
-<p>NO IMPLEMENTATION YET, IN THE END!</p>
+<div>
+	@if (_matches is null)
+	{
+		<p><em>Loading Matches...</em></p>
+	}
+	else
+	{
+		<MudTable Items="_matches">
+			<HeaderContent>
+				<MudTh>HomeTeam</MudTh>
+				<MudTh>AwayTeam</MudTh>
+				<MudTh>Result</MudTh>
+				<MudTh>Competition</MudTh>
+				<MudTh>Round</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd>@context.HomeTeamName</MudTd>
+				<MudTd>@context.AwayTeamName</MudTd>
+				<MudTd>@context.Result</MudTd>
+				<MudTd>@context.Competition</MudTd>
+				<MudTd>@context.Round</MudTd>
+			</RowTemplate>
+		</MudTable>
+	}
+</div>
 
 @code {
+	private MatchResponse[]? _matches = default!;
 
+	protected override async Task OnInitializedAsync()
+	{
+		_matches = await MatchesClient.GetMatches();
+	}
 }
