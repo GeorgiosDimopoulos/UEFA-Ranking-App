@@ -1,9 +1,27 @@
-﻿<h3>Match Details</h3>
-
-@inherits ComponentBase
+﻿@using API.Data.DTOs
 @using MudBlazor
+
 @inject IDialogService DialogService
 
 @code {
+	[Parameter]	public MatchResponse Match { get; set; } = default!;
 
+	private MatchResponse match = new();
+
+	protected override void OnParametersSet()
+	{
+		if (Match == null)
+		{
+			DialogService.ShowAsync<MatchDetails>("Error", new DialogParameters { ["Match"] = Match });
+			return;
+		}
+		match = new MatchResponse
+		{
+			HomeTeamName = Match.HomeTeamName,
+			AwayTeamName = Match.AwayTeamName,
+			Result = Match.Result,
+			Competition = Match.Competition,
+			Round = Match.Round
+		};
+	}
 }
