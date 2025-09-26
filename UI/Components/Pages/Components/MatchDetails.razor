@@ -8,7 +8,7 @@
         <MudStack Row="true" Spacing="2">
             <MudTextField @bind-Value="match.HomeTeamName" Label="Home Team" />
             <MudTextField @bind-Value="match.AwayTeamName" Label="Away Team" />
-            <MudTextField @bind-Value="match.Result" Label="Score" />
+            <MudTextField @bind-Value="match.Score" Label="Score" />
             <Component />
         </MudStack>
     </DialogContent>
@@ -31,7 +31,7 @@
         {
             HomeTeamName = Match.HomeTeamName,
             AwayTeamName = Match.AwayTeamName,
-            Result = Match.Result,
+            Score = Match.Score,
             Competition = Match.Competition,
             Round = Match.Round
         };

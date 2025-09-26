@@ -75,42 +75,19 @@ public class MatchRepository : IMatchRepository
         var createQuery = @"INSERT INTO Matches (Result, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@Result, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
         var insertMatchesResult = await connection.ExecuteScalarAsync<long>(createQuery, new
         {
-            m.Result,
+            m.HomeTeamGoals,
+            m.AwayTeamGoals,
             m.Round,
             m.HomeTeamName,
             m.AwayTeamName,
             m.Competition
         });
 
-        if (insertMatchesResult <= 0)
-        {
-            return false;
-        }
-
-        int newHomeTeamPoints = 0;
-        int newAwayTeamPoints = 0;
-        
-        if (m.Result == MatchResult.HomeWin)
-        {
-            newHomeTeamPoints = 3;
-            newAwayTeamPoints = 0;
-        }
-        else if (m.Result == MatchResult.AwayWin)
-        {
-            newHomeTeamPoints = 0;
-            newAwayTeamPoints = 3;
-        }
-        else
-        {
-            newHomeTeamPoints = 1;
-            newAwayTeamPoints = 1;
-        }
-
         var homeTeamPoints = await connection.ExecuteScalarAsync<int>(@"SELECT Points FROM Teams WHERE Name =@homeTeamName", new { homeTeamName = m.HomeTeamName });
         var awayTeamPoints = await connection.ExecuteScalarAsync<int>(@"SELECT Points FROM Teams WHERE Name = @awayTeamName", new { awayTeamName = m.AwayTeamName });
 
-        var finalHomeTeamPoints = newHomeTeamPoints + homeTeamPoints;
-        var finalAwayTeamPoints = newAwayTeamPoints + awayTeamPoints;
+        var finalHomeTeamPoints = m.HomeTeamGoals + homeTeamPoints;
+        var finalAwayTeamPoints = m.AwayTeamGoals + awayTeamPoints;
 
         var updateHomeTeamPointsResult = await connection.ExecuteAsync(@"UPDATE TEAM SET Points = @Points WHERE Name = @Name", new { Points = homeTeamPoints, Name = m.HomeTeamName});
         var updateAwayTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = @Points WHERE Name = @Name", new { Points = finalAwayTeamPoints, Name = m.AwayTeamName });
@@ -121,7 +98,6 @@ public class MatchRepository : IMatchRepository
         }
 
         // ToDo: update also teams' countries points
-
         return true;
     }
 
@@ -133,7 +109,8 @@ public class MatchRepository : IMatchRepository
         var updateQuery = @"UPDATE Matches SET Result = @Result, Round = @Round, HomeTeamName = @HomeTeamName, AwayTeamName = @AwayTeamName WHERE Id = @Id";
         var result = await connection.ExecuteAsync(updateQuery, new
         {
-            m.Result,
+            m.HomeTeamGoals,
+            m.AwayTeamGoals,
             m.Round,
             m.HomeTeamName,
             m.AwayTeamName,
