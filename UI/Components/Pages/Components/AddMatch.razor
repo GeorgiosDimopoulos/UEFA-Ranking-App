@@ -1,23 +1,27 @@
 ﻿@page "/newMatch"
 @using API.Data.DTOs
+@inherits ComponentBase
+@inject IDialogService DialogService
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="addForm">
+        <MudForm @ref="addForm" Spacing="2">
             <MudTextField @bind-Value="match.HomeTeamName" Label="Home Team" />
             <MudTextField @bind-Value="match.AwayTeamName" Label="Away Team" />
             <MudTextField @bind-Value="match.Score" Label="Score" />
             <MudNumericField @bind-Value="match.Round" Label="Round" />
-            <MudMenu Color="Color.Primary"
-                     Variant="Variant.Filled"
-                     Label="Competition"
-                     StartIcon="@Icons.Material.Filled.Add"
-                     Dense="true"
-                     Class="m-1">
-                <MudMenuItem OnClick="@(args => AddCompetition(args, 1))">Champions League</MudMenuItem>
-                <MudMenuItem OnClick="@(args => AddCompetition(args, 2))">Europa League</MudMenuItem>
-                <MudMenuItem OnClick="@(args => AddCompetition(args, 3))">Conference League</MudMenuItem>                
-            </MudMenu>
+            <div style="text-align:left">
+                <MudMenu Color="Color.Primary"
+                         Variant="Variant.Filled"
+                         Label="Competition"
+                         StartIcon="@Icons.Material.Filled.Add"
+                         Dense="true"
+                         Class="m-1">
+                    <MudMenuItem OnClick="@(args => AddCompetition(args, 1))">Champions League</MudMenuItem>
+                    <MudMenuItem OnClick="@(args => AddCompetition(args, 2))">Europa League</MudMenuItem>
+                    <MudMenuItem OnClick="@(args => AddCompetition(args, 3))">Conference League</MudMenuItem>
+                </MudMenu>
+            </div>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -29,14 +33,15 @@
 @code {
     private MudForm addForm = default!;
     private MatchResponse match = new();
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     protected override void OnParametersSet()
-    {        
+    {
     }
 
     private void Cancel(MouseEventArgs args)
     {
-
+        MudDialog?.Close(DialogResult.Ok(match));
     }
 
     private void Save(MouseEventArgs args)

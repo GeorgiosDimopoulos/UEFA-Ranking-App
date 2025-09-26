@@ -1,13 +1,15 @@
 ﻿@page "/newCountry"
 @using API.Data.DTOs
+@inherits ComponentBase
+@inject IDialogService DialogService
 
 <MudDialog>
     <DialogContent>
-        <MudForm @ref="addForm">
-            <MudTextField @bind-Value="country.Name" Label="Home Team" />
-            <MudTextField @bind-Value="country.NumberOfInitialTeams" Label="Initial Teams" />
-            <MudTextField @bind-Value="country.NumberOfActiveTeams" Label="Active Teams" />
-            <MudTextField @bind-Value="country.TotalPoints" Label="Points" />                       
+        <MudForm @ref="addForm" Spacing="2">
+            <MudTextField @bind-Value="country.Name" Label="Name" />
+            <MudTextField @bind-Value="country.TotalPoints" Label="Points" />
+            <MudText Typo="Typo.body1">Initial Teams: @country.NumberOfInitialTeams</MudText>            
+            <MudText Typo="Typo.body1">Active Teams: @country.NumberOfActiveTeams</MudText>            
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -19,6 +21,7 @@
 @code {
     private MudForm addForm = default!;
     private CountryResponse country = new();
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     protected override void OnParametersSet()
     {
@@ -26,7 +29,7 @@
 
     private void Cancel(MouseEventArgs args)
     {
-
+        MudDialog?.Close(DialogResult.Ok(country));
     }
 
     private void Save(MouseEventArgs args)
