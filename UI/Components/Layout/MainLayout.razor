@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using API.Data.DTOs
+@using UI.Components.Pages.Components
+@inherits LayoutComponentBase
+
+@inject IDialogService DialogService
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -12,16 +16,15 @@
 
     <main>
         <div class="top-row px-4">
-            @* <input type="button" class="btn btn-success" style="width:100px" value="Add" @onclick="AddNewEntity()" /> *@
             <MudMenu Color="Color.Primary"
                      Variant="Variant.Filled"
                      Label="Add"
                      StartIcon="@Icons.Material.Filled.Add"
                      Dense="true"
                      Class="m-2">
-                <MudMenuItem OnClick="AddCountry()">New Country</MudMenuItem>
-                <MudMenuItem OnClick="AddTeam()">New Team</MudMenuItem>
-                <MudMenuItem OnClick="AddMatch()">New Match</MudMenuItem>
+                <MudMenuItem StartIcon="@Icons.Material.Filled.Add" OnClick="AddCountry">Add Country</MudMenuItem>
+                <MudMenuItem StartIcon="@Icons.Material.Filled.Add" OnClick="AddTeam">Add Team</MudMenuItem>
+                <MudMenuItem StartIcon="@Icons.Material.Filled.Add" OnClick="AddMatch">Add Match</MudMenuItem>
             </MudMenu>
         </div>
         <article class="content px-4">
@@ -37,18 +40,34 @@
 </div>
 
 @code {
-    private EventCallback<MouseEventArgs> AddCountry()
+
+    private async Task AddCountry()
     {
-        return EventCallback.Factory.Create<MouseEventArgs>(this, () => Console.WriteLine("Add new country"));
+        var dialogRef = await DialogService.ShowAsync<AddCountry>("Add Country", new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is CountryResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
     }
-    
-    private EventCallback<MouseEventArgs> AddTeam()
+
+    private async Task AddTeam()
     {
-        return EventCallback.Factory.Create<MouseEventArgs>(this, () => Console.WriteLine("Add new team"));
+        var dialogRef = await DialogService.ShowAsync<AddTeam>("Add Team", new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
     }
-    
-    private EventCallback<MouseEventArgs> AddMatch()
+
+    private async Task AddMatch()
     {
-        return EventCallback.Factory.Create<MouseEventArgs>(this, () => Console.WriteLine("Add new match"));
+        var dialogRef = await DialogService.ShowAsync<AddMatch>("Add Match", new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is MatchResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
     }
 }
