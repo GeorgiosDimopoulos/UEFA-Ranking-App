@@ -39,9 +39,10 @@ public class DatabaseInitializer
 
         var createMatchesTableQuery = @"CREATE TABLE IF NOT EXISTS Matches(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                HomeTeam TEXT NOT NULL,
-                AwayTeam TEXT NOT NULL,
-                Result INTEGER NOT NULL,
+                HomeTeamName TEXT NOT NULL,
+                AwayTeamName TEXT NOT NULL,
+                AwayTeamGoals INTEGER NULL,
+                HomeTeamGoals INTEGER NULL,
                 Round INTEGER NOT NULL,
                 Competition INTEGER NOT NULL)";
         command.CommandText = createMatchesTableQuery;

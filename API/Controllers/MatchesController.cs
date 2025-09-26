@@ -221,12 +221,12 @@ public class MatchesController : ControllerBase
         return Ok("Match deleted successfully.");
     }
 
-    private (int, int)? ParseScore(string score)
+    private static (int, int)? ParseScore(string score)
     {
         string[] matchResultParts = score.Split('-', StringSplitOptions.TrimEntries);
         if (matchResultParts.Length != 2 || !int.TryParse(matchResultParts[0], out var homeGoals) || !int.TryParse(matchResultParts[1], out var awayGoals) || homeGoals < 0 || awayGoals < 0)
         {
-            return new();
+            return null;
         }
 
         return (homeGoals, awayGoals);
