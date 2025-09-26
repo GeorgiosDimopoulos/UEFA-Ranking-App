@@ -39,7 +39,7 @@ public class MatchesController : ControllerBase
             AwayTeamName = m.AwayTeamName,
             Round = m.Round,
             Competition = m.Competition,
-            Result = (int)m.Result
+            Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
 
         return matchesResponses.ToList();
@@ -48,7 +48,7 @@ public class MatchesController : ControllerBase
     [HttpGet("by-country/")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
     public async Task<List<MatchResponse>> GetMatchesByCountry(int countryId)
-    {                                    
+    {
         var matches = await matchRepository.GetMatchesByCountryId(countryId);
 
         if (matches is null)
@@ -64,7 +64,7 @@ public class MatchesController : ControllerBase
             AwayTeamName = m.AwayTeamName,
             Competition = m.Competition,
             Round = m.Round,
-            Result = (int)m.Result
+            Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
 
         return matchesResponses.ToList();
@@ -89,7 +89,7 @@ public class MatchesController : ControllerBase
             AwayTeamName = m.AwayTeamName,
             Round = m.Round,
             Competition = m.Competition,
-            Result = (int)m.Result
+            Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
 
         return matchesResponses.ToList();
@@ -114,7 +114,7 @@ public class MatchesController : ControllerBase
             AwayTeamName = m.AwayTeamName,
             Round = m.Round,
             Competition = m.Competition,
-            Result = (int)m.Result
+            Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
 
         return matchesResponses.ToList();
@@ -139,7 +139,7 @@ public class MatchesController : ControllerBase
             AwayTeamName = m.AwayTeamName,
             Round = m.Round,
             Competition = m.Competition,
-            Result = (int)m.Result
+            Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
 
         return matchesResponses.ToList();
@@ -149,41 +149,54 @@ public class MatchesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Matches - Post" })]
     public async Task<ActionResult> AddMatch([FromQuery] MatchRequest matchRequest)
     {
-        if (matchRequest is null)
+        if (matchRequest is null || !string.IsNullOrEmpty(matchRequest.Score))
         {
             return BadRequest("Match data is null.");
         }
+
+        var goals = ParseScore(matchRequest.Score);
+        if (goals is null)
+            return BadRequest("Match format is not ok.");
+        var (homeGoals, awayGoals) = goals.Value;
+
         var match = new Match
         {
             HomeTeamName = matchRequest.HomeTeamName,
             AwayTeamName = matchRequest.AwayTeamName,
             Round = matchRequest.Round,
-            Result = (MatchResult)matchRequest.Result,
+            HomeTeamGoals = homeGoals,
+            AwayTeamGoals = awayGoals,
             Competition = matchRequest.Competition
         };
         var result = await matchRepository.AddMatch(match);
         if (!result)
         {
-            _logger.LogError("Failed to add the match to the database.");
             return StatusCode(500, "A problem happened while handling your request.");
         }
         return Ok("Match added successfully.");
     }
 
-    [HttpPut]
+    [HttpPut("{id:int}")]
     [SwaggerOperation(Tags = new[] { "Matches - Put" })]
-    public async Task<ActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
+    public async Task<ActionResult> UpdateMatch([FromBody] MatchRequest matchRequest, int id)
     {
-        if (matchRequest is null)
+        if (matchRequest is null || !string.IsNullOrEmpty(matchRequest.Score))
         {
-            return BadRequest("Match data is null.");
+            return BadRequest("Match data like score is null.");
         }
+
+        var goals = ParseScore(matchRequest.Score);
+        if (goals is null)
+            return BadRequest("Match format is not ok.");
+        var (homeGoals, awayGoals) = goals.Value;
+
         var match = new Match
         {
             HomeTeamName = matchRequest.HomeTeamName,
             AwayTeamName = matchRequest.AwayTeamName,
             Round = matchRequest.Round,
-            Result = (MatchResult)matchRequest.Result,
+            HomeTeamGoals = homeGoals,
+            AwayTeamGoals = awayGoals,
             Competition = matchRequest.Competition
         };
         var result = await matchRepository.AddMatch(match);
@@ -206,5 +219,16 @@ public class MatchesController : ControllerBase
             return StatusCode(500, "A problem happened while handling your request.");
         }
         return Ok("Match deleted successfully.");
+    }
+
+    private (int, int)? ParseScore(string score)
+    {
+        string[] matchResultParts = score.Split('-', StringSplitOptions.TrimEntries);
+        if (matchResultParts.Length != 2 || !int.TryParse(matchResultParts[0], out var homeGoals) || !int.TryParse(matchResultParts[1], out var awayGoals) || homeGoals < 0 || awayGoals < 0)
+        {
+            return new();
+        }
+
+        return (homeGoals, awayGoals);
     }
 }
