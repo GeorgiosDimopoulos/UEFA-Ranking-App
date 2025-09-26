@@ -1,0 +1,31 @@
+﻿@page "/newTeam"
+@using API.Data.DTOs
+
+<h3>New Team</h3>
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="addForm">
+
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudForm addForm = default!;
+    private TeamResponse country = new();
+
+    private void Cancel(MouseEventArgs args)
+    {
+
+    }
+
+    private void Save(MouseEventArgs args)
+    {
+
+    }
+}
