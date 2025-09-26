@@ -11,15 +11,15 @@ public class MatchesClient
         _httpClient = httpClient;
     }
 
-    public async Task<MatchResponse[]?> GetMatches()
+    public async Task<List<MatchResponse>?> GetMatches()
     {
         var matches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>("api/matches");
-        return matches;
+        return matches?.ToList();
     }
 
-    public async Task<MatchResponse?> GetMatch(string n)
+    public async Task<MatchResponse> GetMatch(string n)
     {
         var match = await _httpClient.GetFromJsonAsync<MatchResponse?>($"api/match/{n}");
-        return match;
+        return match ?? new();
     }
 }

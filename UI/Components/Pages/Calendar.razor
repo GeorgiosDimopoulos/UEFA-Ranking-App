@@ -1,6 +1,7 @@
 ﻿@page "/schedule"
 @using API.Data.DTOs
 @using UI.Clients
+@using UI.Components.Pages.Components
 
 @inject MatchesClient MatchesClient
 @inject IDialogService DialogService
@@ -21,6 +22,7 @@
 				<MudTh>Result</MudTh>
 				<MudTh>Competition</MudTh>
 				<MudTh>Round</MudTh>
+				<MudTh>Edit</MudTh>
 			</HeaderContent>
 			<RowTemplate>
 				<MudTd>@context.HomeTeamName</MudTd>
@@ -28,16 +30,40 @@
 				<MudTd>@context.Result</MudTd>
 				<MudTd>@context.Competition</MudTd>
 				<MudTd>@context.Round</MudTd>
+				<MudTd>
+					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => EditMatch(context)">
+						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+					</MudButton>
+				</MudTd>
 			</RowTemplate>
 		</MudTable>
 	}
 </div>
 
 @code {
-	private MatchResponse[]? _matches = default!;
+	private List<MatchResponse> _matches = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
-		_matches = await MatchesClient.GetMatches();
+		_matches = await MatchesClient.GetMatches() ?? new();
+	}
+
+	private async Task EditMatch(MatchResponse match)
+	{
+		var parameters = new DialogParameters { ["Match"] = match };
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		
+		var dialog = await DialogService.ShowAsync<MatchDetails>("Edit Match", parameters, options);
+		
+		var result = await dialog.Result;
+		if (result != null && !result!.Canceled && result.Data is MatchResponse mr)
+		{
+			var index = _matches.FindIndex(m => m.Id == mr.Id);
+			if (index != -1)
+			{
+				_matches[index] = mr;
+				StateHasChanged();
+			}
+		}
 	}
 }

@@ -17,6 +17,11 @@ builder.Services.AddHttpClient<TeamsClient>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
 });
 
+builder.Services.AddHttpClient<MatchesClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
