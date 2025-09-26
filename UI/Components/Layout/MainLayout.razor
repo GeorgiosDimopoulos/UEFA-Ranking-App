@@ -3,31 +3,52 @@
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<MudPopoverProvider />
 
 <div class="page">
-	<div class="sidebar">
-		<NavMenu />
-	</div>
+    <div class="sidebar">
+        <NavMenu />
+    </div>
 
-	<main>
-		@* <div class="top-row px-4">
-			<input type="button" class="btn btn-success" style="width:100px" value="Add" @onclick="AddNewEntity()" />
-		</div> *@
-		<article class="content px-4">
-			@Body
-		</article>
-	</main>
+    <main>
+        <div class="top-row px-4">
+            @* <input type="button" class="btn btn-success" style="width:100px" value="Add" @onclick="AddNewEntity()" /> *@
+            <MudMenu Color="Color.Primary"
+                     Variant="Variant.Filled"
+                     Label="Add"
+                     StartIcon="@Icons.Material.Filled.Add"
+                     Dense="true"
+                     Class="m-2">
+                <MudMenuItem OnClick="AddCountry()">New Country</MudMenuItem>
+                <MudMenuItem OnClick="AddTeam()">New Team</MudMenuItem>
+                <MudMenuItem OnClick="AddMatch()">New Match</MudMenuItem>
+            </MudMenu>
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
-	An unhandled error has occurred.
-	<a href="." class="reload">Reload</a>
-	<span class="dismiss">🗙</span>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
 </div>
 
 @code {
-	private EventCallback<MouseEventArgs> AddNewEntity()
-	{
-		return EventCallback.Factory.Create<MouseEventArgs>(this, () => Console.WriteLine("Add new entity"));
-	}
+    private EventCallback<MouseEventArgs> AddCountry()
+    {
+        return EventCallback.Factory.Create<MouseEventArgs>(this, () => Console.WriteLine("Add new country"));
+    }
+    
+    private EventCallback<MouseEventArgs> AddTeam()
+    {
+        return EventCallback.Factory.Create<MouseEventArgs>(this, () => Console.WriteLine("Add new team"));
+    }
+    
+    private EventCallback<MouseEventArgs> AddMatch()
+    {
+        return EventCallback.Factory.Create<MouseEventArgs>(this, () => Console.WriteLine("Add new match"));
+    }
 }
