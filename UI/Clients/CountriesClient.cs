@@ -26,7 +26,7 @@ public class CountriesClient
 
     public async Task<bool?> AddCountry(CountryRequest cr)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/countries", cr);
+        var response = await _httpClient.PostAsJsonAsync($"api/countries", cr);
         return response.IsSuccessStatusCode;
     }
 }

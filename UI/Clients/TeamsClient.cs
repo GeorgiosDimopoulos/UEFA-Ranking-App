@@ -14,7 +14,6 @@ public class TeamsClient
 
     public async Task<TeamResponse[]?> GetTeams()
     {
-
         try
         {
             var teams = await _httpClient.GetFromJsonAsync<TeamResponse[]?>("api/teams");

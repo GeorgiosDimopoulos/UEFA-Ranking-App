@@ -20,7 +20,7 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
-        var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.Position, t.CountryId, t.Competition, c.Id, c.Name, c.Position FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
+        var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.CountryId, t.Competition, c.Id, c.Name FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
         var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) => 
         { 
             team.CountryId = country.Id; return team; 
@@ -87,16 +87,12 @@ public class TeamRepository : ITeamRepository
             Name = team.Name,
             CountryId = availableCountry.Id,
             Competition = team.Competition,
+            IsActive = team.IsActive,
             Points = team.Points,
             Matches = [],
         };
 
-        if (team.Competition != Competition.None)
-            newTeam.IsActive = true;
-        else
-            newTeam.IsActive = false;
-
-        var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, Points, Position, CountryId, Competition) VALUES (@Name, @IsActive, @Points, @Position, @CountryId, @Competition)";
+        var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, Points, CountryId, Competition) VALUES (@Name, @IsActive, @Points, @CountryId, @Competition)";
         var result = await connection.ExecuteAsync(insertTeamQuery, newTeam);
 
         return result > 0;
@@ -107,7 +103,7 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
-        var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points, Position = @Position WHERE Id = @Id";
+        var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points WHERE Id = @Id";
         var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, Id = id, t.Competition });
 
         return result > 0;

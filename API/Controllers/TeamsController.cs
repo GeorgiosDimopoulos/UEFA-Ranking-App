@@ -138,6 +138,12 @@ public class TeamsController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Teams - Post" })]
     public async Task<ActionResult<TeamRequest>> AddTeam([FromQuery] TeamRequest t)
     {
+        var valuableCompetitions = new int[3] { 1, 2, 3 };
+        if (!valuableCompetitions.Contains(t.Competition))
+        {
+            _logger.LogWarning($"Competition value {t.Competition} is not valid for team {t.Name}");
+            return BadRequest();
+        }
         var team = new Team
         {
             IsActive = t.IsActive,

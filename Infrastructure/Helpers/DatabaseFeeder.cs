@@ -20,7 +20,7 @@ public class DatabaseFeeder
         connection.Open();
 
         var countries = connection.ExecuteScalar<int>("SELECT * FROM Countries ORDER BY Position ASC");
-        var teams = connection.ExecuteScalar<int>("SELECT * FROM Teams ORDER BY Position ASC");
+        var teams = connection.ExecuteScalar<int>("SELECT * FROM Teams ORDER BY CountryId ASC");
 
         return countries > 1 && teams > 1;
     }

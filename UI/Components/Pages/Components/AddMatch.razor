@@ -11,7 +11,6 @@
         <MudForm @ref="addForm" Spacing="2">
             <MudTextField @bind-Value="matchRes.HomeTeamName" Label="Home Team" />
             <MudTextField @bind-Value="matchRes.AwayTeamName" Label="Away Team" />
-            <MudTextField @bind-Value="matchRes.Score" Label="Score" />
             <MudNumericField @bind-Value="matchRes.Round" Label="Round" />
             <div style="text-align:left">
                 <MudMenu Color="Color.Primary"
@@ -52,6 +51,10 @@
 
     private async Task Save(MouseEventArgs args)
     {
+        if (matchRes.Round <= 0)
+        {
+            return;
+        }
         matchReq = new MatchRequest
         {
             HomeTeamName = matchRes.HomeTeamName,

@@ -2,16 +2,14 @@
 @using API.Data.DTOs
 @using UI.Clients
 @inherits ComponentBase
-@inject IDialogService DialogService
 @inject CountriesClient CountriesClient
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
         <MudForm @ref="addForm" Spacing="2">
             <MudTextField @bind-Value="countryRes.Name" Label="Name" />
             <MudTextField @bind-Value="countryRes.TotalPoints" Label="Points" />
-            <MudText Typo="Typo.body1">Initial Teams: @countryRes.NumberOfInitialTeams</MudText>
-            <MudText Typo="Typo.body1">Active Teams: @countryRes.NumberOfActiveTeams</MudText>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -24,7 +22,7 @@
     private MudForm addForm = default!;
     private CountryResponse countryRes = new();
     private CountryRequest countryReq = new();
-    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [CascadingParameter] IMudDialogInstance Dialog { get; set; } = default!;
 
     protected async override void OnParametersSet()
     {
@@ -33,10 +31,10 @@
 
     private void Cancel(MouseEventArgs args)
     {
-        MudDialog?.Close(DialogResult.Ok(countryRes));
+        Dialog?.Close(DialogResult.Ok(countryRes));
     }
 
-    private async Task Save(MouseEventArgs args)
+    private async Task Save(MouseEventArgs _)
     {
         countryReq = new CountryRequest
         {
@@ -44,5 +42,13 @@
             TotalPoints = countryRes.TotalPoints
         };
         var success = await CountriesClient.AddCountry(countryReq);
+        if (success != null && success == true)
+        {
+            Dialog.Close(DialogResult.Ok(countryRes));
+        }
+        else
+        {
+            Snackbar.Add("Failed to add country.", Severity.Error);
+        }
     }
 }
