@@ -11,7 +11,7 @@
             <MudTextField @bind-Value="teamRes.Name" Label="Team Name" />
             <MudTextField @bind-Value="teamRes.CountryName" Label="Country" />
             <MudTextField @bind-Value="teamRes.Points" Label="Points" />
-            @* <MudCheckBox @bind-value="team.IsActive" Label="Active" /> *@
+            <MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
             <div style="text-align: left;">
                 <MudMenu Color="Color.Primary"
                          Variant="Variant.Filled"
@@ -56,7 +56,8 @@
             Name = teamRes.Name,
             CountryName = teamRes.CountryName,
             Points = teamRes.Points,
-            Competition = CompetitionId
+            Competition = CompetitionId,
+            IsActive = teamRes.IsActive
         };
         var success = await TeamsClient.AddTeam(teamReq);
     }

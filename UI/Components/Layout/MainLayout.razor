@@ -3,6 +3,7 @@
 @inherits LayoutComponentBase
 
 @inject IDialogService DialogService
+@inject NavigationManager Nav
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -10,11 +11,16 @@
 <MudPopoverProvider />
 
 <div class="page">
-    <div class="sidebar">
+    @* <div class="sidebar">
         <NavMenu />
-    </div>
-
+    </div>     *@
     <main>
+        <MudTabs Color="Color.Primary" Rounded="true" Elevation="2" Centered="true" Class="mb-2" FullWidth="true" OnActivePanelIndexChanged="OnTabChanged">
+            <MudTabPanel Text="Matches" Icon="@Icons.Material.Filled.Event" />
+            <MudTabPanel Text="Countries" Icon="@Icons.Material.Filled.Flag" />
+            <MudTabPanel Text="Teams" Icon="@Icons.Material.Filled.EmojiEvents" />
+            <MudTabPanel Text="Statistics" Icon="@Icons.Material.Filled.Insights" />
+        </MudTabs>
         <div class="top-row px-4">
             <MudMenu Color="Color.Primary"
                      Variant="Variant.Filled"
@@ -40,6 +46,11 @@
 </div>
 
 @code {
+    void OnTabChanged(int i)
+    {
+        var routes = new[] { "schedule", "countries", "teams", "statistics" };
+        Nav.NavigateTo(routes[i]);
+    }
 
     private async Task AddCountry()
     {

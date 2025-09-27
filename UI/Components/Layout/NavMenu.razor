@@ -8,25 +8,22 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
 	<nav class="nav flex-column">
-		<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+		@* <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
 			<span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+		</NavLink> *@
+		<NavLink class="nav-link d-flex align-items-center" href="schedule">
+			<span class="bi bi-calendar-fill me-3" aria-hidden="true"></span> Matches
 		</NavLink>
 		<NavLink class="nav-link d-flex align-items-center" href="countries">
 			<span class="bi bi-flag-fill me-3" aria-hidden="true"></span> Countries
 		</NavLink>
 		<NavLink class="nav-link d-flex align-items-center" href="teams">
 			<span class="bi bi-trophy-fill me-3" aria-hidden="true"></span> Teams
-		</NavLink>
-		<NavLink class="nav-link d-flex align-items-center" href="schedule">
-			<span class="bi bi-calendar-fill me-3" aria-hidden="true"></span> Matches
-		</NavLink>
+		</NavLink>		
 		<NavLink class="nav-link d-flex align-items-center" href="statistics">
 			<span class="bi bi-dice-5 me-3" aria-hidden="true"></span> Statistics
 		</NavLink>
-		@* <NavLink class="nav-link d-flex align-items-center" href="management">
-			<span class="bi bi-gear-fill" aria-hidden="true"></span> Management
-		</NavLink> *@
-
+		
 		<a class="nav-link" href="/learnBlazor/bindprop">
 			<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Bind prop
 		</a>

@@ -141,8 +141,7 @@ public class TeamsController : ControllerBase
         var valuableCompetitions = new int[3] { 1, 2, 3 };
         if (!valuableCompetitions.Contains(t.Competition))
         {
-            _logger.LogWarning($"Competition value {t.Competition} is not valid for team {t.Name}");
-            return BadRequest();
+            t.Competition = 0;
         }
         var team = new Team
         {
