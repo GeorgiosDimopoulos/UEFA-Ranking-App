@@ -22,4 +22,10 @@ public class MatchesClient
         var match = await _httpClient.GetFromJsonAsync<MatchResponse?>($"api/match/{n}");
         return match ?? new();
     }
+
+    public async Task<bool?> AddMatch(MatchRequest mr)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"api/matches/", mr);
+        return response.IsSuccessStatusCode;
+    }
 }

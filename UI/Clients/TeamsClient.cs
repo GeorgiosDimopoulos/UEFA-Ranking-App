@@ -1,4 +1,5 @@
 ﻿using API.Data.DTOs;
+using Infrastructure.QueryParameters;
 
 namespace UI.Clients;
 
@@ -22,7 +23,7 @@ public class TeamsClient
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching teams: {ex.Message}");
-            throw new Exception();       
+            throw new Exception();
         }
     }
 
@@ -35,5 +36,11 @@ public class TeamsClient
     {
         var t = await _httpClient.GetFromJsonAsync<TeamResponse?>($"api/teams/{id}");
         return t;
+    }
+
+    public async Task<bool?> AddTeam(TeamRequest tr)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"api/teams/", tr);
+        return response.IsSuccessStatusCode;
     }
 }

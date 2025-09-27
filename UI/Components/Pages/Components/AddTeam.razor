@@ -1,14 +1,16 @@
 ﻿@page "/newTeam"
 @using API.Data.DTOs
+@using UI.Clients
 @inherits ComponentBase
 @inject IDialogService DialogService
+@inject TeamsClient TeamsClient
 
 <MudDialog>
     <DialogContent>
         <MudForm @ref="addForm" Spacing="2">
-            <MudTextField @bind-Value="team.Name" Label="Team Name" />
-            <MudTextField @bind-Value="team.CountryName" Label="Country" />
-            <MudTextField @bind-Value="team.Points" Label="Points" />
+            <MudTextField @bind-Value="teamRes.Name" Label="Team Name" />
+            <MudTextField @bind-Value="teamRes.CountryName" Label="Country" />
+            <MudTextField @bind-Value="teamRes.Points" Label="Points" />
             @* <MudCheckBox @bind-value="team.IsActive" Label="Active" /> *@
             <div style="text-align: left;">
                 <MudMenu Color="Color.Primary"
@@ -32,7 +34,10 @@
 
 @code {
     private MudForm addForm = default!;
-    private TeamResponse team = new();
+    private TeamResponse teamRes = new();
+    private TeamRequest teamReq = new();
+    private int CompetitionId;
+
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     protected override void OnParametersSet()
@@ -41,16 +46,23 @@
 
     private void Cancel(MouseEventArgs args)
     {
-        MudDialog?.Close(DialogResult.Ok(team));
+        MudDialog?.Close(DialogResult.Ok(teamRes));
     }
 
-    private void Save(MouseEventArgs args)
+    private async Task Save(MouseEventArgs args)
     {
-
+        teamReq = new TeamRequest
+        {
+            Name = teamRes.Name,
+            CountryName = teamRes.CountryName,
+            Points = teamRes.Points,
+            Competition = CompetitionId
+        };
+        var success = await TeamsClient.AddTeam(teamReq);
     }
 
     private void AddCompetition(MouseEventArgs args, int i)
     {
-
+        CompetitionId = i;
     }
 }
