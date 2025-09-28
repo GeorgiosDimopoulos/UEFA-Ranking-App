@@ -14,7 +14,6 @@ public class DatabaseInitializer
         var createCountriesTableQuery = @"CREATE TABLE IF NOT EXISTS Countries(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
-                Position INTEGER NOT NULL,
                 NumberOfInitialTeams INTEGER NOT NULL DEFAULT 0,
                 NumberOfActiveTeams INTEGER NOT NULL DEFAULT 0,
                 TotalPoints REAL)";
@@ -31,7 +30,6 @@ public class DatabaseInitializer
                 IsActive INTEGER NOT NULL,
                 Competition INTEGER NOT NULL,
                 CountryId INTEGER NOT NULL,
-                Position INTEGER NOT NULL,
                 Points INTEGER NOT NULL,
                 FOREIGN KEY (CountryId) REFERENCES Countries(Id) ON DELETE CASCADE)";
         command.CommandText = createTeamsTableQuery;

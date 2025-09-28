@@ -20,7 +20,7 @@ public class CountryRepository : ICountryRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, TotalPoints, Position, NumberOfActiveTeams, NumberOfInitialTeams FROM Countries ORDER BY Position ASC");
+        var countries = await connection.QueryAsync<Country>("SELECT Id, Name, TotalPoints, NumberOfActiveTeams, NumberOfInitialTeams FROM Countries");
         return countries.ToList();
     }
 
@@ -41,7 +41,7 @@ public class CountryRepository : ICountryRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, Position, TotalPoints FROM Countries WHERE Id = @Id", new { Id = id });
+        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, TotalPoints FROM Countries WHERE Id = @Id", new { Id = id });
         return country;
     }
 
@@ -53,7 +53,7 @@ public class CountryRepository : ICountryRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, Position, TotalPoints FROM Countries WHERE Name = @Name", new { Name = name });
+        var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, TotalPoints FROM Countries WHERE Name = @Name", new { Name = name });
         return country;
     }
 
@@ -74,18 +74,8 @@ public class CountryRepository : ICountryRepository
             TotalPoints = c.TotalPoints,
         };
 
-        var countries = (await GetAllCountries()).OrderByDescending(c => c.TotalPoints);
-        int position = 1;
-        foreach (var dbCountry in countries)
-        {
-            if (c.TotalPoints < dbCountry.TotalPoints)
-                position++;
-            else
-                break;
-        }
-
-        var insertCountryQuery = @"INSERT INTO Countries (Name, Position, TotalPoints) VALUES (@Name, @Position, @TotalPoints)";
-        var result = await connection.ExecuteAsync(insertCountryQuery, new { newCountry.Name, Position = position, newCountry.TotalPoints });
+        var insertCountryQuery = @"INSERT INTO Countries (Name, TotalPoints) VALUES (@Name, @TotalPoints)";
+        var result = await connection.ExecuteAsync(insertCountryQuery, new { newCountry.Name, newCountry.TotalPoints });
                 
         return result > 0;
     }
@@ -94,7 +84,7 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var updateCountryQuery = "UPDATE Countries SET Name = @Name, Position = @Position, @TotalPoints = TotalPoints WHERE Id = @Id";
+        var updateCountryQuery = "UPDATE Countries SET Name = @Name, @TotalPoints = TotalPoints WHERE Id = @Id";
 
         var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, Id = id, c.TotalPoints });
         return result > 0;

@@ -44,7 +44,7 @@ public class TeamsClient
                 Converters = { new JsonStringEnumConverter() }
             };
 
-            var teams = await _httpClient.GetFromJsonAsync<TeamResponse[]?>($"api/teams/{c}", JsonOpts);
+            var teams = await _httpClient.GetFromJsonAsync<TeamResponse[]?>($"api/teams?competition={c}", JsonOpts);
             return teams;
         }
         catch (Exception ex)
