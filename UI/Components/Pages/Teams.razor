@@ -31,7 +31,6 @@
 			</HeaderContent>
 			<RowTemplate>
 				<MudTd>
-					@* <NavLink class="nav-link" href=@($"/teams/{context.Name}") style="text-decoration:underline">@context.Name</NavLink> *@
 					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
 						<span style="text-decoration:underline"> @context.Name </span>
 					</MudButton>
@@ -43,7 +42,7 @@
 					<MudNumericField T="int" @bind-value="context.Points" Style="width:60px;" Disabled="@(!context.IsActive)" />
 				</MudTd>
 				<MudTd>
-					<MudCheckBox T="bool" @bind-Checked="@context.IsActive" />
+					<MudCheckBox T="bool" Checked="@context.IsActive" OnChanged="@( (bool? v) => context.IsActive = v == true )"/>
 				</MudTd>
 				<MudTd>
 					<MudButton Color="Color.Success"

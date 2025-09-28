@@ -1,6 +1,7 @@
 ﻿using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
+using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -39,7 +40,7 @@ public class MatchesController : ControllerBase
             Id = m.Id,
             HomeTeamName = m.HomeTeamName,
             AwayTeamName = m.AwayTeamName,
-            Round = m.Round,
+            Round = (Round)m.Round,
             Competition = m.Competition,
             Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
@@ -65,7 +66,7 @@ public class MatchesController : ControllerBase
             HomeTeamName = m.HomeTeamName,
             AwayTeamName = m.AwayTeamName,
             Competition = m.Competition,
-            Round = m.Round,
+            Round = (Round)m.Round,
             Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
 
@@ -89,7 +90,7 @@ public class MatchesController : ControllerBase
             Id = m.Id,
             HomeTeamName = m.HomeTeamName,
             AwayTeamName = m.AwayTeamName,
-            Round = m.Round,
+            Round = (Round)m.Round,
             Competition = m.Competition,
             Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
@@ -114,7 +115,7 @@ public class MatchesController : ControllerBase
             Id = m.Id,
             HomeTeamName = m.HomeTeamName,
             AwayTeamName = m.AwayTeamName,
-            Round = m.Round,
+            Round = (Round)m.Round,
             Competition = m.Competition,
             Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
@@ -139,7 +140,7 @@ public class MatchesController : ControllerBase
             Id = m.Id,
             HomeTeamName = m.HomeTeamName,
             AwayTeamName = m.AwayTeamName,
-            Round = m.Round,
+            Round = (Round)m.Round,
             Competition = m.Competition,
             Score = $"{m.HomeTeamGoals}-{m.AwayTeamGoals}"
         });
@@ -151,26 +152,28 @@ public class MatchesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Matches - Post" })]
     public async Task<ActionResult> AddMatch([FromQuery] MatchRequest matchRequest)
     {
-        if (matchRequest is null || !string.IsNullOrEmpty(matchRequest.Score))
-        {
+        if (matchRequest is null)
             return BadRequest("Match data is null.");
-        }
-
-        var goals = ParseScore(matchRequest.Score);
-        if (goals is null)
-            return BadRequest("Match format is not ok.");
-        var (homeGoals, awayGoals) = goals.Value;
 
         var match = new Match
         {
             HomeTeamName = matchRequest.HomeTeamName,
             AwayTeamName = matchRequest.AwayTeamName,
-            Round = matchRequest.Round,
-            HomeTeamGoals = homeGoals,
-            AwayTeamGoals = awayGoals,
+            Round = (int)matchRequest.Round,
             Competition = matchRequest.Competition
         };
-        
+
+        if (string.IsNullOrEmpty(matchRequest.Score))
+        {           
+            var goals = ParseScore(matchRequest.Score);
+            if (goals is not null)
+            {
+                var (homeGoals, awayGoals) = goals.Value;
+                match.HomeTeamGoals = homeGoals;
+                match.AwayTeamGoals = awayGoals;
+            }
+        }
+
         var result = await matchRepository.AddMatch(match);
         if (!result)
             return StatusCode(500, "Could not insert match into DB");
@@ -182,9 +185,9 @@ public class MatchesController : ControllerBase
         return Ok("Match added successfully.");
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut]
     [SwaggerOperation(Tags = new[] { "Matches - Put" })]
-    public async Task<ActionResult> UpdateMatch([FromBody] MatchRequest matchRequest, int id)
+    public async Task<ActionResult> UpdateMatch([FromBody] MatchRequest matchRequest)
     {
         if (matchRequest is null || !string.IsNullOrEmpty(matchRequest.Score))
         {
@@ -200,7 +203,7 @@ public class MatchesController : ControllerBase
         {
             HomeTeamName = matchRequest.HomeTeamName,
             AwayTeamName = matchRequest.AwayTeamName,
-            Round = matchRequest.Round,
+            Round = (int)matchRequest.Round,
             HomeTeamGoals = homeGoals,
             AwayTeamGoals = awayGoals,
             Competition = matchRequest.Competition

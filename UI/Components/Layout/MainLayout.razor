@@ -11,16 +11,21 @@
 <MudPopoverProvider />
 
 <div class="page">
-    @* <div class="sidebar">
+    <div class="sidebar">
         <NavMenu />
-    </div>     *@
+    </div>    
     <main>
-        <MudTabs Color="Color.Primary" Rounded="true" Elevation="2" Centered="true" Class="mb-2" FullWidth="true" OnActivePanelIndexChanged="OnTabChanged">
-            <MudTabPanel Text="Matches" Icon="@Icons.Material.Filled.Event" />
-            <MudTabPanel Text="Countries" Icon="@Icons.Material.Filled.Flag" />
-            <MudTabPanel Text="Teams" Icon="@Icons.Material.Filled.EmojiEvents" />
-            <MudTabPanel Text="Statistics" Icon="@Icons.Material.Filled.Insights" />
-        </MudTabs>
+        @* <MudAppBar Color="Color.Primary" Elevation="2">
+            <MudText Typo="Typo.h6" Class="px-4">UEFA Rankings Demo</MudText>
+            <MudItem xs="6" Class="flex justify-center">
+                <MudTabs @bind-ActivePanelIndex="_idx" Color="Color.Primary" Rounded="true" Elevation="2" Centered="true" OnActivePanelIndexChanged="OnTabChanged">
+                    <MudTabPanel Text="Matches" Icon="@Icons.Material.Filled.Event" />
+                    <MudTabPanel Text="Countries" Icon="@Icons.Material.Filled.Flag" />
+                    <MudTabPanel Text="Teams" Icon="@Icons.Material.Filled.EmojiEvents" />
+                    <MudTabPanel Text="Statistics" Icon="@Icons.Material.Filled.Insights" />
+                </MudTabs>
+            </MudItem>
+        </MudAppBar> *@
         <div class="top-row px-4">
             <MudMenu Color="Color.Primary"
                      Variant="Variant.Filled"
@@ -46,6 +51,7 @@
 </div>
 
 @code {
+    int _idx;
     void OnTabChanged(int i)
     {
         var routes = new[] { "schedule", "countries", "teams", "statistics" };

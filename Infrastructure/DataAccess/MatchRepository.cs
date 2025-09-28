@@ -79,6 +79,13 @@ public class MatchRepository : IMatchRepository
             return false;
         }
 
+        if (m.AwayTeamGoals != null && m.AwayTeamGoals != null)
+        {
+
+        }
+        else
+        {
+        }
         var createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
         var insertMatchesResult = await connection.ExecuteScalarAsync<long>(createQuery, new
         {

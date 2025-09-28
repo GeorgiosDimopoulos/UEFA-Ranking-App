@@ -1,12 +1,13 @@
 using Core.Interfaces;
 using Infrastructure.DataAccess;
 using Infrastructure.Helpers;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opt => { opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
