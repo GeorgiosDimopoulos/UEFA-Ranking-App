@@ -84,10 +84,9 @@ public class CountryRepository : ICountryRepository
                 break;
         }
 
-        var insertCountryQuery = @"INSERT INTO Countries (Name, Position, TotalPoints) VALUES(@Name, @Position, @TotalPoints)";
-        var result = await connection.ExecuteAsync(insertCountryQuery, newCountry);
-
-        Console.WriteLine($"New country added: {newCountry.Name}");
+        var insertCountryQuery = @"INSERT INTO Countries (Name, Position, TotalPoints) VALUES (@Name, @Position, @TotalPoints)";
+        var result = await connection.ExecuteAsync(insertCountryQuery, new { newCountry.Name, Position = position, newCountry.TotalPoints });
+                
         return result > 0;
     }
 
