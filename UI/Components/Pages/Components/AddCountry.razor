@@ -36,6 +36,10 @@
 
     private async Task Save(MouseEventArgs _)
     {
+        await addForm.Validate();
+        if (!addForm.IsValid)
+            return;
+
         countryReq = new CountryRequest
         {
             Name = countryRes.Name,
