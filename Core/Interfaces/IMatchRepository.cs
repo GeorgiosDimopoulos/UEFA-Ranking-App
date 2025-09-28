@@ -7,7 +7,7 @@ public interface IMatchRepository
     public Task<List<Match>> GetMatchesByCountryId(int id);
     public Task<List<Match>> GetMatchesByRound(int r);
 
-    public Task<List<Match>> GetMatchesByCompetition(int c); 
+    public Task<List<Match>> GetMatchesByCompetition(Competition c); 
 
     public Task<bool> AddMatch(Match match);
     public Task<bool> UpdateMatch(Match t, int id);

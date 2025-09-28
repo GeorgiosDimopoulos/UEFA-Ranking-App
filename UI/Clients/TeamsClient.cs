@@ -1,5 +1,6 @@
 ﻿using API.Data.DTOs;
-using Infrastructure.QueryParameters;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace UI.Clients;
 
@@ -16,7 +17,13 @@ public class TeamsClient
     {
         try
         {
-            var teams = await _httpClient.GetFromJsonAsync<TeamResponse[]?>("api/teams");
+            JsonSerializerOptions JsonOpts = new()
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+
+            var teams = await _httpClient.GetFromJsonAsync<TeamResponse[]?>("api/teams", JsonOpts);
             return teams;
         }
         catch (Exception ex)

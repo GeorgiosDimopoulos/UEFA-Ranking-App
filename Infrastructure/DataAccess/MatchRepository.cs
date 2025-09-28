@@ -47,12 +47,12 @@ public class MatchRepository : IMatchRepository
         return matches.ToList();
     }
 
-    public async Task<List<Match>> GetMatchesByCompetition(int c)
+    public async Task<List<Match>> GetMatchesByCompetition(Competition c)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
-
-        var sqlQuery = @"SELECT * FROM Matches WHERE Competition = @c";
+        var competition = (int)c;
+        var sqlQuery = @"SELECT * FROM Matches WHERE Competition = @competition";
         var matches = await connection.QueryAsync<Match>(sqlQuery, new { c });
         return matches.ToList();
     }

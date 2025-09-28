@@ -125,7 +125,7 @@ public class MatchesController : ControllerBase
 
     [HttpGet("by-competition")]
     [SwaggerOperation(Tags = new[] { "Matches - Get" })]
-    public async Task<List<MatchResponse>> GetMatchesByCompetition(int competition)
+    public async Task<List<MatchResponse>> GetMatchesByCompetition(Competition competition)
     {
         var matches = await matchRepository.GetMatchesByCompetition(competition);
 
