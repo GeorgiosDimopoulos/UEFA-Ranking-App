@@ -4,6 +4,7 @@ using Core.Models;
 using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Globalization;
 
 namespace API.Controllers;
 
@@ -56,6 +57,11 @@ public class TeamsController : ControllerBase
                 var matchByTeam = await matchRepository.GetMatchesByTeamName(t.Name);
                 matchesByTeams[t.Id] = matchByTeam;
             }
+        }
+
+        if (queryParameters.Competition != Competition.None)
+        {
+            teams = (teams.Where(t => t.Competition == queryParameters.Competition)).ToList();
         }
 
         return teams.Select(t => new TeamResponse

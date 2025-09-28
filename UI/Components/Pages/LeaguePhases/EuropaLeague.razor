@@ -1,5 +1,80 @@
-﻿<h3>Europa League</h3>
+﻿@page "/europa"
 
-@code {
+@using API.Data.DTOs
+@using Core.Models
+@using Humanizer
+@using Infrastructure
+@using Infrastructure.DataAccess
+@using UI.Clients
+@using UI.Components.Pages.Components
 
+@inject TeamsClient TeamsClient
+@inject IDialogService DialogService
+
+<PageTitle>Europa League Phase</PageTitle>
+
+<div class="col-12">
+    @if (_teams == null)
+    {
+        <p><em>Loading Europa League teams...</em></p>
+    }
+    else
+    {
+        <MudTable Items="_teams">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Country</MudTh>
+                <MudTh>Position</MudTh>
+                <MudTh>Points</MudTh>
+                <MudTh>Matches:</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
+                        <span style="text-decoration:underline"> @context.Name </span>
+                    </MudButton>
+                </MudTd>
+                <MudTd>@context.CountryName</MudTd>
+                <MudTd>@context.Position</MudTd>
+                <MudTd>@context.Points</MudTd>
+                <MudTd>
+					<MudButton Color="Color.Success"
+							   Variant="Variant.Filled"
+							   Style="min-width:40px; width:40px; height:30px; padding:0;"
+							   OnClick="@(() => OpenTeamAsync(context))">
+						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+					</MudButton>
+				</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+</div>
+
+@code
+{
+    private TeamResponse[]? _teams = default!;
+    private CountryResponse[]? _countries = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        var data = await TeamsClient.GetTeamsByCompetition(Competition.EuropaLeague) ?? Array.Empty<TeamResponse>();
+        _teams = data.OrderBy(t => t.Points).ToArray();
+    }
+
+    private async Task OpenTeamAsync(TeamResponse t)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Team"] = t
+        };
+
+        var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
+    }
 }

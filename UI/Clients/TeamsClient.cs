@@ -1,4 +1,5 @@
 ﻿using API.Data.DTOs;
+using Core.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -29,7 +30,27 @@ public class TeamsClient
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching teams: {ex.Message}");
-            throw new Exception();
+            throw;
+        }
+    }
+
+    public async Task<TeamResponse[]?> GetTeamsByCompetition(Competition c)
+    {
+        try
+        {
+            JsonSerializerOptions JsonOpts = new()
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+
+            var teams = await _httpClient.GetFromJsonAsync<TeamResponse[]?>($"api/teams/{c}", JsonOpts);
+            return teams;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching teams: {ex.Message}");
+            throw;
         }
     }
 
