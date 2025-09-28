@@ -163,7 +163,7 @@ public class MatchesController : ControllerBase
             Competition = matchRequest.Competition
         };
 
-        if (string.IsNullOrEmpty(matchRequest.Score))
+        if (!string.IsNullOrEmpty(matchRequest.Score))
         {           
             var goals = ParseScore(matchRequest.Score);
             if (goals is not null)
@@ -172,6 +172,11 @@ public class MatchesController : ControllerBase
                 match.HomeTeamGoals = homeGoals;
                 match.AwayTeamGoals = awayGoals;
             }
+        }
+        else
+        {
+            match.HomeTeamGoals = 99;
+            match.AwayTeamGoals = 99;
         }
 
         var result = await matchRepository.AddMatch(match);

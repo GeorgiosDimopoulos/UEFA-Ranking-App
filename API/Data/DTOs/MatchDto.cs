@@ -22,6 +22,6 @@ public class MatchRequest
     public Round Round { get; set; }
 
     [SwaggerSchema(Description = "Example format: \"1 - 1\"")]
-    public string Score { get; set; } = default!;
+    public string? Score { get; set; }
     public Competition Competition { get; set; }
 }

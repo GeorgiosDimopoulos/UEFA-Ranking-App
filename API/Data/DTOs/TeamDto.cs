@@ -10,7 +10,7 @@ public class TeamResponse
     public int Points { get; set; }
     public int Position { get; set; }
     public string CountryName { get; set; } = string.Empty;
-    public int Competition { get; set; }
+    public Competition Competition { get; set; }
 
     public List<Match>? Matches { get; set; }
 }
@@ -21,5 +21,5 @@ public class TeamRequest
     public bool IsActive { get; set; }
     public int Points { get; set; }
     public string CountryName { get; set; } = string.Empty;
-    public int Competition { get; set; }
+    public Competition Competition { get; set; }
 }

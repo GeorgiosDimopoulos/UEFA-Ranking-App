@@ -1,5 +1,6 @@
 ﻿@page "/newTeam"
 @using API.Data.DTOs
+@using Core.Models
 @using UI.Clients
 @inherits ComponentBase
 @inject IDialogService DialogService
@@ -19,9 +20,9 @@
                          StartIcon="@Icons.Material.Filled.Add"
                          Dense="true"
                          Class="m-1">
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, 1))">Champions League</MudMenuItem>
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, 2))">Europa League</MudMenuItem>
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, 3))">Conference League</MudMenuItem>
+                    <MudMenuItem OnClick="@(args => AddCompetition(args, Competition.ChampionsLeague))">Champions League</MudMenuItem>
+                    <MudMenuItem OnClick="@(args => AddCompetition(args, Competition.EuropaLeague))">Europa League</MudMenuItem>
+                    <MudMenuItem OnClick="@(args => AddCompetition(args, Competition.ConferenceLeague))">Conference League</MudMenuItem>
                 </MudMenu>
             </div>
         </MudForm>
@@ -36,7 +37,7 @@
     private MudForm addForm = default!;
     private TeamResponse teamRes = new();
     private TeamRequest teamReq = new();
-    private int CompetitionId;
+    private Competition Competition;
 
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
@@ -56,14 +57,14 @@
             Name = teamRes.Name,
             CountryName = teamRes.CountryName,
             Points = teamRes.Points,
-            Competition = CompetitionId,
+            Competition = Competition,
             IsActive = teamRes.IsActive
         };
         var success = await TeamsClient.AddTeam(teamReq);
     }
 
-    private void AddCompetition(MouseEventArgs args, int i)
+    private void AddCompetition(MouseEventArgs args, Competition c)
     {
-        CompetitionId = i;
+        Competition = c;
     }
 }

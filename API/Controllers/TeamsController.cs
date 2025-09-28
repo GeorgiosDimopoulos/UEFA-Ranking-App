@@ -66,7 +66,7 @@ public class TeamsController : ControllerBase
             Points = t.Points,
             Position = teamsPositions[t.Points],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
-            Competition = (int)t.Competition,
+            Competition = t.Competition,
             Matches = (queryParameters.IncludeMatches && t.IsActive) ? matchesByTeams[t.Id] : null
         }).ToList();
     }
@@ -92,7 +92,7 @@ public class TeamsController : ControllerBase
             Points = team.Points,
             Position = await GetTeamPosition(team.Points),
             CountryName = teamCountry!.Name,
-            Competition = (int)team.Competition
+            Competition = team.Competition
         };
 
         if (queryParameters.IncludeMatches)
@@ -123,7 +123,7 @@ public class TeamsController : ControllerBase
             Points = team.Points,
             Position = await GetTeamPosition(team.Points),
             CountryName = teamCountry!.Name, // ToDo: include via JOIN in GetTeamByName
-            Competition = (int)team.Competition
+            Competition = team.Competition
         };
 
         if (queryParameters.IncludeMatches)
@@ -138,8 +138,7 @@ public class TeamsController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Teams - Post" })]
     public async Task<ActionResult<TeamRequest>> AddTeam([FromQuery] TeamRequest t)
     {
-        var valuableCompetitions = new int[3] { 1, 2, 3 };
-        if (!valuableCompetitions.Contains(t.Competition))
+        if (!Enum.GetValues<Competition>().Contains(t.Competition))
         {
             t.Competition = 0;
         }
@@ -148,7 +147,7 @@ public class TeamsController : ControllerBase
             IsActive = t.IsActive,
             Name = t.Name,
             Points = t.Points,
-            Competition = (Competition)t.Competition
+            Competition = t.Competition
         };
         var result = await teamRepository.AddTeam(team, t.CountryName);
         if (result == false)

@@ -67,7 +67,7 @@ public class MatchRepository : IMatchRepository
         return matches.ToList();
     }
 
-    public async Task<bool> AddMatch(Match m)
+    public async Task<bool> AddMatch(Match m) // ToDo: change it to IResult with more details
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
@@ -79,14 +79,12 @@ public class MatchRepository : IMatchRepository
             return false;
         }
 
-        if (m.AwayTeamGoals != null && m.AwayTeamGoals != null)
-        {
-
-        }
-        else
-        {
-        }
-        var createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
+        string createQuery;
+        if (m.AwayTeamGoals != 99 && m.AwayTeamGoals != 99)        
+            createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";        
+        else        
+            createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
+               
         var insertMatchesResult = await connection.ExecuteScalarAsync<long>(createQuery, new
         {
             m.HomeTeamGoals,
