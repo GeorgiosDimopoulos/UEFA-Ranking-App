@@ -14,7 +14,7 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="addForm" Spacing="2">
-            <MudSelect T="Competition" Label="Competition" @bind-Value="matchRes.Competition">
+            <MudSelect T="Competition" Label="Competition" @bind-Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
                 @foreach (var tr in _teams)
                 {
                     <MudSelectItem Value="@tr.Competition">@tr.Competition</MudSelectItem>
@@ -58,6 +58,13 @@
     {
         var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
         _teams = data.OrderBy(c => c.Position).ToList();
+    }
+
+    private void OnCompetitionChanged(Competition comp)
+    {
+        matchRes.Competition = comp;
+
+        //SET FILTERED TEAMS BASED ON COMPETITION;
     }
 
     private void Cancel(MouseEventArgs args)
