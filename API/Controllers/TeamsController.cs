@@ -31,6 +31,13 @@ public class TeamsController : ControllerBase
     public async Task<List<TeamResponse>> GetTeams([FromQuery] TeamQueryParameters queryParameters)
     {
         var teams = await teamRepository.GetAllTeams();
+
+        if (teams is null || teams.Count == 0)
+        {
+            _logger.LogWarning("No teams found in the database.");
+            return [];
+        }
+
         var countries = await countryRepository.GetAllCountries();
 
         var teamsPositions = teams.Select(t => t.Points)
@@ -40,14 +47,7 @@ public class TeamsController : ControllerBase
                                   .ToDictionary(x => x.p, x => x.pos);
 
         var countriesNameAndIds = countries.ToDictionary(c => c.Id, c => c.Name);
-
         var teamsIds = teams.Select(t => t.Id).ToArray();
-
-        if (teams is null || teams.Count == 0)
-        {
-            _logger.LogWarning("No teams found in the database.");
-            return [];
-        }
 
         Dictionary<int, List<Match>> matchesByTeams = [];
         if (queryParameters.IncludeMatches)
@@ -59,7 +59,7 @@ public class TeamsController : ControllerBase
             }
         }
 
-        if (queryParameters.Competition != Competition.None)
+        if (queryParameters.Competition != null)
         {
             teams = (teams.Where(t => t.Competition == queryParameters.Competition)).ToList();
         }
