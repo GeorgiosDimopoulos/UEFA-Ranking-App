@@ -8,6 +8,7 @@
 @inject CountriesClient CountriesClient
 @inject IDialogService DialogService
 @inject TeamsClient TeamsClient
+@inject ISnackbar Snackbar
 
 <MudDialog>
 	<DialogContent>
@@ -77,5 +78,15 @@
 			IsActive = teamRes.IsActive
 		};
 		var success = await TeamsClient.AddTeam(teamReq);
+		
+		if (success != null && success == true)
+		{
+			MudDialog.Close(DialogResult.Ok(teamRes));
+			Snackbar.Add("Team added successfully.", Severity.Success);
+		}
+		else
+		{
+			Snackbar.Add("Failed to add team.", Severity.Error);
+		}
 	}
 }

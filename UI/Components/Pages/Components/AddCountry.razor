@@ -46,6 +46,7 @@
             TotalPoints = countryRes.TotalPoints
         };
         var success = await CountriesClient.AddCountry(countryReq);
+        
         if (success != null && success == true)
         {
             Dialog.Close(DialogResult.Ok(countryRes));

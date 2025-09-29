@@ -5,6 +5,7 @@
 @inherits ComponentBase
 @inject IDialogService DialogService
 @inject MatchesClient MatchClient
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
@@ -64,6 +65,16 @@
             Competition = (Competition)CompetitionId
         };
         var success = await MatchClient.AddMatch(matchReq);
+
+        if (success != null && success == true)
+        {
+            MudDialog.Close(DialogResult.Ok(matchRes));
+            Snackbar.Add("Match added successfully.", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Failed to add match.", Severity.Error);
+        }
     }
 
     private void AddCompetition(MouseEventArgs args, int i)

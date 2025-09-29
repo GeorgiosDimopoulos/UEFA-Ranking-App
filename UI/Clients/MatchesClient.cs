@@ -13,7 +13,7 @@ public class MatchesClient
 
     public async Task<List<MatchResponse>?> GetMatches()
     {
-        var matches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>("api/matches");
+        var matches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>("api/Matches");
         return matches?.ToList();
     }
 
