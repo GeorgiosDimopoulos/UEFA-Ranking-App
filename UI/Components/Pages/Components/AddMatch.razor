@@ -1,18 +1,19 @@
 ﻿@page "/newMatch"
+
 @using API.Data.DTOs
 @using Core.Models
 @using UI.Clients
+
 @inherits ComponentBase
+
 @inject IDialogService DialogService
 @inject MatchesClient MatchClient
+@inject TeamsClient TeamsClient
 @inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
         <MudForm @ref="addForm" Spacing="2">
-            <MudTextField @bind-Value="matchRes.HomeTeamName" Label="Home Team" />
-            <MudTextField @bind-Value="matchRes.AwayTeamName" Label="Away Team" />
-            <MudNumericField @bind-Value="matchRes.Round" Label="Round" />
             <div style="text-align:left">
                 <MudMenu Color="Color.Primary"
                          Variant="Variant.Filled"
@@ -25,6 +26,25 @@
                     <MudMenuItem OnClick="@(args => AddCompetition(args, 3))">Conference League</MudMenuItem>
                 </MudMenu>
             </div>
+            <MudSelect T="Competition" Label="Competition" @bind-Value="matchRes.Competition">
+                @foreach (var tr in _teams)
+                {
+                    <MudSelectItem Value="@tr.Competition">@tr.Competition</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="string" Label="Home Team" @bind-Value="matchRes.HomeTeamName">
+                @foreach (var tr in _teams)
+                {
+                    <MudSelectItem Value="@tr.Name">@tr.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="string" Label="Away Team" @bind-Value="matchRes.AwayTeamName">
+                @foreach (var tr in _teams)
+                {
+                    <MudSelectItem Value="@tr.Name">@tr.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelectItem Value="@matchRes.Round">@matchRes.Round</MudSelectItem>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -34,15 +54,27 @@
 </MudDialog>
 
 @code {
+    private bool _disposed;
+
     private MudForm addForm = default!;
+
     private MatchResponse matchRes = new();
     private MatchRequest matchReq = new();
+
+    private List<TeamResponse> _teams = new();
+
     private int CompetitionId;
 
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
+        if (_disposed) 
+            return;
+        var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
+        if (_disposed)
+            return;
+        _teams = data.OrderBy(c => c.Position).ToList();
     }
 
     private void Cancel(MouseEventArgs args)
@@ -80,5 +112,10 @@
     private void AddCompetition(MouseEventArgs args, int i)
     {
         CompetitionId = i;
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
     }
 }
