@@ -41,6 +41,9 @@ public class TeamRepository : ITeamRepository
 
     public async Task<Team?> GetTeamById(int id)
     {
+        if (id <= 0)
+            return null;
+
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
@@ -59,6 +62,9 @@ public class TeamRepository : ITeamRepository
 
     public async Task<List<Team?>> GetTeamsByCountryId(int countryId)
     {
+        if (countryId <= 0)
+            return [];
+
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 

@@ -4,7 +4,6 @@ using Core.Models;
 using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Globalization;
 
 namespace API.Controllers;
 
@@ -84,7 +83,7 @@ public class TeamsController : ControllerBase
         var team = await teamRepository.GetTeamById(id);
         if (team == null)
         {
-            _logger.LogWarning("Team with id {Id} not found", id);
+            _logger.LogWarning($"Team with id {id} not found", id);
             return NotFound();
         }
 
@@ -107,6 +106,53 @@ public class TeamsController : ControllerBase
         }
 
         return Ok(teamDto);
+    }
+
+    [HttpGet("by-country/{countryId:int}")]
+    [SwaggerOperation(Tags = new[] { "Teams - Get" })]
+    public async Task<ActionResult<List<TeamResponse>>> GetTeamsByCountryId(int countryId, [FromQuery] TeamQueryParameters queryParameters)
+    {
+        var teamCountry = await countryRepository.GetCountryById(countryId);
+        if (teamCountry == null)
+        {
+            _logger.LogWarning($"Country with id: {countryId} not found");
+            return NotFound();
+        }
+
+        var teams = await teamRepository.GetTeamsByCountryId(countryId);
+        if (teams == null)
+        {
+            _logger.LogWarning($"Teams with country id: {countryId} not found");
+            return NotFound();
+        }
+
+        var teamsDto = new List<TeamResponse>();
+        foreach (var team in teams!)
+        {
+            var teamDto = new TeamResponse
+            {
+                Id = team!.Id,
+                Name = team.Name,
+                IsActive = team.IsActive,
+                Points = team.Points,
+                Position = await GetTeamPosition(team.Points),
+                CountryName = teamCountry.Name,
+                Competition = team.Competition
+            };
+            
+            if (queryParameters.IncludeMatches)
+            {
+                teamDto.Matches = team.Matches.ToList();
+            }
+            
+            teamsDto.Add(teamDto);
+        }
+
+        //if (queryParameters.IncludeMatches)
+        //{
+        //    teamDtos.Matches = team.Matches.ToList();
+        //}
+        return Ok(teamsDto);
     }
 
     [HttpGet("{name}")]

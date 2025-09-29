@@ -30,20 +30,14 @@
 				<MudTh>Matches:</MudTh>
 			</HeaderContent>
 			<RowTemplate>
-				<MudTd>
-					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
-						<span style="text-decoration:underline"> @context.Name </span>
-					</MudButton>
-				</MudTd>
+				<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
+					<span style="text-decoration:underline"> @context.Name </span>
+				</MudButton>
 				<MudTd>@context.CountryName</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
 				<MudTd>@context.Position</MudTd>
-				<MudTd>
-					<MudNumericField T="int" @bind-value="context.Points" Style="width:60px;" Disabled="@(!context.IsActive)" />
-				</MudTd>
-				<MudTd>
-					<MudCheckBox T="bool" Checked="@context.IsActive" OnChanged="@( (bool? v) => context.IsActive = v == true )"/>
-				</MudTd>
+				<MudText T="int" @bind-value="context.Points" Style="width:60px;" Disabled="@(!context.IsActive)" />
+				<MudCheckBox T="bool" Checked="@context.IsActive" Disabled="true" OnChanged="@( (bool? v) => context.IsActive = v == true )" />
 				<MudTd>
 					<MudButton Color="Color.Success"
 							   Variant="Variant.Filled"
