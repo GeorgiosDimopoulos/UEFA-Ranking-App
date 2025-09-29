@@ -14,18 +14,6 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="addForm" Spacing="2">
-            <div style="text-align:left">
-                <MudMenu Color="Color.Primary"
-                         Variant="Variant.Filled"
-                         Label="Competition"
-                         StartIcon="@Icons.Material.Filled.Add"
-                         Dense="true"
-                         Class="m-1">
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, 1))">Champions League</MudMenuItem>
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, 2))">Europa League</MudMenuItem>
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, 3))">Conference League</MudMenuItem>
-                </MudMenu>
-            </div>
             <MudSelect T="Competition" Label="Competition" @bind-Value="matchRes.Competition">
                 @foreach (var tr in _teams)
                 {
@@ -44,7 +32,12 @@
                     <MudSelectItem Value="@tr.Name">@tr.Name</MudSelectItem>
                 }
             </MudSelect>
-            <MudSelectItem Value="@matchRes.Round">@matchRes.Round</MudSelectItem>
+            <MudSelect T="Round" Label="Round" @bind-Value="matchRes.Round">
+                @foreach (var r in Enum.GetValues<Round>())
+                {
+                    <MudSelectItem Value="@r">@r</MudSelectItem>
+                }
+            </MudSelect>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -54,26 +47,16 @@
 </MudDialog>
 
 @code {
-    private bool _disposed;
-
     private MudForm addForm = default!;
-
     private MatchResponse matchRes = new();
     private MatchRequest matchReq = new();
-
     private List<TeamResponse> _teams = new();
-
-    private int CompetitionId;
 
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        if (_disposed) 
-            return;
         var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
-        if (_disposed)
-            return;
         _teams = data.OrderBy(c => c.Position).ToList();
     }
 
@@ -94,7 +77,7 @@
             AwayTeamName = matchRes.AwayTeamName,
             Score = matchRes.Score,
             Round = matchRes.Round,
-            Competition = (Competition)CompetitionId
+            Competition = matchRes.Competition
         };
         var success = await MatchClient.AddMatch(matchReq);
 
@@ -107,15 +90,5 @@
         {
             Snackbar.Add("Failed to add match.", Severity.Error);
         }
-    }
-
-    private void AddCompetition(MouseEventArgs args, int i)
-    {
-        CompetitionId = i;
-    }
-
-    public void Dispose()
-    {
-        _disposed = true;
     }
 }
