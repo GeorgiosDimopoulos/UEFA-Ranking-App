@@ -1,70 +1,81 @@
-﻿@page "/newTeam"
-@using API.Data.DTOs
+﻿@using API.Data.DTOs
 @using Core.Models
+@using Humanizer
 @using UI.Clients
+
 @inherits ComponentBase
+
+@inject CountriesClient CountriesClient
 @inject IDialogService DialogService
 @inject TeamsClient TeamsClient
 
 <MudDialog>
-    <DialogContent>
-        <MudForm @ref="addForm" Spacing="2">
-            <MudTextField @bind-Value="teamRes.Name" Label="Team Name" />
-            <MudTextField @bind-Value="teamRes.CountryName" Label="Country" />
-            <MudTextField @bind-Value="teamRes.Points" Label="Points" />
-            <MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
-            <div style="text-align: left;">
-                <MudMenu Color="Color.Primary"
-                         Variant="Variant.Filled"
-                         Label="Competition"
-                         StartIcon="@Icons.Material.Filled.Add"
-                         Dense="true"
-                         Class="m-1">
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, Competition.ChampionsLeague))">Champions League</MudMenuItem>
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, Competition.EuropaLeague))">Europa League</MudMenuItem>
-                    <MudMenuItem OnClick="@(args => AddCompetition(args, Competition.ConferenceLeague))">Conference League</MudMenuItem>
-                </MudMenu>
-            </div>
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
-    </DialogActions>
+	<DialogContent>
+		<MudForm @ref="addForm" Spacing="2">
+			<MudTextField @bind-Value="teamRes.Name" Label="Team Name" />
+			<MudSelect T="string" Label="Country" @bind-Value="teamRes.CountryName" Disabled="@(_countries.Length == 0)">
+				@if (_countries.Length > 0)
+				{
+					@foreach (var c in _countries)
+					{
+						<MudSelectItem Value="@c.Name">@c.Name</MudSelectItem>
+					}
+				}
+			</MudSelect>
+			<MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
+			@if (teamRes.IsActive == true)
+			{
+				<MudTextField T="int" @bind-Value="teamRes.Points" Label="Points" />
+			}
+			<MudSelect T="Competition" Label="Competition" @bind-Value="teamRes.Competition">
+				@foreach (var c in Enum.GetValues<Competition>())
+				{
+					<MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
+				}
+			</MudSelect>
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" Variant=" Variant.Filled" Disabled="!AreFieldsFilled()" OnClick="Save">Save</MudButton>
+	</DialogActions>
 </MudDialog>
 
 @code {
-    private MudForm addForm = default!;
-    private TeamResponse teamRes = new();
-    private TeamRequest teamReq = new();
-    private Competition Competition;
+	private MudForm addForm = default!;
+	private TeamResponse teamRes = new();
+	private TeamRequest teamReq = new();
 
-    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+	private CountryResponse[] _countries = Array.Empty<CountryResponse>();
 
-    protected override void OnParametersSet()
-    {
-    }
+	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
-    private void Cancel(MouseEventArgs args)
-    {
-        MudDialog?.Close(DialogResult.Ok(teamRes));
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
+		_countries = data.OrderBy(c => c.Position).ToArray();
+	}
 
-    private async Task Save(MouseEventArgs args)
-    {
-        teamReq = new TeamRequest
-        {
-            Name = teamRes.Name,
-            CountryName = teamRes.CountryName,
-            Points = teamRes.Points,
-            Competition = Competition,
-            IsActive = teamRes.IsActive
-        };
-        var success = await TeamsClient.AddTeam(teamReq);
-    }
+	private bool AreFieldsFilled()
+	{
+		return !string.IsNullOrWhiteSpace(teamRes.Name) && !string.IsNullOrWhiteSpace(teamRes.CountryName) && teamRes.Competition != Competition.None;
+	}
 
-    private void AddCompetition(MouseEventArgs args, Competition c)
-    {
-        Competition = c;
-    }
+	private void Cancel(MouseEventArgs args)
+	{
+		MudDialog?.Close(DialogResult.Ok(teamRes));
+	}
+
+	private async Task Save(MouseEventArgs args)
+	{
+		teamReq = new TeamRequest
+		{
+			Name = teamRes.Name,
+			CountryName = teamRes.CountryName,
+			Points = teamRes.Points,
+			Competition = teamRes.Competition,
+			IsActive = teamRes.IsActive
+		};
+		var success = await TeamsClient.AddTeam(teamReq);
+	}
 }
