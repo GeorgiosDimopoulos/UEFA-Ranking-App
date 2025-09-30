@@ -65,9 +65,9 @@ public class TeamsClient
         return t;
     }
 
-    public async Task<bool?> AddTeam(TeamRequest tr, string originalName)
+    public async Task<bool?> AddTeam(TeamRequest tr)
     {
-        var url = $"api/teams/{Uri.EscapeDataString(originalName)}" +
+        var url = $"api/teams/{Uri.EscapeDataString(tr.Name)}" +
                $"name={Uri.EscapeDataString(tr.Name)}" +
                $"&countryName={Uri.EscapeDataString(tr.CountryName)}" +
                $"&competition={tr.Competition}" +
@@ -77,10 +77,9 @@ public class TeamsClient
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool?> UpdateTeam(TeamRequest tr)
+    public async Task<bool?> UpdateTeam(TeamRequest tr, string originalName)
     {
-        var url =
-               $"api/teams/{tr.Name}?" +
+        var url = $"api/teams/{Uri.EscapeDataString(originalName)}" +
                $"name={Uri.EscapeDataString(tr.Name)}" +
                $"&countryName={Uri.EscapeDataString(tr.CountryName)}" +
                $"&competition={(int)tr.Competition}" +
