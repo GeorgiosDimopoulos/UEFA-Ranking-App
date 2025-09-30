@@ -139,12 +139,12 @@ public class TeamsController : ControllerBase
                 CountryName = teamCountry.Name,
                 Competition = team.Competition
             };
-            
+
             if (queryParameters.IncludeMatches)
             {
                 teamDto.Matches = team.Matches.ToList();
             }
-            
+
             teamsDto.Add(teamDto);
         }
 
@@ -210,12 +210,12 @@ public class TeamsController : ControllerBase
         return Ok();
     }
 
-    [HttpPut]
+    [HttpPut("{name}")]
     [SwaggerOperation(Tags = new[] { "Teams - Put" })]
-    public async Task<ActionResult> UpdateTeam([FromQuery] TeamRequest t)
+    public async Task<ActionResult> UpdateTeam(string name, [FromQuery] TeamRequest t)
     {
-        var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points };
-        var result = await teamRepository.UpdateTeam(team);
+        var team = new Team { Competition = t.Competition, IsActive = t.IsActive, Name = t.Name, Points = t.Points };
+        var result = await teamRepository.UpdateTeam(team, name);
         if (result == false)
         {
             _logger.LogWarning($"Could not update team {t.Name}");

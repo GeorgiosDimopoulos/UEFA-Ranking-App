@@ -65,20 +65,19 @@ public class TeamsClient
         return t;
     }
 
-    public async Task<bool?> AddTeam(TeamRequest tr)
+    public async Task<bool?> AddTeam(TeamRequest tr, string originalName)
     {
-        var url =
-               $"api/teams?" +
+        var url = $"api/teams/{Uri.EscapeDataString(originalName)}" +
                $"name={Uri.EscapeDataString(tr.Name)}" +
                $"&countryName={Uri.EscapeDataString(tr.CountryName)}" +
-               $"&competition={(int)tr.Competition}" +
+               $"&competition={tr.Competition}" +
                $"&points={tr.Points}" +
                $"&isActive={tr.IsActive}";
         var response = await _httpClient.PostAsync(url, null);
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool?> UpdateTeam(TeamRequest tr) 
+    public async Task<bool?> UpdateTeam(TeamRequest tr)
     {
         var url =
                $"api/teams/{tr.Name}?" +

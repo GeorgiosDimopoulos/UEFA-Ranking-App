@@ -104,13 +104,13 @@ public class TeamRepository : ITeamRepository
         return result > 0;
     }
 
-    public async Task<bool> UpdateTeam(Team t)
+    public async Task<bool> UpdateTeam(Team t, string currentName)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
-        var updateQuery = "UPDATE Teams SET Name = @Name, IsActive = @IsActive, Points = @Points WHERE Name = @Name";
-        var result = await connection.ExecuteAsync(updateQuery, new { t.Name, t.IsActive, t.Points, t.Competition });
+        const string sql = "UPDATE Teams SET Name = @NewName, IsActive = @IsActive, Points = @Points, Competition = @Competition WHERE Name = @CurrentName";
+        var result = await connection.ExecuteAsync(sql, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Points, t.Competition });
 
         return result > 0;
     }
