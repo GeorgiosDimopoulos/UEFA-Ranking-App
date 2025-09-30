@@ -2,6 +2,7 @@
 @page "/"
 
 @using API.Data.DTOs
+@using Humanizer
 @using UI.Clients
 @using UI.Components.Pages.Components
 
@@ -29,8 +30,17 @@
 			<RowTemplate>
 				<MudTd>@context.HomeTeamName</MudTd>
 				<MudTd>@context.AwayTeamName</MudTd>
-				<MudTd>@context.Score</MudTd>
-				<MudTd>@context.Competition</MudTd>
+				<MudTd>
+					@if (@context.Score == "99")
+					{
+						@context.Score
+					}
+					else
+					{
+						@string.Empty
+					}
+				</MudTd>
+				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
 				<MudTd>@context.Round</MudTd>
 				<MudTd>
 					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => EditMatch(context)">
@@ -53,10 +63,10 @@
 	private async Task EditMatch(MatchResponse match)
 	{
 		var parameters = new DialogParameters { ["Match"] = match };
-		var options = new DialogOptions { CloseOnEscapeKey = true };
-		
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
 		var dialog = await DialogService.ShowAsync<MatchDetails>("Edit Match", parameters, options);
-		
+
 		var result = await dialog.Result;
 		if (result != null && !result!.Canceled && result.Data is MatchResponse mr)
 		{

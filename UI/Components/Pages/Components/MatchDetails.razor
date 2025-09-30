@@ -3,31 +3,34 @@
 
 @inject IDialogService DialogService
 
-<MudDialog>
+<MudDialog editForm>
     <DialogContent>
         <MudStack Row="true" Spacing="2">
             <MudTextField @bind-Value="match.HomeTeamName" Label="Home Team" />
             <MudTextField @bind-Value="match.AwayTeamName" Label="Away Team" />
             <MudTextField @bind-Value="match.Score" Label="Score" />
-            <Component />
+            <MudTextField @bind-Value="match.Round" Label="Round" />
+            <MudTextField @bind-Value="match.Competition" Label="Competition" />
+            <MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
         </MudStack>
     </DialogContent>
 </MudDialog>
 
 @code {
-    [Parameter] public MatchResponse Match { get; set; } = default!;
+	[Parameter] public MatchResponse Match { get; set; } = default!;
 
-    private MatchResponse match = new();
-    private MudForm editForm = default!;
+	private MatchResponse match = new();
+	private MudForm editForm = default!;
 
-    protected override void OnParametersSet()
-    {
-        if (Match == null)
-        {
-            DialogService.ShowAsync<MatchDetails>("Error", new DialogParameters { ["Match"] = Match });
-            return;
-        }
-        match = new MatchResponse
+	protected override void OnParametersSet()
+	{
+		if (Match == null)
+		{
+			DialogService.ShowAsync<MatchDetails>("Error", new DialogParameters { ["Match"] = Match });
+			return;
+		}
+		match = new MatchResponse
         {
             HomeTeamName = Match.HomeTeamName,
             AwayTeamName = Match.AwayTeamName,
@@ -35,5 +38,13 @@
             Competition = Match.Competition,
             Round = Match.Round
         };
-    }
+	}
+	private void Save(MouseEventArgs args)
+	{
+		
+	}
+	private void Cancel(MouseEventArgs args)
+	{
+		// editForm?.
+	}
 }

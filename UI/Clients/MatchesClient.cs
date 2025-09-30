@@ -1,4 +1,6 @@
-﻿using API.Data.DTOs;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using API.Data.DTOs;
 
 namespace UI.Clients;
 
@@ -13,13 +15,24 @@ public class MatchesClient
 
     public async Task<List<MatchResponse>?> GetMatches()
     {
-        var matches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>("api/Matches");
+        var opts = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+        var matches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>("api/matches", opts);
         return matches?.ToList();
     }
 
     public async Task<MatchResponse> GetMatch(string n)
     {
-        var match = await _httpClient.GetFromJsonAsync<MatchResponse?>($"api/match/{n}");
+        var opts = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
+        var match = await _httpClient.GetFromJsonAsync<MatchResponse?>($"api/match/{n}", opts);
         return match ?? new();
     }
 
@@ -27,9 +40,9 @@ public class MatchesClient
     {
         var url = $"api/matches?" +
             $"homeTeamName={Uri.EscapeDataString(mr.HomeTeamName)}" +
-            $"awayTeamName={Uri.EscapeDataString(mr.AwayTeamName)}" +
+            $"&awayTeamName={Uri.EscapeDataString(mr.AwayTeamName)}" +
             $"&round={(int)mr.Round}" +
-            $"&competition= {(int)mr.Competition}";
+            $"&competition={(int)mr.Competition}";
 
         var response = await _httpClient.PostAsync(url, null);
         if (!response.IsSuccessStatusCode)
