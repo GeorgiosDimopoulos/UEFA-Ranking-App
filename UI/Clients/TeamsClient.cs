@@ -80,7 +80,7 @@ public class TeamsClient
     public async Task<bool?> UpdateTeam(TeamRequest tr, string originalName)
     {
         var url = $"api/teams/{Uri.EscapeDataString(originalName)}" +
-               $"name={Uri.EscapeDataString(tr.Name)}" +
+               $"?name={Uri.EscapeDataString(tr.Name)}" +
                $"&countryName={Uri.EscapeDataString(tr.CountryName)}" +
                $"&competition={(int)tr.Competition}" +
                $"&points={tr.Points}" +
