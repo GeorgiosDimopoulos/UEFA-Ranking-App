@@ -13,11 +13,11 @@
 <MudDialog>
 	<DialogContent>
 		<MudForm>
-			<MudTextField @bind-Value="Team.Name" Label="Name" />
-			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" @bind-Value="Team.Position" Label="Initial Position" />
-			<MudNumericField T="int" @bind-Value="Team.Position" Label="Current Position" />
-			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" Value="Team.Matches?.Count ?? 0" Label="Matches" />
-			<MudNumericField T="int" Value="Team.Points" Label="Points" />
+			<MudTextField @bind-Value="teamRes.Name" Label="Name" />
+			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" @bind-Value="teamRes.Position" Label="Initial Position" />
+			<MudNumericField T="int" @bind-Value="teamRes.Position" Label="Current Position" />
+			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" Value="teamRes.Matches?.Count ?? 0" Label="Matches" />
+			<MudNumericField T="int" Value="teamRes.Points" Label="Points" />
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
@@ -58,7 +58,7 @@
 			IsActive = teamRes.IsActive,
 			CountryName = teamRes.CountryName
 		};
-		var success = await TeamsClient.AddTeam(teamReq);
+		var success = await TeamsClient.UpdateTeam(teamReq);
 
 		if (success != null && success == true)
 		{

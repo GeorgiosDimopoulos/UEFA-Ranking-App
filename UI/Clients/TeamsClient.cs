@@ -77,4 +77,17 @@ public class TeamsClient
         var response = await _httpClient.PostAsync(url, null);
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<bool?> UpdateTeam(TeamRequest tr) 
+    {
+        var url =
+               $"api/teams/{tr.Name}?" +
+               $"name={Uri.EscapeDataString(tr.Name)}" +
+               $"&countryName={Uri.EscapeDataString(tr.CountryName)}" +
+               $"&competition={(int)tr.Competition}" +
+               $"&points={tr.Points}" +
+               $"&isActive={tr.IsActive}";
+        var response = await _httpClient.PutAsync(url, null);
+        return response.IsSuccessStatusCode;
+    }
 }

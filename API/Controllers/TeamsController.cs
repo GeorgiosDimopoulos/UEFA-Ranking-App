@@ -210,12 +210,12 @@ public class TeamsController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut]
     [SwaggerOperation(Tags = new[] { "Teams - Put" })]
-    public async Task<ActionResult> UpdateTeam([FromQuery] TeamRequest t, int id)
+    public async Task<ActionResult> UpdateTeam([FromQuery] TeamRequest t)
     {
         var team = new Team { IsActive = t.IsActive, Name = t.Name, Points = t.Points };
-        var result = await teamRepository.UpdateTeam(team, id);
+        var result = await teamRepository.UpdateTeam(team);
         if (result == false)
         {
             _logger.LogWarning($"Could not update team {t.Name}");
