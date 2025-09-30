@@ -76,26 +76,20 @@
 
 	private void OnHomeTeamChanged(string homeTeam)
 	{
-		if (AreTeamsSame(matchRes.AwayTeamName, homeTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.AwayTeamName, homeTeam))
+		if ((!string.IsNullOrEmpty(matchRes.AwayTeamName)) && AreTeamsSame(matchRes.AwayTeamName, homeTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.AwayTeamName, homeTeam))
 		{
 			return;
 		}
-		else
-		{
-			matchRes.HomeTeamName = homeTeam;
-		}
+		matchRes.HomeTeamName = homeTeam;
 	}
 
 	private void OnAwayTeamChanged(string awayTeam)
 	{
-		if (AreTeamsSame(matchRes.HomeTeamName, awayTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.HomeTeamName, awayTeam))
+		if ((!string.IsNullOrEmpty(matchRes.HomeTeamName)) && AreTeamsSame(matchRes.HomeTeamName, awayTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.HomeTeamName, awayTeam))
 		{
 			return;
 		}
-		else
-		{
-			matchRes.AwayTeamName = awayTeam;
-		}
+		matchRes.AwayTeamName = awayTeam;
 	}
 
 	private async Task Save(MouseEventArgs args)
