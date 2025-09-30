@@ -148,10 +148,6 @@ public class TeamsController : ControllerBase
             teamsDto.Add(teamDto);
         }
 
-        //if (queryParameters.IncludeMatches)
-        //{
-        //    teamDtos.Matches = team.Matches.ToList();
-        //}
         return Ok(teamsDto);
     }
 
