@@ -14,19 +14,19 @@
 <MudDialog>
 	<DialogContent>
 		<MudForm @ref="addForm" Spacing="2">
-			<MudSelect T="Competition" Label="Competition" ValueChanged="OnCompetitionChanged">
+			<MudSelect T="Competition" Label="Competition" Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
 				@foreach (var c in Enum.GetValues<Competition>())
 				{
 					<MudSelectItem Value="@c">@c.ToString()</MudSelectItem>
 				}
 			</MudSelect>
-			<MudSelect T="string" Label="Home Team" @bind-Value="matchRes.HomeTeamName">
+			<MudSelect T="string" Label="Home Team" Value="matchRes.HomeTeamName" ValueChanged="OnHomeTeamChanged">
 				@foreach (var tr in _competitionTeams)
 				{
 					<MudSelectItem Value="@tr.Name">@tr.Name</MudSelectItem>
 				}
 			</MudSelect>
-			<MudSelect T="string" Label="Away Team" @bind-Value="matchRes.AwayTeamName">
+			<MudSelect T="string" Label="Away Team" Value="matchRes.AwayTeamName" ValueChanged="OnAwayTeamChanged">
 				@foreach (var tr in _competitionTeams)
 				{
 					<MudSelectItem Value="@tr.Name">@tr.Name</MudSelectItem>
@@ -67,16 +67,35 @@
 	{
 		matchRes.Competition = comp;
 		_competitionTeams = _teams.Where(t => t.Competition == comp)
-								  .OrderBy(t => t.Name)
-								  .ToList();
+										.OrderBy(t => t.Name)
+										.ToList();
 
 		matchRes.HomeTeamName = string.Empty;
 		matchRes.AwayTeamName = string.Empty;
 	}
 
-	private void Cancel(MouseEventArgs args)
+	private void OnHomeTeamChanged(string homeTeam)
 	{
-		MudDialog?.Close(DialogResult.Ok(matchRes));
+		if (AreTeamsSame(matchRes.AwayTeamName, homeTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.AwayTeamName, homeTeam))
+		{
+			return;
+		}
+		else
+		{
+			matchRes.HomeTeamName = homeTeam;
+		}
+	}
+
+	private void OnAwayTeamChanged(string awayTeam)
+	{
+		if (AreTeamsSame(matchRes.HomeTeamName, awayTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.HomeTeamName, awayTeam))
+		{
+			return;
+		}
+		else
+		{
+			matchRes.AwayTeamName = awayTeam;
+		}
 	}
 
 	private async Task Save(MouseEventArgs args)
@@ -104,5 +123,51 @@
 		{
 			Snackbar.Add("Failed to add match.", Severity.Error);
 		}
+	}
+
+	private void Cancel(MouseEventArgs args)
+	{
+		MudDialog?.Close(DialogResult.Ok(matchRes));
+	}
+
+	private bool AreTeamsSame(string firstTeam, string secondTeam)
+	{
+		if (secondTeam.Equals(firstTeam))
+		{
+			Snackbar.Add("Home and Away teams cannot be the same.", Severity.Warning);
+			matchRes.HomeTeamName = string.Empty;
+			matchRes.AwayTeamName = string.Empty;
+
+			return true;
+		}
+		return false;
+	}
+
+	private bool IsCompetitionNone(Competition comp)
+	{
+		if (matchRes.Competition == Competition.None)
+		{
+			Snackbar.Add("Please select a competition first.", Severity.Warning);
+			matchRes.HomeTeamName = string.Empty;
+			matchRes.AwayTeamName = string.Empty;
+
+			return true;
+		}
+		return false;
+	}
+
+	private bool AreTeamsCountriesSame(string firstTeam, string secondTeam)
+	{
+		var team1 = _teams.First(t => t.Name == firstTeam);
+		var team2 = _teams.First(t => t.Name == secondTeam);
+		if (team1.CountryName.Equals(team2?.CountryName))
+		{
+			Snackbar.Add("Both teams cannot be from the same country.", Severity.Warning);
+			matchRes.HomeTeamName = string.Empty;
+			matchRes.AwayTeamName = string.Empty;
+			return true;
+		}
+
+		return false;
 	}
 }
