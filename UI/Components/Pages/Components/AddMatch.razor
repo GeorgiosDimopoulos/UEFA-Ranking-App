@@ -2,6 +2,7 @@
 
 @using API.Data.DTOs
 @using Core.Models
+@using Humanizer
 @using UI.Clients
 
 @inherits ComponentBase
@@ -17,19 +18,19 @@
 			<MudSelect T="Competition" Label="Competition" Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
 				@foreach (var c in Enum.GetValues<Competition>())
 				{
-					<MudSelectItem Value="@c">@c.ToString()</MudSelectItem>
+					<MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
 				}
 			</MudSelect>
 			<MudSelect T="string" Label="Home Team" Value="matchRes.HomeTeamName" ValueChanged="OnHomeTeamChanged">
 				@foreach (var tr in _competitionTeams)
 				{
-					<MudSelectItem Value="@tr.Name">@tr.Name</MudSelectItem>
+					<MudSelectItem Value="@tr.Name">@tr.Name.Humanize(LetterCasing.Title)</MudSelectItem>
 				}
 			</MudSelect>
 			<MudSelect T="string" Label="Away Team" Value="matchRes.AwayTeamName" ValueChanged="OnAwayTeamChanged">
 				@foreach (var tr in _competitionTeams)
 				{
-					<MudSelectItem Value="@tr.Name">@tr.Name</MudSelectItem>
+					<MudSelectItem Value="@tr.Name">@tr.Name.Humanize(LetterCasing.Title)</MudSelectItem>
 				}
 			</MudSelect>
 			<MudSelect T="Round" Label="Round" @bind-Value="matchRes.Round">
@@ -76,28 +77,38 @@
 
 	private void OnHomeTeamChanged(string homeTeam)
 	{
-		if ((!string.IsNullOrEmpty(matchRes.AwayTeamName)) && AreTeamsSame(matchRes.AwayTeamName, homeTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.AwayTeamName, homeTeam))
+		if ((!string.IsNullOrEmpty(matchRes.AwayTeamName)) && (!string.IsNullOrEmpty(homeTeam)))
 		{
-			return;
+			if (AreTeamsSame(matchRes.AwayTeamName, homeTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.AwayTeamName, homeTeam))
+			{
+				return;
+			}
 		}
+
 		matchRes.HomeTeamName = homeTeam;
 	}
 
 	private void OnAwayTeamChanged(string awayTeam)
 	{
-		if ((!string.IsNullOrEmpty(matchRes.HomeTeamName)) && AreTeamsSame(matchRes.HomeTeamName, awayTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.HomeTeamName, awayTeam))
+		if ((!string.IsNullOrEmpty(matchRes.HomeTeamName)) && (!string.IsNullOrEmpty(awayTeam)))
 		{
-			return;
+			if (AreTeamsSame(matchRes.HomeTeamName, awayTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(matchRes.HomeTeamName, awayTeam))
+			{
+				return;
+			}
 		}
+
 		matchRes.AwayTeamName = awayTeam;
 	}
 
 	private async Task Save(MouseEventArgs args)
 	{
-		if (matchRes.Round <= 0)
+		if (!AreFieldsFilled())
 		{
+			Snackbar.Add("Match cannot be added, fill all fields please!", Severity.Warning);
 			return;
 		}
+
 		matchReq = new MatchRequest
 		{
 			HomeTeamName = matchRes.HomeTeamName,
@@ -122,6 +133,21 @@
 	private void Cancel(MouseEventArgs args)
 	{
 		MudDialog?.Close(DialogResult.Ok(matchRes));
+	}
+
+	private bool AreFieldsFilled()
+	{
+		if (matchRes.Round <= 0)
+		{
+			return false;
+		}
+
+		if (string.IsNullOrWhiteSpace(matchRes.HomeTeamName) || string.IsNullOrWhiteSpace(matchRes.AwayTeamName) || matchRes.Competition == Competition.None)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	private bool AreTeamsSame(string firstTeam, string secondTeam)

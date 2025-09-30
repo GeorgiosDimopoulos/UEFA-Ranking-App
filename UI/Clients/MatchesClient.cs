@@ -25,7 +25,19 @@ public class MatchesClient
 
     public async Task<bool?> AddMatch(MatchRequest mr)
     {
-        var response = await _httpClient.PostAsJsonAsync($"api/matches/", mr);
+        var url = $"api/matches?" +
+            $"homeTeamName={Uri.EscapeDataString(mr.HomeTeamName)}" +
+            $"awayTeamName={Uri.EscapeDataString(mr.AwayTeamName)}" +
+            $"&round={(int)mr.Round}" +
+            $"&competition= {(int)mr.Competition}";
+
+        var response = await _httpClient.PostAsync(url, null);
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"POST /api/matches => {(int)response.StatusCode} {response.ReasonPhrase}\n{body}");
+        }
+
         return response.IsSuccessStatusCode;
     }
 }

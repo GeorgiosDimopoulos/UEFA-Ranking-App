@@ -67,7 +67,14 @@ public class TeamsClient
 
     public async Task<bool?> AddTeam(TeamRequest tr)
     {
-        var response = await _httpClient.PostAsJsonAsync($"api/teams/", tr);
+        var url =
+               $"api/teams?" +
+               $"name={Uri.EscapeDataString(tr.Name)}" +
+               $"&countryName={Uri.EscapeDataString(tr.CountryName)}" +
+               $"&competition={(int)tr.Competition}" +
+               $"&points={tr.Points}" +
+               $"&isActive={tr.IsActive}";
+        var response = await _httpClient.PostAsync(url, null);
         return response.IsSuccessStatusCode;
     }
 }
