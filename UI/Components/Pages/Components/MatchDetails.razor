@@ -1,4 +1,6 @@
 ﻿@using API.Data.DTOs
+@using Core.Models
+@using Humanizer
 @using MudBlazor
 
 @inject IDialogService DialogService
@@ -6,12 +8,17 @@
 <MudDialog editForm>
     <DialogContent>
         <MudStack Row="true" Spacing="2">
-            <MudTextField @bind-Value="match.HomeTeamName" Label="Home Team" />
-            <MudTextField @bind-Value="match.AwayTeamName" Label="Away Team" />
-            <MudTextField @bind-Value="match.Score" Label="Score" />
-            <MudTextField @bind-Value="match.Round" Label="Round" />
-            <MudTextField @bind-Value="match.Competition" Label="Competition" />
-            <MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
+			<MudTextField @bind-Value="matchRes.HomeTeamName" Label="Home Team" />
+			<MudTextField @bind-Value="matchRes.AwayTeamName" Label="Away Team" />
+			<MudTextField @bind-Value="matchRes.Score" Label="Score" />
+			<MudTextField @bind-Value="matchRes.Round" Label="Round" />
+			<MudSelect T="Competition" Label="Competition" Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
+				@foreach (var c in Enum.GetValues<Competition>())
+				{
+					<MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
+				}
+			</MudSelect>          
+			<MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
         </MudStack>
     </DialogContent>
@@ -20,7 +27,7 @@
 @code {
 	[Parameter] public MatchResponse Match { get; set; } = default!;
 
-	private MatchResponse match = new();
+	private MatchResponse matchRes = new();
 	private MudForm editForm = default!;
 
 	protected override void OnParametersSet()
@@ -30,7 +37,7 @@
 			DialogService.ShowAsync<MatchDetails>("Error", new DialogParameters { ["Match"] = Match });
 			return;
 		}
-		match = new MatchResponse
+		matchRes = new MatchResponse
         {
             HomeTeamName = Match.HomeTeamName,
             AwayTeamName = Match.AwayTeamName,
@@ -46,5 +53,10 @@
 	private void Cancel(MouseEventArgs args)
 	{
 		// editForm?.
+	}
+
+	private void OnCompetitionChanged(Competition comp)
+	{
+		matchRes.Competition = comp;
 	}
 }

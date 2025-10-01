@@ -14,92 +14,101 @@
 <PageTitle>Countries Statistics</PageTitle>
 
 <div>
-	@if (_countries is null)
-	{
-		<p><em>Loading countries...</em></p>
-	}
-	else
-	{
-		<MudTable Items="_countries">
-			<HeaderContent>
-				<MudTh>Name</MudTh>
-				<MudTh>Initial Position</MudTh>
-				<MudTh>Active Position</MudTh>
-				<MudTh>Points</MudTh>
-				<MudTh>Initial Teams</MudTh>
-				<MudTh>Active Teams</MudTh>
-				<MudTh>Show Teams</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				<MudTd>
-					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenCountryAsync(context)">
-						<span style="text-decoration:underline"> @context.Name </span>
-					</MudButton>
-				</MudTd>
-				<MudTd>@context.Position</MudTd>
-				<MudTd>@context.Position</MudTd>
-				<MudTd>@context.TotalPoints</MudTd>
-				<MudTd>@context.NumberOfInitialTeams</MudTd>
-				<MudTd>@context.NumberOfActiveTeams</MudTd>
-				<MudTd>
-					<MudSwitch T="bool?"
-							   Checked="@expanded.Contains(context.Name)"
-							   Color="Color.Primary"
-							   OnChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
-				</MudTd>
-			</RowTemplate>
-			<ChildRowContent>
-				@if (expanded.Contains(context.Name) && _countryTeams != null)
-				{
-					foreach (var team in _countryTeams)
-					{
-						<MudTd Colspan="3">@team.Name, has @team.Points points, is in @team.Competition cup, in @team.Position place. </MudTd>
-					}
-				}
-			</ChildRowContent>
-		</MudTable>
-	}
+    @if (_countries is null)
+    {
+        <p><em>Loading countries...</em></p>
+    }
+    else
+    {
+        <MudTable Items="_countries">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Initial Position</MudTh>
+                <MudTh>Active Position</MudTh>
+                <MudTh>Points</MudTh>
+                <MudTh>Initial Teams</MudTh>
+                <MudTh>Active Teams</MudTh>
+                <MudTh>Show Teams</MudTh>
+                <MudTh>Delete</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenCountryAsync(context)">
+                        <span style="text-decoration:underline"> @context.Name </span>
+                    </MudButton>
+                </MudTd>
+                <MudTd>@context.Position</MudTd>
+                <MudTd>@context.Position</MudTd>
+                <MudTd>@context.TotalPoints</MudTd>
+                <MudTd>@context.NumberOfInitialTeams</MudTd>
+                <MudTd>@context.NumberOfActiveTeams</MudTd>
+                <MudTd>
+                    <MudSwitch T="bool?"
+                               Checked="@expanded.Contains(context.Name)"
+                               Color="Color.Primary"
+                               OnChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
+                </MudTd>
+                <MudTd Style="vertical-align: middle;">
+                    <MudButton Color="Color.Error"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; display:flex;"
+                               OnClick="@(() => { })">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+                @if (expanded.Contains(context.Name) && _countryTeams != null)
+                {
+                    foreach (var team in _countryTeams)
+                    {
+                        <MudTd Colspan="3">@team.Name, has @team.Points points, is in @team.Competition cup, in @team.Position place. </MudTd>
+                    }
+                }
+            </ChildRowContent>
+        </MudTable>
+    }
 </div>
 
 @code {
-	private CountryResponse[]? _countries = default!;
-	private TeamResponse[]? _countryTeams = default!;
+    private CountryResponse[]? _countries = default!;
+    private TeamResponse[]? _countryTeams = default!;
 
-	private HashSet<string> expanded = new();
+    private HashSet<string> expanded = new();
 
-	protected override async Task OnInitializedAsync()
-	{
-		await Task.Delay(500);
-		var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
-		_countries = data.OrderBy(c => c.Position).ToArray();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
+        _countries = data.OrderBy(c => c.Position).ToArray();
+    }
 
-	private async Task ToggleTeamId(string countryName, bool isChecked)
-	{
-		if (isChecked)
-		{
-			_countryTeams = await TeamsClient.GetTeamsByCountry(countryName);
-			expanded.Add(countryName);
-		}
-		else
-		{
-			expanded.Remove(countryName);
-		}
-		StateHasChanged();
-	}
+    private async Task ToggleTeamId(string countryName, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _countryTeams = await TeamsClient.GetTeamsByCountry(countryName);
+            expanded.Add(countryName);
+        }
+        else
+        {
+            expanded.Remove(countryName);
+        }
+        StateHasChanged();
+    }
 
-	private async Task OpenCountryAsync(CountryResponse country)
-	{
-		var parameters = new DialogParameters
-		{
-			["Country"] = country
-		};
+    private async Task OpenCountryAsync(CountryResponse country)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Country"] = country
+        };
 
-		var dialogRef = await DialogService.ShowAsync<CountryDetails>(country.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
-		var result = await dialogRef.Result;
-		if (result != null && !result!.Canceled && result.Data is CountryResponse updatedCountry)
-		{
-			StateHasChanged();
-		}
-	}
+        var dialogRef = await DialogService.ShowAsync<CountryDetails>(country.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is CountryResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
+    }
 }
