@@ -19,7 +19,7 @@ public class DatabaseFeeder
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
 
-        var countries = connection.ExecuteScalar<int>("SELECT * FROM Countries");
+        var countries = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM Countries");
         var teams = connection.ExecuteScalar<int>("SELECT * FROM Teams");
 
         return countries > 1 && teams > 1;
