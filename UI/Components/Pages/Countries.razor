@@ -11,6 +11,7 @@
 @inject TeamsClient TeamsClient
 @inject IDialogService DialogService
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 <PageTitle>Countries Statistics</PageTitle>
 
@@ -116,6 +117,7 @@
 	private Task DeleteCountryAsync(CountryResponse country)
 	{
 		// Navigation.NavigateTo($"/countries");
+		Snackbar.Add("NOT AVAILABLE YET", Severity.Warning);
 		return Task.CompletedTask;
 	}
 }

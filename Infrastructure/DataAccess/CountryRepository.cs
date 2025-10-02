@@ -84,7 +84,7 @@ public class CountryRepository : ICountryRepository
     {
         using var connection = new SqliteConnection(_connectionString);
 
-        var updateCountryQuery = "UPDATE Countries SET Name = @Name, @TotalPoints = TotalPoints WHERE Id = @Id";
+        var updateCountryQuery = "UPDATE Countries SET Name = @Name, TotalPoints = @TotalPoints WHERE Id = @Id";
 
         var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, Id = id, c.TotalPoints });
         return result > 0;

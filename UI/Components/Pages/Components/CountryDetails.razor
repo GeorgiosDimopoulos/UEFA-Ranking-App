@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject CountriesClient CountriesClient
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 @using API.Data.DTOs
 @using MudBlazor
@@ -55,10 +56,22 @@
 
 	private async Task Save()
 	{
-		var options = new DialogOptions { CloseOnEscapeKey = true };
+		// var options = new DialogOptions { CloseOnEscapeKey = true };
+		countryReq = new CountryRequest
+		{
+			Name = countryRes.Name,
+			TotalPoints = countryRes.TotalPoints
+		};
 
 		var result = await CountriesClient.UpdateCountry(countryRes.Id, countryReq);
+		if (result != null && result == false)
+		{
+			MudDialog?.Close(DialogResult.Ok(countryRes));
+			Snackbar.Add("Failed to update country.", Severity.Error);
+			return;
+		}
 
+		Snackbar.Add("Country updated successfully.", Severity.Success);
 		MudDialog?.Close(DialogResult.Ok(countryRes));
 		Navigation.NavigateTo("/countries");
 	}
