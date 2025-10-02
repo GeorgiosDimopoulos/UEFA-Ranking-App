@@ -23,11 +23,13 @@
 					}
 				}
 			</MudSelect>
-			<MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
-			@if (teamRes.IsActive == true)
-			{
-				<MudTextField T="int" @bind-Value="teamRes.Points" Label="Points" />
-			}
+			<MudStack Row="true">
+				<MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
+				@if (teamRes.IsActive == true)
+				{
+					<MudNumericField Style="width:200px" T="int" @bind-Value="teamRes.Points" Label="Points" />
+				}
+			</MudStack>
 			<MudSelect T="Competition" Label="Competition" @bind-Value="teamRes.Competition">
 				@foreach (var c in Enum.GetValues<Competition>())
 				{
@@ -78,7 +80,7 @@
 			IsActive = teamRes.IsActive
 		};
 		var success = await TeamsClient.AddTeam(teamReq);
-		
+
 		if (success != null && success == true)
 		{
 			MudDialog.Close(DialogResult.Ok(teamRes));

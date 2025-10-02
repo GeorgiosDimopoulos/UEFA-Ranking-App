@@ -67,7 +67,7 @@ public class TeamsClient
 
     public async Task<bool?> AddTeam(TeamRequest tr)
     {
-        var url = $"api/teams/{Uri.EscapeDataString(tr.Name)}" +
+        var url = $"api/teams?" +
                $"name={Uri.EscapeDataString(tr.Name)}" +
                $"&countryName={Uri.EscapeDataString(tr.CountryName)}" +
                $"&competition={tr.Competition}" +
