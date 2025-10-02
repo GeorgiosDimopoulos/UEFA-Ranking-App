@@ -12,70 +12,70 @@
 <h3>Schedule - Matches</h3>
 
 <div>
-	@if (_matches is null)
-	{
-		<p><em>Loading Matches...</em></p>
-	}
-	else
-	{
-		<MudTable Items="_matches">
-			<HeaderContent>
-				<MudTh>Home Team</MudTh>
-				<MudTh>Away Team</MudTh>
-				<MudTh>Score</MudTh>
-				<MudTh>Competition</MudTh>
-				<MudTh>Round</MudTh>
-				<MudTh>Edit</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				<MudTd>@context.HomeTeamName</MudTd>
-				<MudTd>@context.AwayTeamName</MudTd>
-				<MudTd>
-					@if (@context.Score == "99")
-					{
-						@context.Score
-					}
-					else
-					{
-						@string.Empty
-					}
-				</MudTd>
-				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
-				<MudTd>@context.Round</MudTd>
-				<MudTd>
-					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => EditMatch(context)">
-						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-					</MudButton>
-				</MudTd>
-			</RowTemplate>
-		</MudTable>
-	}
+    @if (_matches is null)
+    {
+        <p><em>Loading Matches...</em></p>
+    }
+    else
+    {
+        <MudTable Items="_matches">
+            <HeaderContent>
+                <MudTh>Home Team</MudTh>
+                <MudTh>Away Team</MudTh>
+                <MudTh>Score</MudTh>
+                <MudTh>Competition</MudTh>
+                <MudTh>Round</MudTh>
+                <MudTh>Edit</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.HomeTeamName</MudTd>
+                <MudTd>@context.AwayTeamName</MudTd>
+                <MudTd>
+                    @if (@context.Score is null || @context.Score == "99-99")
+                    {
+                        @string.Empty
+                    }
+                    else
+                    {
+                        @context.Score
+                    }
+                </MudTd>
+                <MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
+                <MudTd>@context.Round</MudTd>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => EditMatch(context)">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
 </div>
 
 @code {
-	private List<MatchResponse> _matches = default!;
+    private List<MatchResponse> _matches = default!;
 
-	protected override async Task OnInitializedAsync()
-	{
-		_matches = await MatchesClient.GetMatches() ?? new();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        _matches = await MatchesClient.GetMatches() ?? new();
+    }
 
-	private async Task EditMatch(MatchResponse match)
-	{
-		var parameters = new DialogParameters { ["Match"] = match };
-		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+    private async Task EditMatch(MatchResponse match)
+    {
+        var parameters = new DialogParameters { ["Match"] = match };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-		var dialog = await DialogService.ShowAsync<MatchDetails>("Edit Match", parameters, options);
+        var dialog = await DialogService.ShowAsync<MatchDetails>("Edit Match", parameters, options);
 
-		var result = await dialog.Result;
-		if (result != null && !result!.Canceled && result.Data is MatchResponse mr)
-		{
-			var index = _matches.FindIndex(m => m.Id == mr.Id);
-			if (index != -1)
-			{
-				_matches[index] = mr;
-				StateHasChanged();
-			}
-		}
-	}
+        var result = await dialog.Result;
+        if (result != null && !result!.Canceled && result.Data is MatchResponse mr)
+        {
+            var index = _matches.FindIndex(m => m.Id == mr.Id);
+            if (index != -1)
+            {
+                _matches[index] = mr;
+                StateHasChanged();
+            }
+        }
+    }
 }

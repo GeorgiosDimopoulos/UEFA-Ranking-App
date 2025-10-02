@@ -40,7 +40,8 @@ public class MatchesClient
     {
         var url = $"api/matches?" +
             $"homeTeamName={Uri.EscapeDataString(mr.HomeTeamName)}" +
-            $"&awayTeamName={Uri.EscapeDataString(mr.AwayTeamName)}" +
+            $"&awayTeamName={Uri.EscapeDataString(mr.AwayTeamName)}" +    
+            $"&score={(mr.Score != null ? Uri.EscapeDataString(mr.Score) : string.Empty)}" +
             $"&round={(int)mr.Round}" +
             $"&competition={(int)mr.Competition}";
 
