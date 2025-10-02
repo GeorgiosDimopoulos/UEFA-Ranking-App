@@ -5,24 +5,26 @@
 
 @inject IDialogService DialogService
 
-<MudDialog editForm>
-    <DialogContent>
-        <MudStack Row="true" Spacing="2">
-			<MudTextField @bind-Value="matchRes.HomeTeamName" Label="Home Team" />
-			<MudTextField @bind-Value="matchRes.AwayTeamName" Label="Away Team" />
-			<MudTextField @bind-Value="matchRes.Score" Label="Score" />
-			<MudTextField @bind-Value="matchRes.Round" Label="Round" />
+<MudDialog editForm Style="width:500px">
+	<DialogContent>
+		<MudStack Spacing="2">
 			<MudSelect T="Competition" Label="Competition" Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
 				@foreach (var c in Enum.GetValues<Competition>())
 				{
 					<MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
 				}
-			</MudSelect>          
-			<MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
-			<MudButton Color="Color.Secondary" Variant=" Variant.Text" OnClick="Delete">Delete</MudButton>
-            <MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
-        </MudStack>
-    </DialogContent>
+			</MudSelect>
+			<MudTextField @bind-Value="matchRes.HomeTeamName" Label="Home Team" />
+			<MudTextField @bind-Value="matchRes.AwayTeamName" Label="Away Team" />
+			<MudTextField @bind-Value="matchRes.Score" Label="Score" />
+			<MudTextField @bind-Value="matchRes.Round" Label="Round" />
+			<MudStack Row="true" Spacing="1" Class="justify-end">
+				<MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
+				<MudButton Color="Color.Secondary" Variant=" Variant.Text" OnClick="Delete">Delete</MudButton>
+				<MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
+			</MudStack>
+		</MudStack>
+	</DialogContent>
 </MudDialog>
 
 @code {
@@ -39,17 +41,17 @@
 			return;
 		}
 		matchRes = new MatchResponse
-        {
-            HomeTeamName = Match.HomeTeamName,
-            AwayTeamName = Match.AwayTeamName,
-            Score = Match.Score,
-            Competition = Match.Competition,
-            Round = Match.Round
-        };
+		{
+			HomeTeamName = Match.HomeTeamName,
+			AwayTeamName = Match.AwayTeamName,
+			Score = Match.Score,
+			Competition = Match.Competition,
+			Round = Match.Round
+		};
 	}
 	private void Save(MouseEventArgs args)
 	{
-		
+
 	}
 	private void Cancel(MouseEventArgs args)
 	{
