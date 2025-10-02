@@ -11,6 +11,7 @@
 @inject MatchesClient MatchClient
 @inject TeamsClient TeamsClient
 @inject ISnackbar Snackbar
+@inject NavigationManager Navigation
 
 <MudDialog>
 	<DialogContent>
@@ -123,6 +124,7 @@
 		{
 			MudDialog.Close(DialogResult.Ok(matchRes));
 			Snackbar.Add("Match added successfully.", Severity.Success);
+			Navigation.NavigateTo("/schedule");
 		}
 		else
 		{

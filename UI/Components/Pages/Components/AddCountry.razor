@@ -1,59 +1,65 @@
 ﻿@page "/newCountry"
+
 @using API.Data.DTOs
 @using UI.Clients
+
 @inherits ComponentBase
+
 @inject CountriesClient CountriesClient
 @inject ISnackbar Snackbar
+@inject NavigationManager Navigation
 
 <MudDialog>
-    <DialogContent>
-        <MudForm @ref="addForm" Spacing="2">
-            <MudTextField @bind-Value="countryRes.Name" Label="Name" />
-            <MudTextField @bind-Value="countryRes.TotalPoints" Label="Points" />
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
-    </DialogActions>
+	<DialogContent>
+		<MudForm @ref="addForm" Spacing="2">
+			<MudTextField @bind-Value="countryRes.Name" Label="Name" />
+			<MudTextField @bind-Value="countryRes.TotalPoints" Label="Points" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
+	</DialogActions>
 </MudDialog>
 
 @code {
-    private MudForm addForm = default!;
-    private CountryResponse countryRes = new();
-    private CountryRequest countryReq = new();
-    [CascadingParameter] IMudDialogInstance Dialog { get; set; } = default!;
+	private MudForm addForm = default!;
+	private CountryResponse countryRes = new();
+	private CountryRequest countryReq = new();
+	[CascadingParameter] IMudDialogInstance Dialog { get; set; } = default!;
 
-    protected async override void OnParametersSet()
-    {
-        await Task.Delay(500);
-    }
+	protected async override void OnParametersSet()
+	{
+		await Task.Delay(500);
+	}
 
-    private void Cancel(MouseEventArgs args)
-    {
-        Dialog?.Close(DialogResult.Ok(countryRes));
-    }
+	private void Cancel(MouseEventArgs args)
+	{
+		Dialog?.Close(DialogResult.Ok(countryRes));
+	}
 
-    private async Task Save(MouseEventArgs _)
-    {
-        await addForm.Validate();
-        if (!addForm.IsValid)
-            return;
+	private async Task Save(MouseEventArgs _)
+	{
+		await addForm.Validate();
+		if (!addForm.IsValid)
+			return;
 
-        countryReq = new CountryRequest
-        {
-            Name = countryRes.Name,
-            TotalPoints = countryRes.TotalPoints
-        };
-        var success = await CountriesClient.AddCountry(countryReq);
-        
-        if (success != null && success == true)
-        {
-            Dialog.Close(DialogResult.Ok(countryRes));
-        }
-        else
-        {
-            Snackbar.Add("Failed to add country.", Severity.Error);
-        }
-    }
+		countryReq = new CountryRequest
+		{
+			Name = countryRes.Name,
+			TotalPoints = countryRes.TotalPoints
+		};
+		var success = await CountriesClient.AddCountry(countryReq);
+
+		if (success != null && success == true)
+		{
+			Dialog.Close(DialogResult.Ok(countryRes));
+			Snackbar.Add("Country added successfully.", Severity.Success);
+			Navigation.NavigateTo("/countries");
+		}
+		else
+		{
+			Snackbar.Add("Failed to add country.", Severity.Error);
+		}
+	}
 }

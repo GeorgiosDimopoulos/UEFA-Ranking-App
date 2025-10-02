@@ -2,10 +2,15 @@
 @using Core.Models
 @using Humanizer
 @using MudBlazor
+@using UI.Clients
 
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject TeamsClient TeamsClient
+@inject MatchesClient MatchesClient
+@inject NavigationManager Navigation
 
-<MudDialog editForm Style="width:500px">
+<MudDialog Style="width:500px">
 	<DialogContent>
 		<MudStack Spacing="2">
 			<MudSelect T="Competition" Label="Competition" Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
@@ -29,9 +34,10 @@
 
 @code {
 	[Parameter] public MatchResponse Match { get; set; } = default!;
+	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
 	private MatchResponse matchRes = new();
-	private MudForm editForm = default!;
+	private MatchRequest matchReq = new();
 
 	protected override void OnParametersSet()
 	{
@@ -49,17 +55,39 @@
 			Round = Match.Round
 		};
 	}
-	private void Save(MouseEventArgs args)
+	private async Task Save(MouseEventArgs args)
 	{
+		matchReq = new MatchRequest
+		{
+			HomeTeamName = matchRes.HomeTeamName,
+			AwayTeamName = matchRes.AwayTeamName,
+			Score = matchRes.Score,
+			Competition = matchRes.Competition,
+			Round = matchRes.Round
+		};
 
+		var result = await MatchesClient.AddMatch(matchReq);
+
+		if (result != null && result == true)
+		{
+			Snackbar.Add("Match saved successfully", Severity.Success);
+			MudDialog?.Close(DialogResult.Ok(matchReq));
+			Navigation.NavigateTo("/schedule");
+		}
+		else
+		{
+			Snackbar.Add("Error saving new match", Severity.Error);
+		}
 	}
 	private void Cancel(MouseEventArgs args)
 	{
-		// editForm?.
+		MudDialog?.Close(DialogResult.Ok(matchReq));
 	}
 
 	private void Delete(MouseEventArgs args)
 	{
+		Snackbar.Add("NOT AVAILABLE YET", Severity.Warning);
+		MudDialog?.Close(DialogResult.Ok(matchReq));
 	}
 
 	private void OnCompetitionChanged(Competition comp)

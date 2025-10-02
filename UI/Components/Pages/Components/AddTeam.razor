@@ -9,6 +9,7 @@
 @inject IDialogService DialogService
 @inject TeamsClient TeamsClient
 @inject ISnackbar Snackbar
+@inject NavigationManager Navigation
 
 <MudDialog>
 	<DialogContent>
@@ -25,10 +26,10 @@
 			</MudSelect>
 			<MudStack Row="true">
 				<MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
-				@if (teamRes.IsActive == true)
+				@* @if (teamRes.IsActive == true)
 				{
 					<MudNumericField Style="width:200px" T="int" @bind-Value="teamRes.Points" Label="Points" />
-				}
+				} *@
 			</MudStack>
 			<MudSelect T="Competition" Label="Competition" @bind-Value="teamRes.Competition">
 				@foreach (var c in Enum.GetValues<Competition>())
@@ -85,6 +86,7 @@
 		{
 			MudDialog.Close(DialogResult.Ok(teamRes));
 			Snackbar.Add("Team added successfully.", Severity.Success);
+			Navigation.NavigateTo("/teams");
 		}
 		else
 		{
