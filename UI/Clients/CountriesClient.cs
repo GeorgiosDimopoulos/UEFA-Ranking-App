@@ -36,4 +36,16 @@ public class CountriesClient
         }
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<bool?> UpdateCountry(int id, CountryRequest cr)
+    {
+        var url = $"api/countries/{id}?name={cr.Name}&totalPoints={cr.TotalPoints}";
+        var response = await _httpClient.PutAsync(url, null);
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"PUT /api/countries/{id} => {(int)response.StatusCode} {response.ReasonPhrase}\n{body}");
+        }
+        return response.IsSuccessStatusCode;
+    }
 }

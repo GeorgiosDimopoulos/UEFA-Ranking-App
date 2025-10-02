@@ -1,4 +1,4 @@
-﻿    @page "/teams/{Id:guid}"
+﻿@page "/teams/{Id:guid}"
 
 @using API.Controllers
 @using API.Data.DTOs
@@ -11,94 +11,95 @@
 @inject TeamsClient TeamsClient
 @inject ISnackbar Snackbar
 @inject CountriesClient CountriesClient
-
+@inject NavigationManager Navigation
 <MudDialog>
-    <DialogContent>
-        <MudForm>
-            <MudTextField @bind-Value="teamRes.Name" Label="Name" />
-            <MudSelect T="string" Label="Country" Value="teamRes.CountryName"ValueChanged="OnCountryChanged">
-                @foreach (var c in countriesNames)
-                {
-                    <MudSelectItem Value="@c">@c</MudSelectItem>
-                }
-            </MudSelect>
-            <MudTextField T="int" @bind-Value="teamRes.Position" Label="Position" Disabled="true" />
-            <MudTextField T="int" ReadOnly="true" HideSpinButtons="true" Value="teamRes.Matches?.Count ?? 0" Label="Matches" Disabled="true" />
-            <MudTextField T="int" Value="teamRes.Points" Label="Points" Disabled="true" />
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">Save</MudButton>
-    </DialogActions>
+	<DialogContent>
+		<MudForm>
+			<MudTextField @bind-Value="teamRes.Name" Label="Name" />
+			<MudSelect T="string" Label="Country" Value="teamRes.CountryName" ValueChanged="OnCountryChanged">
+				@foreach (var c in countriesNames)
+				{
+					<MudSelectItem Value="@c">@c</MudSelectItem>
+				}
+			</MudSelect>
+			<MudTextField T="int" @bind-Value="teamRes.Position" Label="Position" Disabled="true" />
+			<MudTextField T="int" ReadOnly="true" HideSpinButtons="true" Value="teamRes.Matches?.Count ?? 0" Label="Matches" Disabled="true" />
+			<MudTextField T="int" Value="teamRes.Points" Label="Points" Disabled="true" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="Cancel">Cancel</MudButton>
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">Save</MudButton>
+	</DialogActions>
 </MudDialog>
 
 @code {
-    [Parameter] public TeamResponse Team { get; set; } = default!;
-    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+	[Parameter] public TeamResponse Team { get; set; } = default!;
+	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
-    private TeamResponse teamRes = new();
-    private TeamRequest teamReq = new();
+	private TeamResponse teamRes = new();
+	private TeamRequest teamReq = new();
 
-    private List<string> countriesNames = new();
+	private List<string> countriesNames = new();
 
-    private string initialName = string.Empty;
+	private string initialName = string.Empty;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var countries = await CountriesClient.GetCountries();
-        if (countries == null)
-        {
-            Snackbar.Add("Failed to load countries.", Severity.Error);
-            return;
-        }
+	protected override async Task OnInitializedAsync()
+	{
+		var countries = await CountriesClient.GetCountries();
+		if (countries == null)
+		{
+			Snackbar.Add("Failed to load countries.", Severity.Error);
+			return;
+		}
 
-        countriesNames = countries.Select(c => c.Name).ToList();
-        initialName = Team.Name;
+		countriesNames = countries.Select(c => c.Name).ToList();
+		initialName = Team.Name;
 
-        teamRes = new TeamResponse
-        {
-            Position = Team.Position,
-            Name = Team.Name,
-            Points = Team.Points,
-            Matches = Team.Matches,
-            Competition = Team.Competition,
-            CountryName = Team.CountryName
-        };
-    }
+		teamRes = new TeamResponse
+		{
+			Position = Team.Position,
+			Name = Team.Name,
+			Points = Team.Points,
+			Matches = Team.Matches,
+			Competition = Team.Competition,
+			CountryName = Team.CountryName
+		};
+	}
 
-    protected void OnCountryChanged(string c)
-    {
-        teamRes.CountryName = c;
-    }
+	protected void OnCountryChanged(string c)
+	{
+		teamRes.CountryName = c;
+	}
 
-    private async Task Save()
-    {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
+	private async Task Save()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        teamReq = new TeamRequest
-        {
-            Name = teamRes.Name,
-            Points = teamRes.Points,
-            Competition = teamRes.Competition,
-            IsActive = teamRes.IsActive,
-            CountryName = teamRes.CountryName
-        };
-        var success = await TeamsClient.UpdateTeam(teamReq, initialName);
+		teamReq = new TeamRequest
+		{
+			Name = teamRes.Name,
+			Points = teamRes.Points,
+			Competition = teamRes.Competition,
+			IsActive = teamRes.IsActive,
+			CountryName = teamRes.CountryName
+		};
+		var success = await TeamsClient.UpdateTeam(teamReq, initialName);
 
-        if (success != null && success == true)
-        {
-            MudDialog?.Close(DialogResult.Ok(teamRes));
-            Snackbar.Add("Team updated successfully.", Severity.Success);
-        }
-        else
-        {
-            Snackbar.Add("Failed to update team.", Severity.Error);
-        }
-    }
+		if (success != null && success == true)
+		{
+			MudDialog?.Close(DialogResult.Ok(teamRes));
+			Snackbar.Add("Team updated successfully.", Severity.Success);
+			Navigation.NavigateTo("/teams");
+		}
+		else
+		{
+			Snackbar.Add("Failed to update team.", Severity.Error);
+		}
+	}
 
-    private void Cancel()
-    {
-        MudDialog?.Close(DialogResult.Ok(Team));
-    }
+	private void Cancel()
+	{
+		MudDialog?.Close(DialogResult.Ok(Team));
+	}
 }

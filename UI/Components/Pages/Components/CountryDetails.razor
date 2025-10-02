@@ -1,19 +1,29 @@
 ﻿@page "/countries/{Id:guid}"
 
 @inherits ComponentBase
+
 @inject IDialogService DialogService
+@inject NavigationManager Navigation
+@inject CountriesClient CountriesClient
+@inject NavigationManager Navigation
+
 @using API.Data.DTOs
 @using MudBlazor
+@using UI.Clients
 
 <MudDialog>
 	<DialogContent>
 		<MudForm @ref="editForm">
-			<MudTextField @bind-Value="country.Name" Label="Name" />
-			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" @bind-Value="country.Position" Label="Initial Position" />
-			<MudNumericField T="int" @bind-Value="country.Position" Label="Current Position" />
-			<MudNumericField T="int" ReadOnly="true" HideSpinButtons="true" Value="country.NumberOfInitialTeams" Label="Initial Teams" />
-			<MudNumericField T="int" Value="country.NumberOfActiveTeams" Label="Active Teams" />
-			<MudNumericField T="int" @bind-Value="country.TotalPoints" Label="Total Points" />
+			<MudTextField @bind-Value="countryRes.Name" Label="Name" />
+			<MudNumericField T="int" @bind-Value="countryRes.TotalPoints" Label="Total Points" />
+			<MudStack Row="true">
+				<MudTextField T="int" Disabled="true" Value="countryRes.Position" Label="Initial Position" />
+				<MudTextField T="int" Disabled="true" Value="countryRes.Position" Label="Current Position" />
+			</MudStack>
+			<MudStack Row="true">
+				<MudTextField T="int" Disabled="true" Value="countryRes.NumberOfInitialTeams" Label="Initial Teams" />
+				<MudTextField T="int" Disabled="true" Value="countryRes.NumberOfActiveTeams" Label="Active Teams" />
+			</MudStack>
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
@@ -27,28 +37,34 @@
 	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
 	private MudForm editForm = default!;
-	private CountryResponse country = new();
+	private CountryResponse countryRes = new();
+	private CountryRequest countryReq = new();
 
 	protected override void OnParametersSet()
 	{
-		country = new CountryResponse
+		countryRes = new CountryResponse
 		{
 			Position = Country.Position,
+			Id = Country.Id,
 			Name = Country.Name,
-            NumberOfActiveTeams = Country.NumberOfActiveTeams,
-            NumberOfInitialTeams = Country.NumberOfInitialTeams,
+			NumberOfActiveTeams = Country.NumberOfActiveTeams,
+			NumberOfInitialTeams = Country.NumberOfInitialTeams,
 			TotalPoints = Country.TotalPoints
 		};
 	}
 
-	private void Save()
+	private async Task Save()
 	{
 		var options = new DialogOptions { CloseOnEscapeKey = true };
-		MudDialog?.Close(DialogResult.Ok(country));
+
+		var result = await CountriesClient.UpdateCountry(countryRes.Id, countryReq);
+
+		MudDialog?.Close(DialogResult.Ok(countryRes));
+		Navigation.NavigateTo("/countries");
 	}
 
 	private void Cancel()
 	{
-		MudDialog?.Close(DialogResult.Ok(country));
+		MudDialog?.Close(DialogResult.Ok(countryRes));
 	}
 }

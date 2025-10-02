@@ -6,7 +6,6 @@
 
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-@inject TeamsClient TeamsClient
 @inject MatchesClient MatchesClient
 @inject NavigationManager Navigation
 
@@ -88,6 +87,7 @@
 	{
 		Snackbar.Add("NOT AVAILABLE YET", Severity.Warning);
 		MudDialog?.Close(DialogResult.Ok(matchReq));
+		Navigation.NavigateTo("/schedule");
 	}
 
 	private void OnCompetitionChanged(Competition comp)
