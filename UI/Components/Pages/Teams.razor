@@ -9,6 +9,7 @@
 
 @inject TeamsClient TeamsClient
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <PageTitle>Teams</PageTitle>
 
@@ -88,6 +89,35 @@
         if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
         {
             StateHasChanged();
+        }
+
+        await OnInitializedAsync();
+    }
+
+    private async Task DeleteTeamAsync(TeamResponse t)
+    {
+        var teamReq = new TeamRequest
+        {
+            Name = t.Name,
+            Competition = t.Competition,
+            Id = t.Id,
+            CountryName = t.CountryName,
+            Points = t.Points,
+            IsActive = t.IsActive
+        };
+
+        bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the team: {teamReq.Name}", yesText: "Delete", cancelText: "Cancel");
+        if (confirmation == true)
+        {
+            var result = await TeamsClient.DeleteTeam(teamReq.Id);
+            if (result != null && result == true)
+            {
+                Snackbar.Add($"Team {teamReq.Name} deleted successfully.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Failed to delete team {teamReq.Name}.", Severity.Error);
+            }
         }
 
         await OnInitializedAsync();

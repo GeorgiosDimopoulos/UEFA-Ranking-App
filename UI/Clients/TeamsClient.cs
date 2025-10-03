@@ -88,4 +88,11 @@ public class TeamsClient
         var response = await _httpClient.PutAsync(url, null);
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<bool?> DeleteTeam(int id)
+    {
+        var url = $"api/teams/{id}";
+        var response = await _httpClient.DeleteAsync(url);
+        return response.IsSuccessStatusCode;
+    }
 }
