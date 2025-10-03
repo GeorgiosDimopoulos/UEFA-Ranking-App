@@ -192,14 +192,14 @@ public class MatchesController : ControllerBase
 
     [HttpPut]
     [SwaggerOperation(Tags = new[] { "Matches - Put" })]
-    public async Task<ActionResult> UpdateMatch([FromBody] MatchRequest matchRequest)
+    public async Task<ActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
     {
-        if (matchRequest is null || !string.IsNullOrEmpty(matchRequest.Score))
+        if (matchRequest is null || string.IsNullOrEmpty(matchRequest.Score))
         {
             return BadRequest("Match data like score is null.");
         }
 
-        var goals = ParseScore(matchRequest.Score);
+        var goals = ParseScore(matchRequest.Score!);
         if (goals is null)
             return BadRequest("Match format is not ok.");
         var (homeGoals, awayGoals) = goals.Value;
@@ -211,9 +211,10 @@ public class MatchesController : ControllerBase
             Round = (int)matchRequest.Round,
             HomeTeamGoals = homeGoals,
             AwayTeamGoals = awayGoals,
-            Competition = matchRequest.Competition
+            Competition = matchRequest.Competition,
+            Id = matchRequest.Id
         };
-        var result = await matchRepository.AddMatch(match);
+        var result = await matchRepository.UpdateMatch(match, match.Id);
         if (!result)
         {
             _logger.LogError("Failed to update the match to the database.");

@@ -16,6 +16,8 @@ public class MatchResponse
 
 public class MatchRequest
 {
+    public int Id { get; set; }
+
     public string HomeTeamName { get; set; } = default!;
     public string AwayTeamName { get; set; } = default!;
 

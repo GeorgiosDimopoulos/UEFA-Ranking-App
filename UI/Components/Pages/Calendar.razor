@@ -26,6 +26,7 @@
                 <MudTh>Competition</MudTh>
                 <MudTh>Round</MudTh>
                 <MudTh>Edit</MudTh>
+                <MudTh>Delete</MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>@context.HomeTeamName</MudTd>
@@ -42,9 +43,21 @@
                 </MudTd>
                 <MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
                 <MudTd>@context.Round</MudTd>
-                <MudTd>
-                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => EditMatch(context)">
+                <MudTd Style="vertical-align: middle;">
+                    <MudButton Class="p-0"
+                               Color="Color.Success"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; display:flex;"
+                               OnClick="() => EditMatch(context)">
                         <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+                    </MudButton>
+                </MudTd>
+                <MudTd Style="vertical-align: middle;">
+                    <MudButton Color="Color.Error"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; display:flex;"
+                               OnClick="@(() => DeleteMatchAsync(context))">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
                     </MudButton>
                 </MudTd>
             </RowTemplate>
@@ -58,6 +71,11 @@
     protected override async Task OnInitializedAsync()
     {
         _matches = await MatchesClient.GetMatches() ?? new();
+    }
+
+    private async Task DeleteMatchAsync(MatchResponse match)
+    {
+        // var result = await MatchesClient.DeleteMatch() ?? new();
     }
 
     private async Task EditMatch(MatchResponse match)

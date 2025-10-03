@@ -24,7 +24,7 @@
 			<MudTextField @bind-Value="matchRes.Round" Label="Round" />
 			<MudStack Row="true" Spacing="1" Class="justify-end">
 				<MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
-				<MudButton Color="Color.Secondary" Variant=" Variant.Text" OnClick="Delete">Delete</MudButton>
+				@* <MudButton Color="Color.Secondary" Variant=" Variant.Text" OnClick="Delete">Delete</MudButton> *@
 				<MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
 			</MudStack>
 		</MudStack>
@@ -51,9 +51,11 @@
 			AwayTeamName = Match.AwayTeamName,
 			Score = Match.Score,
 			Competition = Match.Competition,
-			Round = Match.Round
+			Round = Match.Round,
+            Id = Match.Id
 		};
 	}
+
 	private async Task Save(MouseEventArgs args)
 	{
 		matchReq = new MatchRequest
@@ -62,10 +64,11 @@
 			AwayTeamName = matchRes.AwayTeamName,
 			Score = matchRes.Score,
 			Competition = matchRes.Competition,
-			Round = matchRes.Round
+			Round = matchRes.Round,
+			Id = matchRes.Id
 		};
 
-		var result = await MatchesClient.AddMatch(matchReq);
+		var result = await MatchesClient.SaveMatch(matchReq);
 
 		if (result != null && result == true)
 		{
@@ -78,18 +81,12 @@
 			Snackbar.Add("Error saving new match", Severity.Error);
 		}
 	}
+
 	private void Cancel(MouseEventArgs args)
 	{
 		MudDialog?.Close(DialogResult.Ok(matchReq));
 	}
-
-	private void Delete(MouseEventArgs args)
-	{
-		Snackbar.Add("NOT AVAILABLE YET", Severity.Warning);
-		MudDialog?.Close(DialogResult.Ok(matchReq));
-		Navigation.NavigateTo("/schedule");
-	}
-
+	
 	private void OnCompetitionChanged(Competition comp)
 	{
 		matchRes.Competition = comp;

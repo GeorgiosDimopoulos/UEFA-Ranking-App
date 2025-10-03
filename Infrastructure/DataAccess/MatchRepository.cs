@@ -110,7 +110,7 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var updateQuery = @"UPDATE Matches SET Result = @Result, Round = @Round, HomeTeamName = @HomeTeamName, AwayTeamName = @AwayTeamName WHERE Id = @Id";
+        var updateQuery = @"UPDATE Matches SET HomeTeamGoals = @HomeTeamGoals, AwayTeamGoals = @AwayTeamGoals, Round = @Round, HomeTeamName = @HomeTeamName, AwayTeamName = @AwayTeamName WHERE Id = @Id";
         var result = await connection.ExecuteAsync(updateQuery, new
         {
             m.HomeTeamGoals,
