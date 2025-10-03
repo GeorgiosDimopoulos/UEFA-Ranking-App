@@ -48,4 +48,18 @@ public class CountriesClient
         }
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<bool?> DeleteCountry(int id)
+    {
+        var url = $"api/countries/{id}";
+        var response = await _httpClient.DeleteAsync(url);
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"DELETE /api/countries/{id} => {(int)response.StatusCode} {response.ReasonPhrase}\n{body}");
+            return false;
+        }
+
+        return true;
+    }
 }

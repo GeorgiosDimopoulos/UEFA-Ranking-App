@@ -114,10 +114,30 @@
 		}
 	}
 
-	private Task DeleteCountryAsync(CountryResponse country)
+	private async Task DeleteCountryAsync(CountryResponse country)
 	{
-		// Navigation.NavigateTo($"/countries");
-		Snackbar.Add("NOT AVAILABLE YET", Severity.Warning);
-		return Task.CompletedTask;
+		var countryReq = new CountryRequest
+		{
+			Name = country.Name,
+            Id = country.Id,
+			TotalPoints = country.TotalPoints			
+        };
+
+		bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the country: {countryReq.Name} and its teams?", yesText: "Delete", cancelText: "Cancel");
+		if (confirmation== true)
+		{
+			var result = await CountriesClient.DeleteCountry(countryReq.Id);
+			if (result != null && result == true)
+			{
+				Snackbar.Add($"Country {countryReq.Name} deleted successfully.", Severity.Success);
+			}
+			else
+			{
+				Snackbar.Add($"Failed to delete country {countryReq.Name}.", Severity.Error);
+            }
+		}
+
+		// StateHasChanged();
+        await OnInitializedAsync();
 	}
 }

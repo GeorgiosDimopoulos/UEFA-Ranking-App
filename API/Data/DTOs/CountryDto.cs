@@ -12,6 +12,7 @@ public class CountryResponse
 
 public class CountryRequest
 {
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public int TotalPoints { get; set; }
 }

@@ -70,7 +70,9 @@ public class TeamRepository : ITeamRepository
 
         var countryTeams = await connection.QueryAsync<Team>("SELECT * FROM Teams WHERE CountryId = @CountryId", new { CountryId = countryId });
         if (!countryTeams.Any())
-            throw new InvalidOperationException("No teams found for the given country ID.");
+        {
+            return [];
+        }
         return countryTeams.ToList()!;
     }
 

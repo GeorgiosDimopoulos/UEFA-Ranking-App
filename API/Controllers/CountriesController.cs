@@ -4,6 +4,7 @@ using Core.Models;
 using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.Metrics;
 
 namespace API.Controllers;
 
@@ -24,7 +25,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet(Name = "Countries")]
-    [SwaggerOperation(Tags = new[] {"Countries - Get"})]
+    [SwaggerOperation(Tags = new[] { "Countries - Get" })]
     public async Task<IEnumerable<CountryResponse>> GetCountries([FromQuery] CountryQueryParameters queryParameters)
     {
         var countries = await countryRepository.GetAllCountries();
@@ -133,6 +134,15 @@ public class CountriesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Countries – Delete" })]
     public async Task<ActionResult> DeleteCountry(int id)
     {
+        var countryTeams = await teamRepository.GetTeamsByCountryId(id);
+        if (countryTeams.Count > 0)
+        {
+            foreach (var team in countryTeams)
+            {
+                await teamRepository.DeleteTeamByName(team!.Name);
+            }
+        }
+
         var result = await countryRepository.DeleteCountry(id);
         if (result == false)
         {
@@ -143,19 +153,28 @@ public class CountriesController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{n}")]
-    [SwaggerOperation(Tags = new[] { "Countries – Delete" })]
-    public async Task<ActionResult> DeleteCountryByName(string n)
-    {
-        var result = await countryRepository.DeleteCountryByName(n);
-        if (result == false)
-        {
-            _logger.LogWarning($"Could not delete country with name {n}");
-            return NotFound();
-        }
+    //[HttpDelete("{n}")]
+    //[SwaggerOperation(Tags = new[] { "Countries – Delete" })]
+    //public async Task<ActionResult> DeleteCountry(string n)
+    //{
+    //    var countryTeams = await teamRepository.GetTeams(id);
+    //    if (countryTeams.Count > 0)
+    //    {
+    //        foreach (var team in countryTeams)
+    //        {
+    //            await teamRepository.DeleteTeamByName(team!.Name);
+    //        }
+    //    }
 
-        return NoContent();
-    }
+    //    var result = await countryRepository.DeleteCountryByName(n);
+    //    if (result == false)
+    //    {
+    //        _logger.LogWarning($"Could not delete country with name {n}");
+    //        return NotFound();
+    //    }
+
+    //    return NoContent();
+    //}
 
     [HttpDelete]
     [SwaggerOperation(Tags = new[] { "Countries – Delete" })]
