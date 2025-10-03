@@ -80,11 +80,11 @@ public class MatchRepository : IMatchRepository
         }
 
         string createQuery;
-        if (m.AwayTeamGoals != 99 && m.AwayTeamGoals != 99)        
-            createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";        
-        else        
+        if (m.AwayTeamGoals != 99 && m.AwayTeamGoals != 99)
             createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
-               
+        else
+            createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
+
         var insertMatchesResult = await connection.ExecuteScalarAsync<long>(createQuery, new
         {
             m.HomeTeamGoals,
@@ -131,10 +131,9 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var deleteQuery = @"DELETE Matches WHERE Id = @Id";
-        var result = await connection.ExecuteAsync(deleteQuery, id);
+        var deleteQuery = @"DELETE FROM Matches WHERE Id = @Id";
+        var result = await connection.ExecuteAsync(deleteQuery, new { Id = id });
 
-        // ToDo: remove the match from both teams
         return result > 0;
     }
 }

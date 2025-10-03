@@ -7,88 +7,108 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject MatchesClient MatchesClient
+@inject TeamsClient TeamsClient
 @inject NavigationManager Navigation
 
 <MudDialog Style="width:500px">
-	<DialogContent>
-		<MudStack Spacing="2">
-			<MudSelect T="Competition" Label="Competition" Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
-				@foreach (var c in Enum.GetValues<Competition>())
-				{
-					<MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
-				}
-			</MudSelect>
-			<MudTextField @bind-Value="matchRes.HomeTeamName" Label="Home Team" />
-			<MudTextField @bind-Value="matchRes.AwayTeamName" Label="Away Team" />
-			<MudTextField @bind-Value="matchRes.Score" Label="Score" />
-			<MudTextField @bind-Value="matchRes.Round" Label="Round" />
-			<MudStack Row="true" Spacing="1" Class="justify-end">
-				<MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
-				@* <MudButton Color="Color.Secondary" Variant=" Variant.Text" OnClick="Delete">Delete</MudButton> *@
-				<MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
-			</MudStack>
-		</MudStack>
-	</DialogContent>
+    <DialogContent>
+        <MudStack Spacing="2">
+            <MudSelect T="Competition" Label="Competition" Value="matchRes.Competition" ValueChanged="OnCompetitionChanged">
+                @foreach (var c in Enum.GetValues<Competition>())
+                {
+                    <MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="string" Label="Home Team" @bind-Value="matchRes.HomeTeamName">
+                @foreach (var t in _competitionTeams)
+                {
+                    <MudSelectItem Value="@t.Name">@t.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="string" Label="Away Team" @bind-Value="matchRes.AwayTeamName">
+                @foreach (var t in _competitionTeams)
+                {
+                    <MudSelectItem Value="@t.Name">@t.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextField @bind-Value="matchRes.Score" Label="Score" />
+            <MudTextField @bind-Value="matchRes.Round" Label="Round" />
+            <MudStack Row="true" Spacing="1" Class="justify-end">
+                <MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
+                @* <MudButton Color="Color.Secondary" Variant=" Variant.Text" OnClick="Delete">Delete</MudButton> *@
+                <MudButton Color="Color.Primary" Variant=" Variant.Filled" OnClick="Save">Save</MudButton>
+            </MudStack>
+        </MudStack>
+    </DialogContent>
 </MudDialog>
 
 @code {
-	[Parameter] public MatchResponse Match { get; set; } = default!;
-	[CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public MatchResponse Match { get; set; } = default!;
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
-	private MatchResponse matchRes = new();
-	private MatchRequest matchReq = new();
+    private MatchResponse matchRes = new();
+    private MatchRequest matchReq = new();
 
-	protected override void OnParametersSet()
-	{
-		if (Match == null)
-		{
-			DialogService.ShowAsync<MatchDetails>("Error", new DialogParameters { ["Match"] = Match });
-			return;
-		}
-		matchRes = new MatchResponse
-		{
-			HomeTeamName = Match.HomeTeamName,
-			AwayTeamName = Match.AwayTeamName,
-			Score = Match.Score,
-			Competition = Match.Competition,
-			Round = Match.Round,
+    private TeamResponse[] teams = Array.Empty<TeamResponse>();
+    private List<TeamResponse> _competitionTeams = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Match == null)
+        {
+            await DialogService.ShowAsync<MatchDetails>("Error", new DialogParameters { ["Match"] = Match });
+            return;
+        }
+
+        teams = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
+
+        matchRes = new MatchResponse
+        {
+            HomeTeamName = Match.HomeTeamName,
+            AwayTeamName = Match.AwayTeamName,
+            Score = Match.Score,
+            Competition = Match.Competition,
+            Round = Match.Round,
             Id = Match.Id
-		};
-	}
+        };
+    }
 
-	private async Task Save(MouseEventArgs args)
-	{
-		matchReq = new MatchRequest
-		{
-			HomeTeamName = matchRes.HomeTeamName,
-			AwayTeamName = matchRes.AwayTeamName,
-			Score = matchRes.Score,
-			Competition = matchRes.Competition,
-			Round = matchRes.Round,
-			Id = matchRes.Id
-		};
+    private void OnCompetitionChanged(Competition comp)
+    {
+        matchRes.Competition = comp;
+        _competitionTeams = teams.Where(t => t.Competition == comp)
+                                        .OrderBy(t => t.Name)
+                                        .ToList();
+    }
 
-		var result = await MatchesClient.SaveMatch(matchReq);
+    private async Task Save(MouseEventArgs args)
+    {
+        matchReq = new MatchRequest
+        {
+            HomeTeamName = matchRes.HomeTeamName,
+            AwayTeamName = matchRes.AwayTeamName,
+            Score = matchRes.Score,
+            Competition = matchRes.Competition,
+            Round = matchRes.Round,
+            Id = matchRes.Id
+        };
 
-		if (result != null && result == true)
-		{
-			Snackbar.Add("Match saved successfully", Severity.Success);
-			MudDialog?.Close(DialogResult.Ok(matchReq));
-			Navigation.NavigateTo("/schedule");
-		}
-		else
-		{
-			Snackbar.Add("Error saving new match", Severity.Error);
-		}
-	}
+        var result = await MatchesClient.SaveMatch(matchReq);
 
-	private void Cancel(MouseEventArgs args)
-	{
-		MudDialog?.Close(DialogResult.Ok(matchReq));
-	}
-	
-	private void OnCompetitionChanged(Competition comp)
-	{
-		matchRes.Competition = comp;
-	}
+        if (result != null && result == true)
+        {
+            Snackbar.Add("Match saved successfully", Severity.Success);
+            MudDialog?.Close(DialogResult.Ok(matchReq));
+            Navigation.NavigateTo("/schedule");
+        }
+        else
+        {
+            Snackbar.Add("Error saving new match", Severity.Error);
+        }
+    }
+
+    private void Cancel(MouseEventArgs args)
+    {
+        MudDialog?.Close(DialogResult.Ok(matchReq));
+    }
 }
