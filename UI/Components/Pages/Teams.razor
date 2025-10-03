@@ -13,79 +13,81 @@
 <PageTitle>Teams</PageTitle>
 
 <div class="col-12">
-	@if (_teams == null)
-	{
-		<p><em>Loading teams...</em></p>
-	}
-	else
-	{
-		<MudTable Items="_teams">
-			<HeaderContent>
-				<MudTh>Name</MudTh>
-				<MudTh>Country</MudTh>
-				<MudTh>Competition</MudTh>
-				<MudTh>Position</MudTh>
-				<MudTh>Points</MudTh>
-				<MudTh>Is Active?</MudTh>
-				<MudTh>Matches:</MudTh>
+    @if (_teams == null)
+    {
+        <p><em>Loading teams...</em></p>
+    }
+    else
+    {
+        <MudTable Items="_teams">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Country</MudTh>
+                <MudTh>Competition</MudTh>
+                <MudTh>Position</MudTh>
+                <MudTh>Points</MudTh>
+                <MudTh>Is Active?</MudTh>
+                <MudTh>Matches:</MudTh>
                 <MudTh>Delete</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
-					<span style="text-decoration:underline"> @context.Name </span>
-				</MudButton>
-				<MudTd>@context.CountryName</MudTd>
-				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
-				<MudTd>@context.Position</MudTd>
-				<MudTd>@context.Points</MudTd>
-				<MudText T="int" @bind-value="context.Points" Style="width:60px;" Disabled="@(!context.IsActive)" />
-				<MudCheckBox T="bool" Checked="@context.IsActive" Disabled="true" OnChanged="@( (bool? v) => context.IsActive = v == true )" />
-				<MudTd>
-					<MudButton Color="Color.Success"
-							   Variant="Variant.Filled"
-							   Style="min-width:40px; width:40px; height:30px; padding:0;"
-							   OnClick="@(() => OpenTeamAsync(context))">
-						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-					</MudButton>
-				</MudTd>
-				<MudTd>
-					<MudButton Color="Color.Error"
-							   Variant="Variant.Filled"
-							   Style="min-width:40px; width:40px; height:30px; padding:0;"
-							   OnClick="@(() => { })">
-						<MudIcon Icon="@Icons.Material.Filled.Delete" />
-					</MudButton>
-				</MudTd>				
-			</RowTemplate>
-		</MudTable>
-	}
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd Class="pl-4">
+                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
+                        <span style="text-decoration:underline"> @context.Name </span>
+                    </MudButton>
+                </MudTd>
+                <MudTd>@context.CountryName</MudTd>
+                <MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
+                <MudTd>@context.Position</MudTd>
+                <MudTd>@context.Points</MudTd>
+                <MudText T="int" @bind-value="context.Points" Style="width:60px;" Disabled="@(!context.IsActive)" />
+                <MudCheckBox T="bool" Checked="@context.IsActive" Disabled="true" OnChanged="@( (bool? v) => context.IsActive = v == true )" />
+                <MudTd>
+                    <MudButton Color="Color.Success"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; padding:0;"
+                               OnClick="@(() => OpenTeamAsync(context))">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+                    </MudButton>
+                </MudTd>
+                <MudTd>
+                    <MudButton Color="Color.Error"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; padding:0;"
+                               OnClick="@(() => { })">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
 
 </div>
 
 @code
 {
-	private TeamResponse[]? _teams = default!;
-	private CountryResponse[]? _countries = default!;
+    private TeamResponse[]? _teams = default!;
+    private CountryResponse[]? _countries = default!;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await Task.Delay(500);
-		var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
-		_teams = data.OrderByDescending(t => t.Points).ToArray();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
+        _teams = data.OrderByDescending(t => t.CountryPoints).ToArray();
+    }
 
-	private async Task OpenTeamAsync(TeamResponse t)
-	{
-		var parameters = new DialogParameters
-		{
-			["Team"] = t
-		};
+    private async Task OpenTeamAsync(TeamResponse t)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Team"] = t
+        };
 
-		var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
-		var result = await dialogRef.Result;
-		if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
-		{
-			StateHasChanged();
-		}
-	}
+        var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
+    }
 }

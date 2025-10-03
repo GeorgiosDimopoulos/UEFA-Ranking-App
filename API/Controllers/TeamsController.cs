@@ -68,6 +68,7 @@ public class TeamsController : ControllerBase
             Id = t.Id,
             Name = t.Name,
             IsActive = t.IsActive,
+            CountryPoints = countries.FirstOrDefault(c => c.Id == t.CountryId)!.TotalPoints,
             Points = t.Points,
             Position = teamsPositions[t.Points],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
