@@ -32,7 +32,12 @@
                 }
             </MudSelect>
             <MudTextField @bind-Value="matchRes.Score" Label="Score" />
-            <MudTextField @bind-Value="matchRes.Round" Label="Round" />
+            <MudSelect T="Round" Label="Round" @bind-Value="matchRes.Round">
+                @foreach (var c in Enum.GetValues<Round>())
+                {
+                    <MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
+                }
+            </MudSelect>
             <MudStack Row="true" Spacing="1" Class="justify-end">
                 <MudButton Color="Color.Primary" Variant=" Variant.Text" OnClick="Cancel">Cancel</MudButton>
                 @* <MudButton Color="Color.Secondary" Variant=" Variant.Text" OnClick="Delete">Delete</MudButton> *@
