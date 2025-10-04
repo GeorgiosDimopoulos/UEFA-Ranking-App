@@ -29,11 +29,12 @@
                 <MudTh>Points</MudTh>
                 <MudTh>Is Active?</MudTh>
                 <MudTh>Matches:</MudTh>
+                <MudTh>Edit</MudTh>
                 <MudTh>Delete</MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd Class="pl-4">
-                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
+                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamInfoAsync(context)">
                         <span style="text-decoration:underline"> @context.Name </span>
                     </MudButton>
                 </MudTd>
@@ -47,15 +48,23 @@
                     <MudButton Color="Color.Success"
                                Variant="Variant.Filled"
                                Style="min-width:40px; width:40px; height:30px; padding:0;"
-                               OnClick="@(() => OpenTeamAsync(context))">
+                               OnClick="@(() => OpenTeamMatchesAsync(context))">
                         <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+                    </MudButton>
+                </MudTd>
+                <MudTd>
+                    <MudButton Color="Color.Success"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; padding:0;"
+                               OnClick="@(() => OpenTeamInfoAsync(context))">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
                     </MudButton>
                 </MudTd>
                 <MudTd>
                     <MudButton Color="Color.Error"
                                Variant="Variant.Filled"
                                Style="min-width:40px; width:40px; height:30px; padding:0;"
-                               OnClick="@(() => { })">
+                               OnClick="@(() => DeleteTeamAsync(context))">
                         <MudIcon Icon="@Icons.Material.Filled.Delete" />
                     </MudButton>
                 </MudTd>
@@ -77,7 +86,7 @@
         _teams = data.OrderByDescending(t => t.CountryPoints).ToArray();
     }
 
-    private async Task OpenTeamAsync(TeamResponse t)
+    private async Task OpenTeamInfoAsync(TeamResponse t)
     {
         var parameters = new DialogParameters
         {
@@ -92,6 +101,16 @@
         }
 
         await OnInitializedAsync();
+    }
+
+    private async Task OpenTeamMatchesAsync(TeamResponse match)
+    {
+        var parameters = new DialogParameters { ["Matches"] = match };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
+
+        var result = await dialog.Result;
     }
 
     private async Task DeleteTeamAsync(TeamResponse t)
