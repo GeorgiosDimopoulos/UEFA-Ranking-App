@@ -136,4 +136,9 @@ public class MatchRepository : IMatchRepository
 
         return result > 0;
     }
+
+    public Task<List<Match>> GetMatchesByTeamId(int id)
+    {
+        throw new NotImplementedException();
+    }
 }
