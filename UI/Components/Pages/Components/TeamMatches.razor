@@ -3,13 +3,10 @@
 
 @inject MatchesClient MatchesClient
 
-<h3>Team Matches</h3>
-
 <MudPaper Class="p-4">
 
 <MudTable Items="matches">
     <HeaderContent>
-            <MudTh>Date</MudTh>
             <MudTh>Home</MudTh>
             <MudTh>Away</MudTh>
             <MudTh>Score</MudTh>
@@ -34,6 +31,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        matches = await MatchesClient.GetMatchesByTeam(Team.Id);
+        matches = await MatchesClient.GetMatchesByTeam(Team.Name);
     }
 }

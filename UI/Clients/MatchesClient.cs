@@ -31,7 +31,8 @@ public class MatchesClient
             PropertyNameCaseInsensitive = true,
             Converters = { new JsonStringEnumConverter() }
         };
-        var teamMatches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>($"api/matches/team/{n}", opts);
+
+        var teamMatches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>($"api/matches/by-team?n={Uri.EscapeDataString(n)}", opts);
         return teamMatches?.ToList();
     }
 
