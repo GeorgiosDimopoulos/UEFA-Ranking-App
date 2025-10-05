@@ -1,5 +1,39 @@
-﻿<h3>Team Matches</h3>
+﻿@using API.Data.DTOs
+@using UI.Clients
 
+@inject MatchesClient MatchesClient
+
+<h3>Team Matches</h3>
+
+<MudPaper Class="p-4">
+
+<MudTable Items="matches">
+    <HeaderContent>
+            <MudTh>Date</MudTh>
+            <MudTh>Home</MudTh>
+            <MudTh>Away</MudTh>
+            <MudTh>Score</MudTh>
+            <MudTh>Round</MudTh>
+            <MudTh>Competition</MudTh>
+            <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Home">@context.HomeTeamName</MudTd>
+        <MudTd DataLabel="Away">@context.AwayTeamName</MudTd>
+        <MudTd DataLabel="Score">@context.Score</MudTd>
+        <MudTd DataLabel="Round">@context.Round</MudTd>
+        <MudTd DataLabel="Competition">@context.Competition</MudTd>
+    </RowTemplate>
+</MudTable>
+</MudPaper>
 @code {
+    [Parameter]
+    public TeamResponse Team { get; set; } = default!;
 
+    private List<MatchResponse>? matches { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        matches = await MatchesClient.GetMatchesByTeam(Team.Id);
+    }
 }

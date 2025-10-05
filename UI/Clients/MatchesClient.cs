@@ -24,6 +24,17 @@ public class MatchesClient
         return matches?.ToList();
     }
 
+    public async Task<List<MatchResponse>?> GetMatchesByTeam(int id)
+    {
+        var opts = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+        var teamMatches = await _httpClient.GetFromJsonAsync<MatchResponse[]?>($"api/matches/team/{id}", opts);
+        return teamMatches?.ToList();
+    }
+
     public async Task<MatchResponse> GetMatch(string n)
     {
         var opts = new JsonSerializerOptions

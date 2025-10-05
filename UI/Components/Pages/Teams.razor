@@ -105,7 +105,7 @@
 
     private async Task OpenTeamMatchesAsync(TeamResponse match)
     {
-        var parameters = new DialogParameters { ["Matches"] = match };
+        var parameters = new DialogParameters { ["Matches"] = match.Matches };
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
         var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
