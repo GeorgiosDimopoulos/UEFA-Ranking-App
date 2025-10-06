@@ -43,7 +43,7 @@
 					<MudButton Color="Color.Success"
 							   Variant="Variant.Filled"
 							   Style="min-width:40px; width:40px; height:30px; padding:0;"
-							   OnClick="@(() => OpenTeamAsync(context))">
+                               OnClick="@(() => OpenTeamMatchesAsync(context))">
 						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
 					</MudButton>
 				</MudTd>
@@ -78,5 +78,15 @@
         {
             StateHasChanged();
         }
+    }
+
+    private async Task OpenTeamMatchesAsync(TeamResponse team)
+    {
+        var parameters = new DialogParameters { ["Team"] = team };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
+
+        var result = await dialog.Result;
     }
 }

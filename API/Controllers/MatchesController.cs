@@ -150,7 +150,7 @@ public class MatchesController : ControllerBase
 
     [HttpPost]
     [SwaggerOperation(Tags = new[] { "Matches - Post" })]
-    public async Task<ActionResult> AddMatch([FromQuery] MatchRequest matchRequest)
+    public async Task<IActionResult> AddMatch([FromQuery] MatchRequest matchRequest)
     {
         if (matchRequest is null)
             return BadRequest("Match data is null.");
@@ -192,7 +192,7 @@ public class MatchesController : ControllerBase
 
     [HttpPut]
     [SwaggerOperation(Tags = new[] { "Matches - Put" })]
-    public async Task<ActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
+    public async Task<IActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
     {
         if (matchRequest is null || string.IsNullOrEmpty(matchRequest.Score))
         {
@@ -223,11 +223,11 @@ public class MatchesController : ControllerBase
         return Ok("Match update successfully.");
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [SwaggerOperation(Tags = new[] { "Matches - Delete" })]
-    public async Task<ActionResult> DeleteMatch(int matchId)
+    public async Task<IActionResult> DeleteMatch(int id)
     {
-        var result = await matchRepository.DeleteMatch(matchId);
+        var result = await matchRepository.DeleteMatch(id);
         if (!result)
         {
             _logger.LogError("Failed to delete the match in the database.");
