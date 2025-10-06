@@ -8,8 +8,9 @@
 
 @inject MatchesClient MatchesClient
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
-<h3>Schedule - Matches</h3>
+<h3>Calendar Schedule</h3>
 
 <div>
     @if (_matches is null)
@@ -73,9 +74,24 @@
         _matches = await MatchesClient.GetMatches() ?? new();
     }
 
-    private async Task DeleteMatchAsync(MatchResponse match)
+    private async Task DeleteMatchAsync(MatchResponse m)
     {
-        // var result = await MatchesClient.DeleteMatch() ?? new();
+        bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", "Are you sure you want to delete the match?", yesText: "Delete", cancelText: "Cancel");
+        
+        if (confirmation == true)
+        {
+            var result = await MatchesClient.DeleteMatch(m.Id);
+            if (result != null && result == true)
+            {
+                Snackbar.Add($"Match deleted successfully.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Failed to delete Match", Severity.Error);
+            }
+        }
+
+        await OnInitializedAsync();
     }
 
     private async Task EditMatch(MatchResponse match)

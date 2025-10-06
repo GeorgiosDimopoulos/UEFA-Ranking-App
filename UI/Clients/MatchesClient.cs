@@ -65,13 +65,13 @@ public class MatchesClient
         }
 
         return response.IsSuccessStatusCode;
-    } 
+    }
 
     public async Task<bool?> AddMatch(MatchRequest mr)
     {
         var url = $"api/matches?" +
             $"homeTeamName={Uri.EscapeDataString(mr.HomeTeamName)}" +
-            $"&awayTeamName={Uri.EscapeDataString(mr.AwayTeamName)}" +    
+            $"&awayTeamName={Uri.EscapeDataString(mr.AwayTeamName)}" +
             $"&score={(mr.Score != null ? Uri.EscapeDataString(mr.Score) : string.Empty)}" +
             $"&round={(int)mr.Round}" +
             $"&competition={(int)mr.Competition}";
@@ -81,6 +81,19 @@ public class MatchesClient
         {
             var body = await response.Content.ReadAsStringAsync();
             Console.WriteLine($"POST /api/matches => {(int)response.StatusCode} {response.ReasonPhrase}\n{body}");
+        }
+
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool?> DeleteMatch(int id)
+    {
+        var url = $"api/matches/{id}";
+        var response = await _httpClient.DeleteAsync(url);
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"DELETE /api/matches => {(int)response.StatusCode} {response.ReasonPhrase}\n{body}");
         }
 
         return response.IsSuccessStatusCode;
