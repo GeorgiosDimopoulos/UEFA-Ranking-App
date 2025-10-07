@@ -16,7 +16,7 @@
 	<DialogContent>
 		<MudForm>
 			<MudTextField @bind-Value="teamRes.Name" Label="Name" />
-			<MudSelect T="string" Label="Country" Value="teamRes.CountryName" ValueChanged="OnCountryChanged">
+			<MudSelect T="string" Label="Country" @bind-Value="teamRes.CountryName">
 				@foreach (var c in countriesNames)
 				{
 					<MudSelectItem Value="@c">@c</MudSelectItem>
@@ -24,7 +24,8 @@
 			</MudSelect>
 			<MudTextField T="int" @bind-Value="teamRes.Position" Label="Position" Disabled="true" />
 			<MudTextField T="int" ReadOnly="true" HideSpinButtons="true" Value="teamRes.Matches?.Count ?? 0" Label="Matches" Disabled="true" />
-			<MudTextField T="int" Value="teamRes.Points" Label="Points" Disabled="true" />
+			<MudTextField T="int" Value="teamRes.Points" Label="Points" Disabled="true" />	
+			<MudSwitch T="bool" Color="Color.Secondary" @bind-Checked="teamRes.IsActive"/>
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
@@ -65,11 +66,6 @@
 			Competition = Team.Competition,
 			CountryName = Team.CountryName
 		};
-	}
-
-	protected void OnCountryChanged(string c)
-	{
-		teamRes.CountryName = c;
 	}
 
 	private async Task Save()
