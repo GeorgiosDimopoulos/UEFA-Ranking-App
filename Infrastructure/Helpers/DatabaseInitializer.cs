@@ -39,8 +39,8 @@ public class DatabaseInitializer
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 HomeTeamName TEXT NOT NULL,
                 AwayTeamName TEXT NOT NULL,
-                AwayTeamGoals INTEGER NULL,
                 HomeTeamGoals INTEGER NULL,
+                AwayTeamGoals INTEGER NULL,
                 Round INTEGER NOT NULL,
                 Competition INTEGER NOT NULL)";
         command.CommandText = createMatchesTableQuery;

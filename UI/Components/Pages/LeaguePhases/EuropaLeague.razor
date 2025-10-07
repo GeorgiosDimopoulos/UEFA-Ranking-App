@@ -30,14 +30,10 @@
 				<MudTh>Matches:</MudTh>
 			</HeaderContent>
 			<RowTemplate>
-				<MudTd>
-					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamAsync(context)">
-						<span style="text-decoration:underline"> @context.Name </span>
-					</MudButton>
-				</MudTd>
+				<MudTd>@context.Name</MudTd>
 				<MudTd>@context.CountryName</MudTd>
 				<MudTd>@context.Position</MudTd>
-				<MudTd></MudTd>
+				<MudTd>-</MudTd>
 				<MudTd Style="font-weight:700">@context.Points</MudTd>
 				<MudTd>
 					<MudButton Color="Color.Success"

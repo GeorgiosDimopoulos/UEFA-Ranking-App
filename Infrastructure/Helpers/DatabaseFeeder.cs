@@ -56,7 +56,7 @@ public class DatabaseFeeder
                 Competition = Competition.ConferenceLeague,
                 CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found")).Id,
                 IsActive = true,
-                Points = 2
+                Points = 0
             };
             await teamRepository.AddTeam(team, "Greece");
 
