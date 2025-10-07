@@ -11,6 +11,7 @@ public class TeamResponse
     public int Position { get; set; }
     public string CountryName { get; set; } = string.Empty;
     public int CountryPoints { get; set; }
+    public int MatchesPlayed { get; set; } // => Matches?.Count() ?? 0;
 
     public Competition Competition { get; set; }    
     

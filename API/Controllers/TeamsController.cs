@@ -4,6 +4,7 @@ using Core.Models;
 using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace API.Controllers;
 
@@ -39,15 +40,6 @@ public class TeamsController : ControllerBase
 
         var countries = await countryRepository.GetAllCountries();
 
-        var teamsPositions = teams.Select(t => t.Points)
-                                  .Distinct()
-                                  .OrderByDescending(p => p)
-                                  .Select((p, i) => new { p, pos = i + 1 })
-                                  .ToDictionary(x => x.p, x => x.pos);
-
-        var countriesNameAndIds = countries.ToDictionary(c => c.Id, c => c.Name);
-        var teamsIds = teams.Select(t => t.Id).ToArray();
-
         Dictionary<int, List<Match>> matchesByTeams = [];
         if (queryParameters.IncludeMatches)
         {
@@ -63,6 +55,12 @@ public class TeamsController : ControllerBase
             teams = (teams.Where(t => t.Competition == queryParameters.Competition)).ToList();
         }
 
+        var teamsPositions = teams.Select(t => t.Points)
+                          .Distinct()
+                          .OrderByDescending(p => p)
+                          .Select((p, i) => new { p, pos = i + 1 })
+                          .ToDictionary(x => x.p, x => x.pos);
+
         return teams.Select(t => new TeamResponse
         {
             Id = t.Id,
@@ -73,7 +71,8 @@ public class TeamsController : ControllerBase
             Position = teamsPositions[t.Points],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = t.Competition,
-            Matches = (queryParameters.IncludeMatches && t.IsActive) ? matchesByTeams[t.Id] : null
+            Matches = (queryParameters.IncludeMatches && t.IsActive) ? matchesByTeams[t.Id] : null,
+            MatchesPlayed = (t.IsActive && queryParameters.IncludeMatches) ? matchesByTeams[t.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
         }).ToList();
     }
 
@@ -90,6 +89,13 @@ public class TeamsController : ControllerBase
 
         var teamCountry = await countryRepository.GetCountryById(team.CountryId);
 
+        Dictionary<int, List<Match>> teamMatches = [];
+        if (queryParameters.IncludeMatches)
+        {
+            var matchByTeam = await matchRepository.GetMatchesByTeamName(team.Name);
+            teamMatches[team.Id] = matchByTeam;
+        }
+
         var teamDto = new TeamResponse
         {
             Id = team.Id,
@@ -98,13 +104,10 @@ public class TeamsController : ControllerBase
             Points = team.Points,
             Position = await GetTeamPosition(team.Points),
             CountryName = teamCountry!.Name,
-            Competition = team.Competition
+            Competition = team.Competition,
+            Matches = (queryParameters.IncludeMatches && team.IsActive) ? teamMatches[team.Id] : null,
+            MatchesPlayed = (team.IsActive && queryParameters.IncludeMatches) ? teamMatches[team.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
         };
-
-        if (queryParameters.IncludeMatches)
-        {
-            teamDto.Matches = team.Matches.ToList();
-        }
 
         return Ok(teamDto);
     }
@@ -127,6 +130,16 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
+        Dictionary<int, List<Match>> matchesByTeams = [];
+        if (queryParameters.IncludeMatches)
+        {
+            foreach (var t in teams)
+            {
+                var matchByTeam = await matchRepository.GetMatchesByTeamName(t.Name);
+                matchesByTeams[t.Id] = matchByTeam;
+            }
+        }
+
         var teamsDto = new List<TeamResponse>();
         foreach (var team in teams!)
         {
@@ -138,13 +151,10 @@ public class TeamsController : ControllerBase
                 Points = team.Points,
                 Position = await GetTeamPosition(team.Points),
                 CountryName = teamCountry.Name,
-                Competition = team.Competition
+                Competition = team.Competition,
+                Matches = (queryParameters.IncludeMatches && team.IsActive) ? matchesByTeams[team.Id] : null,
+                MatchesPlayed = (team.IsActive && queryParameters.IncludeMatches) ? matchesByTeams[team.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
             };
-
-            if (queryParameters.IncludeMatches)
-            {
-                teamDto.Matches = team.Matches.ToList();
-            }
 
             teamsDto.Add(teamDto);
         }
@@ -165,6 +175,13 @@ public class TeamsController : ControllerBase
 
         var teamCountry = await countryRepository.GetCountryById(team.CountryId);
 
+        Dictionary<int, List<Match>> teamMatches = [];
+        if (queryParameters.IncludeMatches)
+        {
+            var matchByTeam = await matchRepository.GetMatchesByTeamName(team.Name);
+            teamMatches[team.Id] = matchByTeam;
+        }
+
         var teamDto = new TeamResponse
         {
             Name = team.Name,
@@ -172,13 +189,11 @@ public class TeamsController : ControllerBase
             Points = team.Points,
             Position = await GetTeamPosition(team.Points),
             CountryName = teamCountry!.Name, // ToDo: include via JOIN in GetTeamByName
-            Competition = team.Competition
+            Competition = team.Competition,
+            CountryPoints = teamCountry!.TotalPoints,
+            Matches = (queryParameters.IncludeMatches && team.IsActive) ? teamMatches[team.Id] : null,
+            MatchesPlayed = (team.IsActive && queryParameters.IncludeMatches) ? teamMatches[team.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
         };
-
-        if (queryParameters.IncludeMatches)
-        {
-            teamDto.Matches = team.Matches.ToList();
-        }
 
         return Ok(teamDto);
     }
