@@ -56,7 +56,9 @@
     {
         await Task.Delay(500);
         var data = await TeamsClient.GetTeamsByCompetition(Competition.ChampionsLeague) ?? Array.Empty<TeamResponse>();
-        _teams = data.OrderByDescending(t => t.Points).ToArray();
+        _teams = data.Where(t => t.IsActive)
+                     .OrderByDescending(t => t.Points)
+                     .ToArray();
     }
 
     private async Task OpenTeamAsync(TeamResponse t)

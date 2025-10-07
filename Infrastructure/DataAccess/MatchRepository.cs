@@ -80,7 +80,7 @@ public class MatchRepository : IMatchRepository
         }
 
         string createQuery;
-        if (m.AwayTeamGoals != 99 && m.AwayTeamGoals != 99)
+        if (m.AwayTeamGoals != null && m.AwayTeamGoals != null)
             createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
         else
             createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";

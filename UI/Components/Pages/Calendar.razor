@@ -33,7 +33,7 @@
                 <MudTd>@context.HomeTeamName</MudTd>
                 <MudTd>@context.AwayTeamName</MudTd>
                 <MudTd>
-                    @if (@context.Score is null || @context.Score == "99-99")
+                    @if (@context.Score is null)
                     {
                         @string.Empty
                     }
@@ -72,7 +72,9 @@
     protected override async Task OnInitializedAsync()
     {
         var matches = await MatchesClient.GetMatches() ?? new();
-        _matches = matches.OrderBy(m => m.Competition).ToList();
+        _matches = matches.OrderBy(m => m.Competition)
+                          .ThenBy(m=> m.Round)
+                          .ToList();
     }
 
     private async Task DeleteMatchAsync(MatchResponse m)

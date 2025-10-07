@@ -176,11 +176,6 @@ public class MatchesController : ControllerBase
                 return BadRequest("Match score format is invalid.");
             }
         }
-        else
-        {
-            match.HomeTeamGoals = 99;
-            match.AwayTeamGoals = 99;
-        }
 
         var result = await matchRepository.AddMatch(match);
         if (!result)
