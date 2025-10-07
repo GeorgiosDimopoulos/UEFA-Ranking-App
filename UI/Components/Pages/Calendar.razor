@@ -71,7 +71,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _matches = await MatchesClient.GetMatches() ?? new();
+        var matches = await MatchesClient.GetMatches() ?? new();
+        _matches = matches.OrderBy(m => m.Competition).ToList();
     }
 
     private async Task DeleteMatchAsync(MatchResponse m)
