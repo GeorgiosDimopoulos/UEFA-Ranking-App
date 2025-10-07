@@ -111,25 +111,50 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
-        const string sql = "UPDATE Teams SET Name = @NewName, IsActive = @IsActive, Points = @Points, Competition = @Competition WHERE Name = @CurrentName";
-        var result = await connection.ExecuteAsync(sql, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Points, t.Competition });
+        const string query = "UPDATE Teams SET Name = @NewName, IsActive = @IsActive, Points = @Points, Competition = @Competition WHERE Name = @CurrentName";
+        var result = await connection.ExecuteAsync(query, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Points, t.Competition });
 
         return result > 0;
     }
 
-    public async Task<bool> UpdateTeamPoints(Match m)
+    public async Task<bool> UpdateTeamPoints(string team)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
-
-        var homeTeamPoints = m.AwayTeamGoals < m.HomeTeamGoals ? 3 : m.AwayTeamGoals == m.HomeTeamGoals ? 1 : 0;
-        var awayTeamPoints = m.AwayTeamGoals > m.HomeTeamGoals ? 3 : m.AwayTeamGoals == m.HomeTeamGoals ? 1 : 0;
-
         using var transaction = connection.BeginTransaction();
 
-        var updateHomeTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = Points + @NewPoints WHERE Name = @Name", new { NewPoints = homeTeamPoints, Name = m.HomeTeamName });
-        var updateAwayTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = Points + @NewPoints WHERE Name = @Name", new { NewPoints = awayTeamPoints, Name = m.AwayTeamName });
-        if (updateHomeTeamPointsResult == 0 || updateAwayTeamPointsResult == 0)
+        var teamInfoQuery = "SELECT * FROM Matches WHERE (HomeTeamName = @team OR AwayTeamName = @team) AND HomeTeamGoals IS NOT NULL AND AwayTeamGoals IS NOT NULL";
+        var teamMatches = await connection.QueryAsync<Match>(teamInfoQuery, new { team });
+
+        var teamPoints = 0;
+        foreach (var teamMatch in teamMatches)
+        {
+            if (teamMatch.HomeTeamName.Equals(team))
+            {
+                if (teamMatch.AwayTeamGoals == teamMatch.HomeTeamGoals)
+                {
+                    teamPoints += 1;
+                }
+                else if (teamMatch.HomeTeamGoals > teamMatch.AwayTeamGoals)
+                {
+                    teamPoints += 3;
+                }
+            }
+            else if (teamMatch.AwayTeamName.Equals(team))
+            {
+                if (teamMatch.AwayTeamGoals == teamMatch.HomeTeamGoals)
+                {
+                    teamPoints += 1;
+                }
+                else if (teamMatch.HomeTeamGoals < teamMatch.AwayTeamGoals)
+                {
+                    teamPoints += 3;
+                }
+            }
+        }
+
+        var updateHomeTeamPointsResult = await connection.ExecuteAsync(@"UPDATE Teams SET Points = @NewPoints WHERE Name = @Name", new { NewPoints = teamPoints, Name = team }, transaction);
+        if (updateHomeTeamPointsResult == 0)
         {
             await transaction.RollbackAsync();
             return false;

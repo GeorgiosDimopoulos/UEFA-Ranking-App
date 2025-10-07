@@ -1,7 +1,6 @@
 ﻿using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
-using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -163,14 +162,18 @@ public class MatchesController : ControllerBase
             Competition = matchRequest.Competition
         };
 
-        if (!string.IsNullOrEmpty(matchRequest.Score))
-        {           
+        if (!string.IsNullOrWhiteSpace(matchRequest.Score))
+        {
             var goals = ParseScore(matchRequest.Score);
             if (goals is not null)
             {
                 var (homeGoals, awayGoals) = goals.Value;
                 match.HomeTeamGoals = homeGoals;
                 match.AwayTeamGoals = awayGoals;
+            }
+            else
+            {
+                return BadRequest("Match score format is invalid.");
             }
         }
         else
@@ -183,8 +186,9 @@ public class MatchesController : ControllerBase
         if (!result)
             return StatusCode(500, "Could not insert match into DB");
 
-        result = await teamRepository.UpdateTeamPoints(match);
-        if (!result)
+        var result2 = await teamRepository.UpdateTeamPoints(match.HomeTeamName);
+        var result3 = await teamRepository.UpdateTeamPoints(match.AwayTeamName);
+        if (!result3 || !result2)
             return StatusCode(500, "Could not update match's teams points");
 
         return Ok("Match added successfully.");
@@ -194,11 +198,11 @@ public class MatchesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Matches - Put" })]
     public async Task<IActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
     {
-        if (matchRequest is null || string.IsNullOrEmpty(matchRequest.Score))
-        {
-            return BadRequest("Match data like score is null.");
-        }
-
+        if (matchRequest is null || string.IsNullOrWhiteSpace(matchRequest.Score))
+            return BadRequest("Match data like score is null.");        
+        if (matchRequest.Id <= 0)
+            return BadRequest("Valid match Id is required.");
+        
         var goals = ParseScore(matchRequest.Score!);
         if (goals is null)
             return BadRequest("Match format is not ok.");
@@ -214,13 +218,27 @@ public class MatchesController : ControllerBase
             Competition = matchRequest.Competition,
             Id = matchRequest.Id
         };
+
         var result = await matchRepository.UpdateMatch(match, match.Id);
         if (!result)
         {
             _logger.LogError("Failed to update the match to the database.");
             return StatusCode(500, "A problem happened while handling your request.");
         }
-        return Ok("Match update successfully.");
+        else
+        {
+            _logger.LogInformation("Match updated successfully. Now lets update the teams with points");
+        }
+
+        var result2 = await teamRepository.UpdateTeamPoints(match.HomeTeamName);
+        var result3 = await teamRepository.UpdateTeamPoints(match.AwayTeamName);
+        if (!result2 || !result3)
+        {
+            _logger.LogError("Failed to update the match's teams points to the database.");
+            return StatusCode(500, "A problem happened while handling your request.");
+        }
+
+        return Ok("Match and its teams updated successfully.");
     }
 
     [HttpDelete("{id}")]

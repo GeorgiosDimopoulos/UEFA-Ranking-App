@@ -101,7 +101,6 @@ public class MatchRepository : IMatchRepository
         }
 
         // ToDo: update also teams' countries points
-
         return true;
     }
 
@@ -122,7 +121,6 @@ public class MatchRepository : IMatchRepository
             Id = id
         });
 
-        // ToDo: update both teams points
         return result > 0;
     }
 
