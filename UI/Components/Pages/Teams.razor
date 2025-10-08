@@ -20,7 +20,7 @@
     }
     else
     {
-        <MudAutocomplete/>
+        <MudTextField @bind-Value="_searchText" Label="Search teams..." Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" />
         <MudTable Items="_teams">
             <HeaderContent>
                 <MudTh>Name</MudTh>
@@ -77,6 +77,8 @@
 
 @code
 {
+    private string _searchText = string.Empty;
+
     private TeamResponse[]? _teams = default!;
     private CountryResponse[]? _countries = default!;
 

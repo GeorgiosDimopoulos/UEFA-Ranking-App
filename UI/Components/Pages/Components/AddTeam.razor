@@ -72,6 +72,12 @@
 
 	private async Task Save(MouseEventArgs args)
 	{
+		if (!teamRes.IsActive)
+		{
+            Snackbar.Add("Only active teams can be added.", Severity.Warning);
+            return;	
+		}
+
 		teamReq = new TeamRequest
 		{
 			Name = teamRes.Name,
