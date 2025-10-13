@@ -19,13 +19,18 @@
     }
     else
     {
+        <div class="d-flex justify-content-center mb-3 align-items-center gap-2">
+            <MudButton Style="text-decoration:underline">PREVIOUS</MudButton>
+            <MudText Style="font-weight:bold; text-align:center;">Round: 1</MudText>
+            <MudButton Style="text-decoration:underline">NEXT</MudButton>
+        </div>
         <MudTable Items="_matches">
             <HeaderContent>
                 <MudTh Style="font-weight:bold;">Home Team</MudTh>
                 <MudTh Style="font-weight:bold;">Away Team</MudTh>
                 <MudTh Style="font-weight:bold;">Score</MudTh>
                 <MudTh Style="font-weight:bold;">Competition</MudTh>
-                <MudTh Style="font-weight:bold;">Round</MudTh>
+                @* <MudTh Style="font-weight:bold;">Round</MudTh> *@
                 <MudTh Style="font-weight:bold;">Edit</MudTh>
                 <MudTh Style="font-weight:bold;">Delete</MudTh>
             </HeaderContent>
@@ -43,7 +48,7 @@
                     }
                 </MudTd>
                 <MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
-                <MudTd>@context.Round</MudTd>
+                @* <MudTd>@context.Round</MudTd> *@
                 <MudTd Style="vertical-align: middle;">
                     <MudButton Class="p-0"
                                Color="Color.Success"
