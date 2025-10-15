@@ -4,7 +4,6 @@ using Core.Models;
 using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Diagnostics.Metrics;
 
 namespace API.Controllers;
 

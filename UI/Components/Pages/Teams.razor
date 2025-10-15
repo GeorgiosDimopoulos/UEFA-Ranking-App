@@ -37,6 +37,7 @@
                 <MudTh Style="font-weight:bold;">Points</MudTh>
                 <MudTh Style="font-weight:bold;">Is Active?</MudTh>
                 <MudTh Style="font-weight:bold;">Matches:</MudTh>
+                <MudTh Style="font-weight:bold;">Played</MudTh>
                 <MudTh Style="font-weight:bold;">Delete</MudTh>
             </HeaderContent>
             <RowTemplate>
@@ -65,6 +66,9 @@
                                OnClick="@(() => OpenTeamMatchesAsync(context))">
                         <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
                     </MudButton>
+                </MudTd>
+                <MudTd>
+                    @context.MatchesPlayed
                 </MudTd>
                 <MudTd>
                     <MudButton Color="Color.Error"

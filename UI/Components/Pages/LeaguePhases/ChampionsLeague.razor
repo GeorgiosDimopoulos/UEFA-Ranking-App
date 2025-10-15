@@ -20,7 +20,7 @@
     {
         <MudTable Items="_teams">
             <HeaderContent>
-                <MudTh Style="font-weight:bold;">Position</MudTh>
+                <MudTh Style="font-weight:bold; width:40px">Position</MudTh>
                 <MudTh Style="font-weight:bold;">Name</MudTh>
                 <MudTh Style="font-weight:bold;">Country</MudTh>                
                 <MudTh Style="font-weight:bold;">+ -</MudTh>
@@ -29,10 +29,10 @@
                 <MudTh Style="font-weight:bold;">Matches:</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd>@context.Position</MudTd>
+                <MudTd Style="width:40px">@context.Position</MudTd>
                 <MudTd>@context.Name</MudTd>
-                <MudTd>@context.CountryName</MudTd>                
-                <MudTd>-</MudTd>
+                <MudTd>@context.CountryName</MudTd>
+                <MudTd>@context.GoalsDifference</MudTd>
                 <MudTh>@context.MatchesPlayed</MudTh>
                 <MudTd Style="font-weight:700">@context.Points</MudTd>
                 <MudTd>
@@ -60,6 +60,7 @@
         var data = await TeamsClient.GetTeamsByCompetition(Competition.ChampionsLeague) ?? Array.Empty<TeamResponse>();
         _teams = data.Where(t => t.IsActive)
                      .OrderByDescending(t => t.Points)
+                     .ThenByDescending(t =>t.GoalsDifference)
                      .ToArray();
     }
 

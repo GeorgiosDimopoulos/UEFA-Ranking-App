@@ -26,11 +26,11 @@
 		</div>
 		<MudTable Items="_matches">
 			<HeaderContent>
-				<MudTh Style="font-weight:bold;">Home Team</MudTh>
+@* 				<MudTh>#</MudTh>
+ *@				<MudTh Style="font-weight:bold;">Home Team</MudTh>
 				<MudTh Style="font-weight:bold;">Away Team</MudTh>
 				<MudTh Style="font-weight:bold;">Score</MudTh>
 				<MudTh Style="font-weight:bold;">Competition</MudTh>
-				@* <MudTh Style="font-weight:bold;">Round</MudTh> *@
 				<MudTh Style="font-weight:bold;">Edit</MudTh>
 				<MudTh Style="font-weight:bold;">Delete</MudTh>
 			</HeaderContent>
@@ -81,9 +81,10 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_allMatches = await MatchesClient.GetMatches() ?? new();
-		_matches = _allMatches.OrderBy(m => m.Competition)
-						  .ThenBy(m => m.Round)
-						  .ToList();
+		_matches = _allMatches.Where(m => ((int)m.Round) == 1)
+							  .OrderBy(m => m.Competition)							  
+							  .ThenBy(m => m.Round)
+							  .ToList();
 	}
 
 	private void NextRound()

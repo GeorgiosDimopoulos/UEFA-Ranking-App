@@ -24,18 +24,18 @@
 	{
 		<MudTable Items="_teams">
 			<HeaderContent>
+				<MudTh Style="font-weight:bold; width:40px">Position</MudTh>
 				<MudTh Style="font-weight:bold;">Name</MudTh>
-				<MudTh Style="font-weight:bold;">Country</MudTh>
-				<MudTh Style="font-weight:bold;">Position</MudTh>
+				<MudTh Style="font-weight:bold;">Country</MudTh>				
 				<MudTh Style="font-weight:bold;">+ -</MudTh>
 				<MudTh Style="font-weight:bold;">Played</MudTh>
 				<MudTh Style="font-weight:bold;">Points</MudTh>
 				<MudTh Style="font-weight:bold;">Matches:</MudTh>
 			</HeaderContent>
 			<RowTemplate>
+				<MudTd Style="width:40px">@context.Position</MudTd>
 				<MudTd>@context.Name</MudTd>
 				<MudTd>@context.CountryName</MudTd>
-				<MudTd>@context.Position</MudTd>
 				<MudTd>-</MudTd>
 				<MudTh>@context.MatchesPlayed</MudTh>
 				<MudTd Style="font-weight:700">@context.Points</MudTd>

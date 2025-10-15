@@ -4,7 +4,6 @@ using Core.Models;
 using Infrastructure.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace API.Controllers;
 
@@ -55,11 +54,11 @@ public class TeamsController : ControllerBase
             teams = (teams.Where(t => t.Competition == queryParameters.Competition)).ToList();
         }
 
-        var teamsPositions = teams.Select(t => t.Points)
-                          .Distinct()
-                          .OrderByDescending(p => p)
-                          .Select((p, i) => new { p, pos = i + 1 })
-                          .ToDictionary(x => x.p, x => x.pos);
+        var teamsPositions = teams.OrderByDescending(t => t.Points)
+                                  .ThenByDescending(t => matchesByTeams[t.Id].Sum(m => m.HomeTeamName == t.Name
+                                                    ? (m.HomeTeamGoals ?? 0) - (m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0)))
+                                  .Select((t, i) => new { t.Id, Position = i + 1 })
+                                  .ToDictionary(x => x.Id, x => x.Position);
 
         return teams.Select(t => new TeamResponse
         {
@@ -68,7 +67,8 @@ public class TeamsController : ControllerBase
             IsActive = t.IsActive,
             CountryPoints = countries.FirstOrDefault(c => c.Id == t.CountryId)!.TotalPoints,
             Points = t.Points,
-            Position = teamsPositions[t.Points],
+            GoalsDifference = matchesByTeams[t.Id].Sum(m => m.HomeTeamName == t.Name ? (m.HomeTeamGoals ?? 0) - (m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0)),
+            Position = teamsPositions[t.Id],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = t.Competition,
             Matches = (queryParameters.IncludeMatches && t.IsActive) ? matchesByTeams[t.Id] : null,

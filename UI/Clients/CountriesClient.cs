@@ -1,5 +1,4 @@
 ﻿using API.Data.DTOs;
-using System.Net.Http.Json;
 
 namespace UI.Clients;
 
