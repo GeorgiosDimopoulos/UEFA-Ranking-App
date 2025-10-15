@@ -54,10 +54,10 @@
 				<MudTd>@context.NumberOfInitialTeams</MudTd>
 				<MudTd>@context.NumberOfActiveTeams</MudTd>
 				<MudTd>
-					<MudSwitch T="bool?"
+					<MudSwitch T="bool"
 							   Checked="@expanded.Contains(context.Name)"
 							   Color="Color.Primary"
-							   OnChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
+							   CheckedChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
 				</MudTd>
 				<MudTd Style="vertical-align: middle;">
 					<MudButton Color="Color.Error"
