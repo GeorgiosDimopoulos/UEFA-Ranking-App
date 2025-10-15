@@ -22,6 +22,15 @@
 	}
 	else
 	{
+
+		<MudTextField @bind-Value="_searchText" 
+					  Label="Search teams..."
+					  Variant="Variant.Outlined"
+					  Adornment="Adornment.End"
+					  AdornmentIcon="@Icons.Material.Filled.Search"
+					  Immediate="true"
+					  OnAdornmentClick="@OnSearchClick"
+					  OnKeyDown="@OnEnterPressed"/>
 		<MudTable Items="_countries">
 			<HeaderContent>
 				<MudTh Style="font-weight:bold;">Name</MudTh>
@@ -73,6 +82,8 @@
 </div>
 
 @code {
+	private string _searchText = string.Empty;
+
 	private CountryResponse[]? _countries = default!;
 	private TeamResponse[]? _countryTeams = default!;
 
@@ -83,6 +94,18 @@
 		await Task.Delay(500);
 		var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
 		_countries = data.OrderBy(c => c.Position).ToArray();
+	}
+
+	private void OnSearchClick()
+	{
+	}
+
+	private void OnEnterPressed(KeyboardEventArgs e)
+	{
+		if (e.Key == "Enter")
+		{
+			OnSearchClick();
+		}
 	}
 
 	private async Task ToggleTeamId(string countryName, bool isChecked)
