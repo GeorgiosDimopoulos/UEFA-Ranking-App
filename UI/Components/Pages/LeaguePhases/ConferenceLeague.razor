@@ -13,79 +13,80 @@
 @inject IDialogService DialogService
 
 <div class="col-12">
-	@if (_teams == null)
-	{
-		<p><em>Loading Conference League teams...</em></p>
-	}
-	else
-	{
-		<MudTable Items="_teams">
-			<HeaderContent>
-				<MudTh Style="font-weight:bold; width:40px">Position</MudTh>
-				<MudTh Style="font-weight:bold;">Name</MudTh>
-				<MudTh Style="font-weight:bold;">Country</MudTh>				
-				<MudTh>+ -</MudTh>
-				<MudTh Style="font-weight:bold;">Played</MudTh>
-				<MudTh Style="font-weight:bold;">Points</MudTh>
-				<MudTh Style="font-weight:bold;">Matches:</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				<MudTd Style="width:40px">@context.Position</MudTd>
-				<MudTd>@context.Name</MudTd>
-				<MudTd>@context.CountryName</MudTd>				
-				<MudTd>-</MudTd>
-				<MudTh>@context.MatchesPlayed</MudTh>
-				<MudTd Style="font-weight:700">@context.Points</MudTd>
-				<MudTd>
-					<MudButton Color="Color.Success"
-							   Variant="Variant.Filled"
-							   Style="min-width:40px; width:40px; height:30px; padding:0;"
-							   OnClick="@(() => OpenTeamMatchesAsync(context))">
-						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-					</MudButton>
-				</MudTd>
-			</RowTemplate>
-		</MudTable>
-	}
+    @if (_teams == null)
+    {
+        <p><em>Loading Conference League teams...</em></p>
+    }
+    else
+    {
+        <MudTable Items="_teams">
+            <HeaderContent>
+                <MudTh Style="font-weight:bold; width:40px">Position</MudTh>
+                <MudTh Style="font-weight:bold;">Name</MudTh>
+                <MudTh Style="font-weight:bold;">Country</MudTh>
+                <MudTh>+ -</MudTh>
+                <MudTh Style="font-weight:bold;">Played</MudTh>
+                <MudTh Style="font-weight:bold;">Points</MudTh>
+                <MudTh Style="font-weight:bold;">Matches:</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd Style="width:40px">@context.Position</MudTd>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@context.CountryName</MudTd>
+                <MudTd>-</MudTd>
+                <MudTh>@context.MatchesPlayed</MudTh>
+                <MudTd Style="font-weight:700">@context.Points</MudTd>
+                <MudTd>
+                    <MudButton Color="Color.Success"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; padding:0;"
+                               OnClick="@(() => OpenTeamMatchesAsync(context))">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
 
 </div>
 
 @code
 {
-	private TeamResponse[]? _teams = default!;
-	private CountryResponse[]? _countries = default!;
+    private TeamResponse[]? _teams = default!;
+    private CountryResponse[]? _countries = default!;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await Task.Delay(500);
-		var data = await TeamsClient.GetTeamsByCompetition(Competition.ConferenceLeague) ?? Array.Empty<TeamResponse>();
-		_teams = data.Where(t => t.IsActive)
-					 .OrderByDescending(t => t.Points)
-					 .ToArray();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        var data = await TeamsClient.GetTeamsByCompetition(Competition.ConferenceLeague) ?? Array.Empty<TeamResponse>();
+        _teams = data.Where(t => t.IsActive)
+                     .OrderByDescending(t => t.Points)
+                     .ThenByDescending(t => t.GoalsDifference)
+                     .ToArray();
+    }
 
-	private async Task OpenTeamAsync(TeamResponse t)
-	{
-		var parameters = new DialogParameters
-		{
-			["Team"] = t
-		};
+    private async Task OpenTeamAsync(TeamResponse t)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Team"] = t
+        };
 
-		var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
-		var result = await dialogRef.Result;
-		if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
-		{
-			StateHasChanged();
-		}
-	}
+        var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
+    }
 
-	private async Task OpenTeamMatchesAsync(TeamResponse team)
-	{
-		var parameters = new DialogParameters { ["Team"] = team };
-		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+    private async Task OpenTeamMatchesAsync(TeamResponse team)
+    {
+        var parameters = new DialogParameters { ["Team"] = team };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-		var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
+        var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
 
-		var result = await dialog.Result;
-	}
+        var result = await dialog.Result;
+    }
 }

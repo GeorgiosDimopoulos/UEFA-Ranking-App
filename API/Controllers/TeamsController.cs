@@ -55,8 +55,7 @@ public class TeamsController : ControllerBase
         }
 
         var teamsPositions = teams.OrderByDescending(t => t.Points)
-                                  .ThenByDescending(t => matchesByTeams[t.Id].Sum(m => m.HomeTeamName == t.Name
-                                                    ? (m.HomeTeamGoals ?? 0) - (m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0)))
+                                  .ThenByDescending(t => CalculateGoalsDifference(t, matchesByTeams[t.Id]))
                                   .Select((t, i) => new { t.Id, Position = i + 1 })
                                   .ToDictionary(x => x.Id, x => x.Position);
 
@@ -67,7 +66,7 @@ public class TeamsController : ControllerBase
             IsActive = t.IsActive,
             CountryPoints = countries.FirstOrDefault(c => c.Id == t.CountryId)!.TotalPoints,
             Points = t.Points,
-            GoalsDifference = matchesByTeams[t.Id].Sum(m => m.HomeTeamName == t.Name ? (m.HomeTeamGoals ?? 0) - (m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0)),
+            GoalsDifference = CalculateGoalsDifference(t, matchesByTeams[t.Id]),
             Position = teamsPositions[t.Id],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = t.Competition,
@@ -263,6 +262,11 @@ public class TeamsController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    private static int CalculateGoalsDifference(Team t, List<Match> matches)
+    {
+        return matches.Sum(m => m.HomeTeamName.Equals(t.Name) ? (m.HomeTeamGoals ?? 0)-(m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0));
     }
 
     private async Task<int> GetTeamPosition(int points)
