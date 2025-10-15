@@ -84,6 +84,7 @@
 @code {
 	private string _searchText = string.Empty;
 
+	private CountryResponse[]? _allCountries = default!;
 	private CountryResponse[]? _countries = default!;
 	private TeamResponse[]? _countryTeams = default!;
 
@@ -92,12 +93,21 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var data = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
-		_countries = data.OrderBy(c => c.Position).ToArray();
+		_allCountries = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
+		_countries = _allCountries.OrderBy(c => c.Position).ToArray();
 	}
 
 	private void OnSearchClick()
 	{
+		if (string.IsNullOrEmpty(_searchText))
+		{
+			_countries = _allCountries;
+		}
+		else
+		{
+			_countries = _allCountries?.Where(t => t.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToArray();
+		}
+		StateHasChanged();
 	}
 
 	private void OnEnterPressed(KeyboardEventArgs e)
