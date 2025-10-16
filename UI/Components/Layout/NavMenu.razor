@@ -4,23 +4,41 @@
 	</div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" style="background: linear-gradient(180deg, #0d0b33 0%, #3f1a61 100%);" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+<div class="nav-scrollable">
 	<nav class="nav flex-column">
-		<MudNavGroup Title="Champions League" Expanded="true" IconColor="Color.Primary" Class="text-white" Icon="@Icons.Material.Filled.EmojiEvents">
+		<MudNavGroup Title="Champions League"
+					 Expanded="true"
+					 IconColor="Color.Primary"
+					 Class="text-white"
+					 Icon="@Icons.Material.Filled.EmojiEvents"
+					 Style="background: linear-gradient(90deg, #1e1f7a 0%, #3f51b5 100%); border-radius:10px; margin:3px 0;">
 			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="schedule">Matches</MudNavLink>
 			<MudNavLink Icon="@Icons.Material.Filled.TableChart" Href="champions">Table</MudNavLink>
 		</MudNavGroup>
-		<MudNavGroup Title="Europa League" Expanded="true" IconColor="Color.Primary" Class="text-white" Icon="@Icons.Material.Outlined.EmojiEvents">
+		<MudNavGroup Title="Europa League"
+					 Expanded="true"
+					 IconColor="Color.Primary"
+					 Class="text-white"
+					 Icon="@Icons.Material.Outlined.EmojiEvents"
+					 Style="background: linear-gradient(90deg, #4a148c 0%, #ffb300 100%); border-radius:10px; margin:3px 0;">
 			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="schedule">Matches</MudNavLink>
 			<MudNavLink Icon="@Icons.Material.Filled.TableChart" Href="europa">Table</MudNavLink>
 		</MudNavGroup>
-		<MudNavGroup Title="Conference League" Expanded="true" IconColor="Color.Primary" Class="text-white" Icon="@Icons.Material.Outlined.LocalDrink">
+		<MudNavGroup Title="Conference League"
+					 Expanded="true"
+					 IconColor="Color.Primary"
+					 Class="text-white"
+					 Icon="@Icons.Material.Outlined.LocalDrink"
+					 Style="background: linear-gradient(90deg, #004d40 0%, #00e676 100%); border-radius:10px; margin:3px 0;">
 			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="schedule">Matches</MudNavLink>
 			<MudNavLink Icon="@Icons.Material.Filled.TableChart" Href="conference">Table</MudNavLink>
 		</MudNavGroup>
-		<MudNavGroup Title="Management" Expanded="true" Class="text-white" Icon="@Icons.Material.Filled.ManageAccounts">
+		<MudNavGroup Title="Management"
+					 Expanded="true" Class="text-white"
+					 Icon="@Icons.Material.Filled.ManageAccounts"
+					 Style="background: linear-gradient(90deg, #000000 0%, #424242  100%); border-radius:10px; margin:3px 0;">
 			<MudNavLink Icon="@Icons.Material.Filled.Flag" href="countries">Countries</MudNavLink>
 			<MudNavLink Icon="@Icons.Material.Filled.SportsBaseball" href="teams">Teams</MudNavLink>
 		</MudNavGroup>

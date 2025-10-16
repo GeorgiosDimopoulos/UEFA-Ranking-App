@@ -2,6 +2,7 @@
 
 @using API.Data.DTOs
 @using Core.Interfaces
+@using Humanizer
 @using Infrastructure
 @using Infrastructure.DataAccess
 @using UI.Clients
@@ -34,7 +35,7 @@
 		<MudTable Items="_countries">
 			<HeaderContent>
 				<MudTh Style="font-weight:bold;">Name</MudTh>
-				<MudTh Style="font-weight:bold;">Initial Position</MudTh>
+				@* <MudTh Style="font-weight:bold;">Initial Position</MudTh> *@
 				<MudTh Style="font-weight:bold;">Active Position</MudTh>
 				<MudTh Style="font-weight:bold;">Points</MudTh>
 				<MudTh Style="font-weight:bold;">Initial Teams</MudTh>
@@ -45,10 +46,10 @@
 			<RowTemplate>
 				<MudTd>
 					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenCountryAsync(context)">
-						<span style="text-decoration:underline"> @context.Name </span>
+						<span style="text-decoration:underline"> @context.Name.Humanize(LetterCasing.Title) </span>
 					</MudButton>
 				</MudTd>
-				<MudTd>@context.Position</MudTd>
+				@* <MudTd>@context.Position</MudTd> *@
 				<MudTd>@context.Position</MudTd>
 				<MudTd>@context.TotalPoints</MudTd>
 				<MudTd>@context.NumberOfInitialTeams</MudTd>

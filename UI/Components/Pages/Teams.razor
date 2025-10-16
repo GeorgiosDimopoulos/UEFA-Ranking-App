@@ -14,166 +14,167 @@
 <PageTitle>Teams</PageTitle>
 
 <div class="col-12">
-    @if (_teams == null)
-    {
-        <p><em>Loading teams...</em></p>
-    }
-    else
-    {
-        <MudTextField @bind-Value="_searchText"
-                      Label="Search teams..."
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.End"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      Immediate="true"
-                      OnAdornmentClick="@OnSearchClick"
-                      OnKeyDown="@OnEnterPressed" />
-        <MudTable Items="_teams">
-            <HeaderContent>
-                <MudTh Style="font-weight:bold;">Name</MudTh>
-                <MudTh Style="font-weight:bold;">Country</MudTh>
-                <MudTh Style="font-weight:bold;">Competition</MudTh>
-                <MudTh Style="font-weight:bold;">Position</MudTh>
-                <MudTh Style="font-weight:bold;">Points</MudTh>
-                <MudTh Style="font-weight:bold;">Is Active?</MudTh>
-                <MudTh Style="font-weight:bold;">Matches:</MudTh>
-                <MudTh Style="font-weight:bold;">Played</MudTh>
-                <MudTh Style="font-weight:bold;">Delete</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd Class="pl-4">
-                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamInfoAsync(context)">
-                        <span style="text-decoration:underline"> @context.Name </span>
-                    </MudButton>
-                </MudTd>                <MudTd>@context.CountryName</MudTd>
-                <MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
-                <MudTd>@context.Position</MudTd>
-                <MudTd>@context.Points</MudTd>
-                <MudTd>
-                    @if (@context.IsActive)
-                    {
-                        <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
-                    }
-                    else
-                    {
-                        <MudIcon Icon="@Icons.Material.Filled.NotInterested" Color="Color.Error" />
-                    }
-                </MudTd>
-                <MudTd>
-                    <MudButton Color="Color.Success"
-                               Variant="Variant.Filled"
-                               Style="min-width:40px; width:40px; height:30px; padding:0;"
-                               OnClick="@(() => OpenTeamMatchesAsync(context))">
-                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-                    </MudButton>
-                </MudTd>
-                <MudTd>
-                    @context.MatchesPlayed
-                </MudTd>
-                <MudTd>
-                    <MudButton Color="Color.Error"
-                               Variant="Variant.Filled"
-                               Style="min-width:40px; width:40px; height:30px; padding:0;"
-                               OnClick="@(() => DeleteTeamAsync(context))">
-                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
-                    </MudButton>
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
-    }
+	@if (_teams == null)
+	{
+		<p><em>Loading teams...</em></p>
+	}
+	else
+	{
+		<MudTextField @bind-Value="_searchText"
+					  Label="Search teams..."
+					  Variant="Variant.Outlined"
+					  Adornment="Adornment.End"
+					  AdornmentIcon="@Icons.Material.Filled.Search"
+					  Immediate="true"
+					  OnAdornmentClick="@OnSearchClick"
+					  OnKeyDown="@OnEnterPressed" />
+		<MudTable Items="_teams">
+			<HeaderContent>
+				<MudTh Style="font-weight:bold;">Name</MudTh>
+				<MudTh Style="font-weight:bold;">Country</MudTh>
+				<MudTh Style="font-weight:bold;">Competition</MudTh>
+				<MudTh Style="font-weight:bold;">Position</MudTh>
+				<MudTh Style="font-weight:bold;">Points</MudTh>
+				<MudTh Style="font-weight:bold;">Is Active?</MudTh>
+				<MudTh Style="font-weight:bold;">Matches:</MudTh>
+				<MudTh Style="font-weight:bold;">Played</MudTh>
+				<MudTh Style="font-weight:bold;">Delete</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd Class="pl-4">
+					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenTeamInfoAsync(context)">
+						<span style="text-decoration:underline"> @context.Name.Humanize(LetterCasing.Title) </span>
+					</MudButton>
+				</MudTd>
+				<MudTd>@context.CountryName</MudTd>
+				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
+				<MudTd>@context.Position</MudTd>
+				<MudTd>@context.Points</MudTd>
+				<MudTd>
+					@if (@context.IsActive)
+					{
+						<MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+					}
+					else
+					{
+						<MudIcon Icon="@Icons.Material.Filled.NotInterested" Color="Color.Error" />
+					}
+				</MudTd>
+				<MudTd>
+					<MudButton Color="Color.Success"
+							   Variant="Variant.Filled"
+							   Style="min-width:40px; width:40px; height:30px; padding:0;"
+							   OnClick="@(() => OpenTeamMatchesAsync(context))">
+						<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+					</MudButton>
+				</MudTd>
+				<MudTd>
+					@context.MatchesPlayed
+				</MudTd>
+				<MudTd>
+					<MudButton Color="Color.Error"
+							   Variant="Variant.Filled"
+							   Style="min-width:40px; width:40px; height:30px; padding:0;"
+							   OnClick="@(() => DeleteTeamAsync(context))">
+						<MudIcon Icon="@Icons.Material.Filled.Delete" />
+					</MudButton>
+				</MudTd>
+			</RowTemplate>
+		</MudTable>
+	}
 
 </div>
 
 @code
 {
-    private string _searchText = string.Empty;
+	private string _searchText = string.Empty;
 
-    private TeamResponse[]? _allTeams = default!;
-    private TeamResponse[]? _teams = default!;
-    private CountryResponse[]? _countries = default!;
+	private TeamResponse[]? _allTeams = default!;
+	private TeamResponse[]? _teams = default!;
+	private CountryResponse[]? _countries = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Task.Delay(500);
-        var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
-        _allTeams = data.OrderByDescending(t => t.CountryPoints).ToArray();
-        _teams = _allTeams;
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		await Task.Delay(500);
+		var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
+		_allTeams = data.OrderByDescending(t => t.CountryPoints).ToArray();
+		_teams = _allTeams;
+	}
 
-    private void OnEnterPressed(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            OnSearchClick();
-        }
-    }
+	private void OnEnterPressed(KeyboardEventArgs e)
+	{
+		if (e.Key == "Enter")
+		{
+			OnSearchClick();
+		}
+	}
 
-    private void OnSearchClick()
-    {
-        if (string.IsNullOrEmpty(_searchText))
-        {
-            _teams = _allTeams;
-        }
-        else
-        {
-            _teams = _allTeams?.Where(t => t.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToArray();
-        }
-        StateHasChanged();
-    }
+	private void OnSearchClick()
+	{
+		if (string.IsNullOrEmpty(_searchText))
+		{
+			_teams = _allTeams;
+		}
+		else
+		{
+			_teams = _allTeams?.Where(t => t.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToArray();
+		}
+		StateHasChanged();
+	}
 
-    private async Task OpenTeamInfoAsync(TeamResponse t)
-    {
-        var parameters = new DialogParameters
-        {
-            ["Team"] = t
-        };
+	private async Task OpenTeamInfoAsync(TeamResponse t)
+	{
+		var parameters = new DialogParameters
+		{
+			["Team"] = t
+		};
 
-        var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
-        var result = await dialogRef.Result;
-        if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
-        {
-            StateHasChanged();
-        }
+		var dialogRef = await DialogService.ShowAsync<TeamDetails>(t.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+		var result = await dialogRef.Result;
+		if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
+		{
+			StateHasChanged();
+		}
 
-        await OnInitializedAsync();
-    }
+		await OnInitializedAsync();
+	}
 
-    private async Task OpenTeamMatchesAsync(TeamResponse team)
-    {
-        var parameters = new DialogParameters { ["Team"] = team };
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+	private async Task OpenTeamMatchesAsync(TeamResponse team)
+	{
+		var parameters = new DialogParameters { ["Team"] = team };
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-        var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
+		var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
 
-        var result = await dialog.Result;
-    }
+		var result = await dialog.Result;
+	}
 
-    private async Task DeleteTeamAsync(TeamResponse t)
-    {
-        var teamReq = new TeamRequest
-        {
-            Name = t.Name,
-            Competition = t.Competition,
-            Id = t.Id,
-            CountryName = t.CountryName,
-            Points = t.Points,
-            IsActive = t.IsActive
-        };
+	private async Task DeleteTeamAsync(TeamResponse t)
+	{
+		var teamReq = new TeamRequest
+		{
+			Name = t.Name,
+			Competition = t.Competition,
+			Id = t.Id,
+			CountryName = t.CountryName,
+			Points = t.Points,
+			IsActive = t.IsActive
+		};
 
-        bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the team: {teamReq.Name}", yesText: "Delete", cancelText: "Cancel");
-        if (confirmation == true)
-        {
-            var result = await TeamsClient.DeleteTeam(teamReq.Id);
-            if (result != null && result == true)
-            {
-                Snackbar.Add($"Team {teamReq.Name} deleted successfully.", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add($"Failed to delete team {teamReq.Name}.", Severity.Error);
-            }
-        }
+		bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the team: {teamReq.Name}", yesText: "Delete", cancelText: "Cancel");
+		if (confirmation == true)
+		{
+			var result = await TeamsClient.DeleteTeam(teamReq.Id);
+			if (result != null && result == true)
+			{
+				Snackbar.Add($"Team {teamReq.Name} deleted successfully.", Severity.Success);
+			}
+			else
+			{
+				Snackbar.Add($"Failed to delete team {teamReq.Name}.", Severity.Error);
+			}
+		}
 
-        await OnInitializedAsync();
-    }
+		await OnInitializedAsync();
+	}
 }
