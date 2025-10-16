@@ -54,9 +54,11 @@ public class TeamsController : ControllerBase
             teams = (teams.Where(t => t.Competition == queryParameters.Competition)).ToList();
         }
 
-        var teamsPositions = teams.OrderByDescending(t => t.Points)
+        var teamsPositions = teams.GroupBy(t => t.Competition)
+                                  .SelectMany(g => g
+                                  .OrderByDescending(t => t.Points)
                                   .ThenByDescending(t => CalculateGoalsDifference(t, matchesByTeams[t.Id]))
-                                  .Select((t, i) => new { t.Id, Position = i + 1 })
+                                  .Select((t, i) => new { t.Id, Position = i + 1 }))
                                   .ToDictionary(x => x.Id, x => x.Position);
 
         return teams.Select(t => new TeamResponse
@@ -266,7 +268,7 @@ public class TeamsController : ControllerBase
 
     private static int CalculateGoalsDifference(Team t, List<Match> matches)
     {
-        return matches.Sum(m => m.HomeTeamName.Equals(t.Name) ? (m.HomeTeamGoals ?? 0)-(m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0));
+        return matches.Sum(m => m.HomeTeamName.Equals(t.Name) ? (m.HomeTeamGoals ?? 0) - (m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0));
     }
 
     private async Task<int> GetTeamPosition(int points)
