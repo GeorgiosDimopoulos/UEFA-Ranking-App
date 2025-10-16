@@ -8,28 +8,25 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
 	<nav class="nav flex-column">
-		<NavLink class="nav-link d-flex align-items-center" href="schedule">
-			<span class="bi bi-calendar-fill me-3" aria-hidden="true"></span> Matches
-		</NavLink>
-		<NavLink class="nav-link d-flex align-items-center" href="champions">
-			<span class="bi bi-trophy-fill me-3" aria-hidden="true"></span> Champions League
-		</NavLink>
-		<NavLink class="nav-link d-flex align-items-center" href="europa">
-			<span class="bi bi-trophy me-3" aria-hidden="true"></span> Europa League
-		</NavLink>
-		<NavLink class="nav-link d-flex align-items-center" href="conference">
-			<span class="bi bi-cup me-3" aria-hidden="true"></span> Conference League
-		</NavLink>
-		<NavLink class="nav-link d-flex align-items-center" href="countries">
-			<span class="bi bi-flag-fill me-3" aria-hidden="true"></span> Countries
-		</NavLink>
-		<NavLink class="nav-link d-flex align-items-center" href="teams">
-			<span class="bi bi-trophy-fill me-3" aria-hidden="true"></span> Teams
-		</NavLink>		
+		<MudNavGroup Title="Champions League" Expanded="true" IconColor="Color.Primary" Class="text-white" Icon="@Icons.Material.Filled.EmojiEvents">
+			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="schedule">Matches</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.TableChart" Href="champions">Table</MudNavLink>
+		</MudNavGroup>
+		<MudNavGroup Title="Europa League" Expanded="true" IconColor="Color.Primary" Class="text-white" Icon="@Icons.Material.Outlined.EmojiEvents">
+			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="schedule">Matches</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.TableChart" Href="europa">Table</MudNavLink>
+		</MudNavGroup>
+		<MudNavGroup Title="Conference League" Expanded="true" IconColor="Color.Primary" Class="text-white" Icon="@Icons.Material.Outlined.LocalDrink">
+			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="schedule">Matches</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.TableChart" Href="conference">Table</MudNavLink>
+		</MudNavGroup>
+		<MudNavGroup Title="Management" Expanded="true" Class="text-white" Icon="@Icons.Material.Filled.ManageAccounts">
+			<MudNavLink Icon="@Icons.Material.Filled.Flag" href="countries">Countries</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.SportsBaseball" href="teams">Teams</MudNavLink>
+		</MudNavGroup>
 		<NavLink class="nav-link d-flex align-items-center" href="statistics">
-			<span class="bi bi-dice-5 me-3" aria-hidden="true"></span> Statistics
+			<span class="bi bi-dice-5 me-3" aria-hidden="true"></span> My Guesses
 		</NavLink>
-		
 		@* <a class="nav-link" href="/learnBlazor/bindprop">
 			<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Bind prop
 		</a>
