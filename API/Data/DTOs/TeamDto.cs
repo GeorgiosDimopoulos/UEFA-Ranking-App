@@ -9,9 +9,9 @@ public class TeamResponse
     public string CountryName { get; set; } = string.Empty;
     public int Points { get; set; }
     public int Position { get; set; }
-    public int CountryPoints { get; set; }
     public int MatchesPlayed { get; set; } // => Matches?.Count() ?? 0;
     public int GoalsDifference { get; set; }
+    public int CountryPoints { get; set; }
     public bool IsActive { get; set; }    
 
     public Competition Competition { get; set; }    

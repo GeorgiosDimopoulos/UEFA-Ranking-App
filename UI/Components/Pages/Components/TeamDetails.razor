@@ -24,8 +24,8 @@
 			</MudSelect>
 			<MudTextField T="int" @bind-Value="teamRes.Position" Label="Position" Disabled="true" />
 			<MudTextField T="int" ReadOnly="true" HideSpinButtons="true" Value="teamRes.Matches?.Count ?? 0" Label="Matches" Disabled="true" />
-			<MudTextField T="int" Value="teamRes.Points" Label="Points" Disabled="true" />	
-			<MudSwitch T="bool" Color="Color.Secondary" @bind-Checked="teamRes.IsActive"/>
+			<MudTextField T="int" Value="teamRes.Points" Label="Points" Disabled="true" />
+			<MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
@@ -64,7 +64,11 @@
 			Points = Team.Points,
 			Matches = Team.Matches,
 			Competition = Team.Competition,
-			CountryName = Team.CountryName
+			CountryName = Team.CountryName,
+			IsActive = Team.IsActive,
+			Id = Team.Id,
+			GoalsDifference = Team.GoalsDifference,
+			MatchesPlayed = Team.MatchesPlayed
 		};
 	}
 
