@@ -25,11 +25,6 @@
 				}
 			</MudSelect>
 			<MudStack Row="true">
-				<MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
-				@* @if (teamRes.IsActive == true)
-				{
-					<MudNumericField Style="width:200px" T="int" @bind-Value="teamRes.Points" Label="Points" />
-				} *@
 			</MudStack>
 			<MudSelect T="Competition" Label="Competition" @bind-Value="teamRes.Competition">
 				@foreach (var c in Enum.GetValues<Competition>())
@@ -62,7 +57,7 @@
 
 	private bool AreFieldsFilled()
 	{
-		return !string.IsNullOrWhiteSpace(teamRes.Name) && !string.IsNullOrWhiteSpace(teamRes.CountryName) && teamRes.Competition != Competition.None;
+		return !string.IsNullOrWhiteSpace(teamRes.Name) && !string.IsNullOrWhiteSpace(teamRes.CountryName);
 	}
 
 	private void Cancel(MouseEventArgs args)
@@ -72,12 +67,6 @@
 
 	private async Task Save(MouseEventArgs args)
 	{
-		if (!teamRes.IsActive)
-		{
-            Snackbar.Add("Only active teams can be added.", Severity.Warning);
-            return;	
-		}
-
 		teamReq = new TeamRequest
 		{
 			Name = teamRes.Name,

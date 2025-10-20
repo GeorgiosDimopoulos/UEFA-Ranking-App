@@ -1,6 +1,7 @@
 ﻿@page "/teams"
 
 @using API.Data.DTOs
+@using Core.Models
 @using Humanizer
 @using Infrastructure
 @using Infrastructure.DataAccess
@@ -48,7 +49,12 @@
 				</MudTd>
 				<MudTd>@context.CountryName</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
-				<MudTd>@context.Position</MudTd>
+				<MudTd>
+					@if(context.Competition != Competition.None)
+					{
+						@context.Position
+					}
+				</MudTd>
 				<MudTd>@context.Points</MudTd>
 				<MudTd>
 					@if (@context.IsActive)
