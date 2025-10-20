@@ -32,6 +32,7 @@
 					<MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
 				}
 			</MudSelect>
+			<MudCheckBox @bind-value="teamRes.IsActive" Label="Active" />
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
