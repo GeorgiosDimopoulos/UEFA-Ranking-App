@@ -47,7 +47,6 @@
 					}
 				</MudTd>
 				<MudTd>@context.Competition.ToString().Humanize(LetterCasing.Title)</MudTd>
-				@* <MudTd>@((int)context.Round)</MudTd> *@
 				<MudTd Style="vertical-align: middle;">
 					<MudButton Class="p-0"
 							   Color="Color.Success"
@@ -101,7 +100,8 @@
 			// _round = "All rounds";
 			return;
 		}
-
+		
+		_roundNumber -= 1;
 		_roundMatches = _cupMatches.Where(m => ((int)m.Round) == _roundNumber).ToList();
 
 		StateHasChanged();
