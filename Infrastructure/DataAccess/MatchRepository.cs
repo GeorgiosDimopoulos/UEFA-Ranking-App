@@ -72,11 +72,18 @@ public class MatchRepository : IMatchRepository
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        var homeTeamExists = await connection.ExecuteScalarAsync<int>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.HomeTeamName });
-        var awayTeamExists = await connection.ExecuteScalarAsync<int>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.AwayTeamName });
-        if (homeTeamExists <= 0 || awayTeamExists <= 0)
+        var homeTeamExists = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.HomeTeamName });
+        var awayTeamExists = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.AwayTeamName });
+        if (homeTeamExists is null || awayTeamExists is null)
         {
             return false;
+        }
+        else
+        {
+            var team1Matches = await connection.QueryAsync<Match>("SELECT * FROM Matches WHERE HomeTeamName = @HomeTeamName OR AwayTeamName = @HomeTeamName", new { m.HomeTeamName });
+            var team2Matches = await connection.QueryAsync<Match>("SELECT * FROM Matches WHERE HomeTeamName = @HomeTeamName OR AwayTeamName = @HomeTeamName", new { m.AwayTeamName });
+            if (m.Round == team1Matches.Count() || m.Round == team2Matches.Count())
+                return false;
         }
 
         string createQuery;

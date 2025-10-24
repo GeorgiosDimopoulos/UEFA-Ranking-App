@@ -100,7 +100,6 @@
 
 		if (result != null && result == true)
 		{
-			Snackbar.Add("Match saved successfully", Severity.Success);
 			MudDialog?.Close(DialogResult.Ok(matchReq));
 			switch (matchReq.Competition)
 			{
@@ -117,7 +116,9 @@
 					Navigation.NavigateTo("/");
 					break;
 			}
+			
 			await InvokeAsync(StateHasChanged);
+			Snackbar.Add("Match saved successfully", Severity.Success);
 		}
 		else
 		{

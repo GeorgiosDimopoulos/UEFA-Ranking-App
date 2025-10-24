@@ -154,6 +154,12 @@ public class MatchesController : ControllerBase
         if (matchRequest is null)
             return BadRequest("Match data is null.");
 
+        var allRoundMatches = await matchRepository.GetMatchesByRound((int)matchRequest.Round);
+        if (allRoundMatches.Any(m => m.HomeTeamName == matchRequest.HomeTeamName && m.AwayTeamName == matchRequest.AwayTeamName))
+        {
+            return BadRequest("Match between these teams for this round already exists.");
+        }
+
         var match = new Match
         {
             HomeTeamName = matchRequest.HomeTeamName,
@@ -170,10 +176,6 @@ public class MatchesController : ControllerBase
                 var (homeGoals, awayGoals) = goals.Value;
                 match.HomeTeamGoals = homeGoals;
                 match.AwayTeamGoals = awayGoals;
-            }
-            else
-            {
-                return BadRequest("Match score format is invalid.");
             }
         }
 
@@ -194,10 +196,10 @@ public class MatchesController : ControllerBase
     public async Task<IActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
     {
         if (matchRequest is null || string.IsNullOrWhiteSpace(matchRequest.Score))
-            return BadRequest("Match data like score is null.");        
+            return BadRequest("Match data like score is null.");
         if (matchRequest.Id <= 0)
             return BadRequest("Valid match Id is required.");
-        
+
         var goals = ParseScore(matchRequest.Score!);
         if (goals is null)
             return BadRequest("Match format is not ok.");
