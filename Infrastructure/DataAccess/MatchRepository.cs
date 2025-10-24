@@ -81,8 +81,8 @@ public class MatchRepository : IMatchRepository
         else
         {
             var team1Matches = await connection.QueryAsync<Match>("SELECT * FROM Matches WHERE HomeTeamName = @HomeTeamName OR AwayTeamName = @HomeTeamName", new { m.HomeTeamName });
-            var team2Matches = await connection.QueryAsync<Match>("SELECT * FROM Matches WHERE HomeTeamName = @HomeTeamName OR AwayTeamName = @HomeTeamName", new { m.AwayTeamName });
-            if (m.Round == team1Matches.Count() || m.Round == team2Matches.Count())
+            var team2Matches = await connection.QueryAsync<Match>("SELECT * FROM Matches WHERE HomeTeamName = @AwayTeamName OR AwayTeamName = @AwayTeamName", new { m.AwayTeamName, });
+            if (m.Round <= team1Matches.Count() || m.Round <= team2Matches.Count())
                 return false;
         }
 
