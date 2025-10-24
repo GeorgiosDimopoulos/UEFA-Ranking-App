@@ -127,19 +127,20 @@
 			switch (matchReq.Competition)
 			{
 				case Competition.ChampionsLeague:
-					Navigation.NavigateTo("/championsSchedule");
+					Navigation.NavigateTo("/championsSchedule", forceLoad: true);
 					break;					
 				case Competition.EuropaLeague:
-					Navigation.NavigateTo("/europaSchedule");
+					Navigation.NavigateTo("/europaSchedule", forceLoad: true);
 					break;
 				case Competition.ConferenceLeague:
-					Navigation.NavigateTo("/conferenceSchedule");
+					Navigation.NavigateTo("/conferenceSchedule", forceLoad: true);
 					break;
 				default: 
 					Navigation.NavigateTo("/");
 					break;
 			}			
-			StateHasChanged();
+			
+			await InvokeAsync(StateHasChanged);
 		}
 		else
 		{
