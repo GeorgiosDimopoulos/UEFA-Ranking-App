@@ -1,7 +1,7 @@
-﻿@page "/schedule"
-@page "/"
+﻿@page "/championsSchedule"
 
 @using API.Data.DTOs
+@using Core.Models
 @using Humanizer
 @using UI.Clients
 @using UI.Components.Pages.Components
@@ -26,8 +26,7 @@
 		</div>
 		<MudTable Items="_matches">
 			<HeaderContent>
-@* 				<MudTh>#</MudTh>
- *@				<MudTh Style="font-weight:bold;">Home Team</MudTh>
+				<MudTh Style="font-weight:bold;">Home Team</MudTh>
 				<MudTh Style="font-weight:bold;">Away Team</MudTh>
 				<MudTh Style="font-weight:bold;">Score</MudTh>
 				<MudTh Style="font-weight:bold;">Competition</MudTh>
@@ -82,7 +81,7 @@
 	{
 		_allMatches = await MatchesClient.GetMatches() ?? new();
 		_matches = _allMatches.Where(m => ((int)m.Round) == 1)
-							  .OrderBy(m => m.Competition)							  
+							  .OrderBy(m => m.Competition)
 							  .ThenBy(m => m.Round)
 							  .ToList();
 	}
@@ -90,7 +89,7 @@
 	private void NextRound()
 	{
 		_roundNumber += 1;
-		_matches = _allMatches.Where(m => ((int)m.Round) == _roundNumber).ToList();
+		_matches = _allMatches.Where(m => ((int)m.Round) == _roundNumber && m.Competition == Competition.ChampionsLeague).ToList();
 
 		StateHasChanged();
 	}
@@ -104,7 +103,7 @@
 		}
 
 		_roundNumber -= 1;
-		_matches = _allMatches.Where(m => ((int)m.Round) == _roundNumber).ToList();
+		_matches = _allMatches.Where(m => ((int)m.Round) == _roundNumber && m.Competition == Competition.ChampionsLeague).ToList();
 
 		StateHasChanged();
 	}
