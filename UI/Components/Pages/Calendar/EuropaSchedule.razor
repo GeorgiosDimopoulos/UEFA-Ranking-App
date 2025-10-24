@@ -24,10 +24,9 @@
 			<MudText Style="font-weight:bold; text-align:center;" bind-value="@_round">@_round</MudText>
 			<MudButton Style="text-decoration:underline" OnClick="@NextRound">NEXT</MudButton>
 		</div>
-		<MudTable Items="_matches">
+		<MudTable Items="_roundMatches">
 			<HeaderContent>
-@* 				<MudTh>#</MudTh>
- *@				<MudTh Style="font-weight:bold;">Home Team</MudTh>
+				<MudTh Style="font-weight:bold;">Home Team</MudTh>
 				<MudTh Style="font-weight:bold;">Away Team</MudTh>
 				<MudTh Style="font-weight:bold;">Score</MudTh>
 				<MudTh Style="font-weight:bold;">Competition</MudTh>
@@ -76,21 +75,20 @@
 	private int _roundNumber = 1;
 
 	private List<MatchResponse> _allMatches = default!;
-	private List<MatchResponse> _matches = default!;
+	private List<MatchResponse> _cupMatches = default!;
+	private List<MatchResponse> _roundMatches = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		_allMatches = await MatchesClient.GetMatches() ?? new();
-		_matches = _allMatches.Where(m => ((int)m.Round) == 1)
-							  .OrderBy(m => m.Competition)							  
-							  .ThenBy(m => m.Round)
-							  .ToList();
+		_cupMatches = _allMatches.Where(m => m.Competition == Competition.EuropaLeague).ToList();
+		_roundMatches = _cupMatches.Where(m => (int)m.Round == 1).ToList();
 	}
 
 	private void NextRound()
 	{
 		_roundNumber += 1;
-		_matches = _allMatches.Where(m => ((int)m.Round) == _roundNumber).ToList();
+		_roundMatches = _cupMatches.Where(m => ((int)m.Round) == _roundNumber).ToList();
 
 		StateHasChanged();
 	}
@@ -99,12 +97,11 @@
 	{
 		if (_round.Equals("Round: 1"))
 		{
-			// _round = "All rounds";
 			return;
 		}
 
 		_roundNumber -= 1;
-		_matches = _allMatches.Where(m => ((int)m.Round) == _roundNumber && m.Competition == Competition.EuropaLeague).ToList();
+		_roundMatches = _cupMatches.Where(m => ((int)m.Round) == _roundNumber).ToList();
 
 		StateHasChanged();
 	}
@@ -139,10 +136,10 @@
 		var result = await dialog.Result;
 		if (result != null && !result!.Canceled && result.Data is MatchResponse mr)
 		{
-			var index = _matches.FindIndex(m => m.Id == mr.Id);
+			var index = _cupMatches.FindIndex(m => m.Id == mr.Id);
 			if (index != -1)
 			{
-				_matches[index] = mr;
+				_cupMatches[index] = mr;
 				StateHasChanged();
 			}
 		}
