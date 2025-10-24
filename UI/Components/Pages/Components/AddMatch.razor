@@ -124,7 +124,22 @@
 		{
 			MudDialog.Close(DialogResult.Ok(matchRes));
 			Snackbar.Add("Match added successfully.", Severity.Success);
-			Navigation.NavigateTo("/");
+			switch (matchReq.Competition)
+			{
+				case Competition.ChampionsLeague:
+					Navigation.NavigateTo("/championsSchedule");
+					break;					
+				case Competition.EuropaLeague:
+					Navigation.NavigateTo("/europaSchedule");
+					break;
+				case Competition.ConferenceLeague:
+					Navigation.NavigateTo("/conferenceSchedule");
+					break;
+				default: 
+					Navigation.NavigateTo("/");
+					break;
+			}			
+			StateHasChanged();
 		}
 		else
 		{
