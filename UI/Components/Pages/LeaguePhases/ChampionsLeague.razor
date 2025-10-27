@@ -18,6 +18,14 @@
     }
     else
     {
+        <MudTextField @bind-Value="_searchText"
+                      Label="Search teams..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Immediate="true"
+                      OnAdornmentClick="@OnSearchClick"
+                      OnKeyDown="@OnEnterPressed" />
         <MudTable Items="_teams">
             <HeaderContent>
                 <MudTh Style="font-weight:bold; width:40px">Position</MudTh>
@@ -51,6 +59,9 @@
 
 @code
 {
+    private string _searchText = string.Empty;
+    
+    private TeamResponse[]? _allTeams = default!;
     private TeamResponse[]? _teams = default!;
     private CountryResponse[]? _countries = default!;
 
@@ -58,10 +69,11 @@
     {
         await Task.Delay(500);
         var data = await TeamsClient.GetTeamsByCompetition(Competition.ChampionsLeague) ?? Array.Empty<TeamResponse>();
-        _teams = data.Where(t => t.IsActive)
+        _allTeams = data.Where(t => t.IsActive)
                      .OrderByDescending(t => t.Points)
                      .ThenByDescending(t =>t.GoalsDifference)
                      .ToArray();
+		_teams = _allTeams;
     }
 
     private async Task OpenTeamAsync(TeamResponse t)
@@ -87,5 +99,26 @@
         var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
 
         var result = await dialog.Result;
+    }
+
+    private void OnEnterPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            OnSearchClick();
+        }
+    }
+
+    private void OnSearchClick()
+    {
+        if (string.IsNullOrEmpty(_searchText))
+        {
+            _teams = _allTeams;
+        }
+        else
+        {
+            _teams = _allTeams?.Where(t => t.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToArray();
+        }
+        StateHasChanged();
     }
 }
