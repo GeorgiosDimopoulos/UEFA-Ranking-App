@@ -76,7 +76,7 @@ public class CountryRepository : ICountryRepository
 
         var insertCountryQuery = @"INSERT INTO Countries (Name, TotalPoints) VALUES (@Name, @TotalPoints)";
         var result = await connection.ExecuteAsync(insertCountryQuery, new { newCountry.Name, newCountry.TotalPoints });
-                
+
         return result > 0;
     }
 
