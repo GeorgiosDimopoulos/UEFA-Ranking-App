@@ -18,7 +18,7 @@
         <MudTd DataLabel="Home">@context.HomeTeamName</MudTd>
         <MudTd DataLabel="Away">@context.AwayTeamName</MudTd>
         <MudTd DataLabel="Score">@context.Score</MudTd>
-        <MudTd DataLabel="Round">@context.Round</MudTd>
+        <MudTd DataLabel="Round">@((int)context.Round)</MudTd>
         <MudTd DataLabel="Competition">@context.Competition</MudTd>
     </RowTemplate>
 </MudTable>
