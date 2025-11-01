@@ -1,8 +1,19 @@
-﻿namespace Infrastructure.DataAccess;
+﻿  namespace Infrastructure.DataAccess;
 
 public class CountryCoefficientService : ICountryCoefficientService
 {
-    public async Task<double> GetCountryPoints(string country)
+    private readonly ITeamRepository teamRepository;
+    private readonly ICountryRepository countryRepository;
+    private readonly IMatchRepository matchRepository;
+
+    public CountryCoefficientService(ITeamRepository teamRepository, ICountryRepository countryRepository, IMatchRepository matchRepository)
+    {            
+        this.teamRepository = teamRepository;
+        this.countryRepository = countryRepository;
+        this.matchRepository = matchRepository;
+    }
+
+    public async Task<int> GetCountryPoints(string country)
     {
         throw new NotImplementedException();
     }
