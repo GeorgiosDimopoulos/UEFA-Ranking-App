@@ -2,7 +2,7 @@
 
 public interface ICountryCoefficientService
 {
-    Task<int> GetCountryPoints(string country);
-    Task<bool> UpdateCountryCoefficient(string country, int countryNewPoints);
+    Task<int> GetCountryPoints(int countryId);
+    Task<bool> UpdateCountryCoefficient(int countryId, int countryNewPoints);
     Task<bool> RecalculateForMatchAsync(int matchId);
 }
