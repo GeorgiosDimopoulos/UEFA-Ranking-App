@@ -1,4 +1,5 @@
-﻿namespace Infrastructure.DataAccess;
+﻿
+namespace Infrastructure.DataAccess;
 
 public class CountryCoefficientService : ICountryCoefficientService
 {
@@ -23,7 +24,7 @@ public class CountryCoefficientService : ICountryCoefficientService
         return country.TotalPoints;
     }
 
-    public async Task<bool> UpdateCountryCoefficient(int countryId, int countryNewPoints)
+    public async Task<bool> UpdateCountryCoefficient(int countryId, int matchResult)
     {
         var country = await countryRepository.GetCountryById(countryId);
         if (country is null)
@@ -31,9 +32,11 @@ public class CountryCoefficientService : ICountryCoefficientService
             return false;
         }
 
+        int countryNewPoints = await CalculateCountryMatch(country, matchResult);
+
         var countryNewTotalPoints = country.TotalPoints + countryNewPoints;
 
-        // ToDo: calculate new points due to the number of the teams of the country devided by initial teams
+        // ToDo: calculate new points due to the number of the teams of the country devided by initial teams        
 
         return await countryRepository.UpdateCountry(country, countryNewTotalPoints);
     }
@@ -41,5 +44,22 @@ public class CountryCoefficientService : ICountryCoefficientService
     public async Task<bool> RecalculateForMatchAsync(int matchId)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task<int> CalculateCountryMatch(Country country, int matchResult)
+    {
+        int countryInitialTeams = (await teamRepository.GetTeamsByCountryId(country.Id)).Count;
+        switch (matchResult)
+        {
+            case 1: // win
+                return 2000/ countryInitialTeams;
+            case 2: // draw
+                return 1000 / countryInitialTeams;
+            case 3: // loss
+                return 0;
+            default:
+                break;
+        }
+        return 0;
     }
 }
