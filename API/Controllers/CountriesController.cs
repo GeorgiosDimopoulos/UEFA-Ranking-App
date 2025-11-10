@@ -188,6 +188,8 @@ public class CountriesController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("points/{countryId}")]
     public async Task<int> GetCountryPoints(int countryId)
     {
         var country = await countryRepository.GetCountryById(countryId);
@@ -198,6 +200,7 @@ public class CountriesController : ControllerBase
         return country.TotalPoints;
     }
 
+    [HttpPut("update-coefficient/{countryId}/{matchResult}")]
     public async Task<bool> UpdateCountryCoefficient(int countryId, int matchResult)
     {
         var country = await countryRepository.GetCountryById(countryId);

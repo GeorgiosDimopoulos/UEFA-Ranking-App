@@ -10,96 +10,103 @@
 
 <PageTitle>Greek Statistics</PageTitle>
 
-<MudContainer Class="py-6">
-	<MudText Typo="Typo.h5" Class="mb-4">Greek Teams Stats:</MudText>
-	<MudGrid Class="stats-grid" GutterSize="0">
-		<MudItem xs="12" sm="6">
-			<MudPaper Elevation="3" Square="true" Style="height:100%; border-right:1px solid #000;">
-				<MudButton Variant="Variant.Text"
-						   Class="px-0 text-start"
-						   Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue" 
-						   OnClick="() => OpenTeamMatchesAsync(aek)">					
-						   @aek?.Name.Humanize(LetterCasing.Title)
-				</MudButton>
-				<MudDivider Class="my-2" />
-				<MudText>Position: @aek?.Position</MudText>
-				<MudText>Matches: @aek?.MatchesPlayed</MudText>
-				<MudText>Points: @aek?.Points</MudText>
-				<MudText>Competition: @aek?.Competition</MudText>
-			</MudPaper>
-		</MudItem>
-		<MudItem xs="12" sm="6">
-			<MudPaper Elevation="3" Square="true" Style="height:100%; border-right:1px solid #000;">
-				<MudButton Variant="Variant.Text"
-						   Class="px-0 text-start"
-						   Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue"
-						   OnClick="() => OpenTeamMatchesAsync(osfp)">
-					@osfp?.Name.Humanize(LetterCasing.Title)
-				</MudButton>				<MudDivider Class="my-2" />
-				<MudText>Position: @osfp?.Position</MudText>
-				<MudText>Matches: @osfp?.MatchesPlayed</MudText>
-				<MudText>Points: @osfp?.Points</MudText>
-				<MudText>Competition: @osfp?.Competition</MudText>
-			</MudPaper>
-		</MudItem>
-		<MudItem xs="12" sm="6">
-			<MudPaper Elevation="3" Square="true" Style="height:100%; border-right:1px solid #000;">
-				<MudButton Variant="Variant.Text"
-						   Class="px-0 text-start"
-						   Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue"
-						   OnClick="() => OpenTeamMatchesAsync(pao)">
-					@pao?.Name.Humanize(LetterCasing.Title)
-				</MudButton>				<MudDivider Class="my-2" />
-				<MudText>Position:@pao?.Position</MudText>
-				<MudText>Matches:@pao?.MatchesPlayed</MudText>
-				<MudText>Competition:@pao?.Points</MudText>
-				<MudText>Position:@pao?.Competition</MudText>
-			</MudPaper>
-		</MudItem>
-		<MudItem xs="12" sm="6">
-			<MudPaper Elevation="3" Square="true" Style="height:100%; border-right:1px solid #000;">
-				<MudButton Variant="Variant.Text"
-						   Class="px-0 text-start"
-						   Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue"
-						   OnClick="() => OpenTeamMatchesAsync(paok)">
-					@paok?.Name.Humanize(LetterCasing.Title)
-				</MudButton>				<MudDivider Class="my-2" />
-				<MudText>Position: @paok?.Position</MudText>
-				<MudText>Matches: @paok?.MatchesPlayed</MudText>
-				<MudText>Points: @paok?.Points</MudText>
-				<MudText>Competition: @paok?.Competition</MudText>
-			</MudPaper>
-		</MudItem>
-	</MudGrid>
-</MudContainer>
+<MudPaper Class="pa-6" Elevation="0" Style="background-color:#f9fafb;">
+    <MudContainer Class="py-6 statistics-page">
+        <MudText Typo="Typo.h5" Class="mb-4">Greek Teams Stats:</MudText>
+        <MudGrid Class="stats-grid" GutterSize="3">
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="4" Square="false" Class="pa-4"
+                          Style="background-color:white; border-radius:10px; height:100%; border:1px solid #000;">
+                    <MudButton Variant="Variant.Text"
+                               Class="px-0 text-start"
+                               Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue"
+                               OnClick="() => OpenTeamMatchesAsync(aek)">
+                        @aek?.Name.Humanize(LetterCasing.Title)
+                    </MudButton>
+                    <MudDivider Class="my-2" />
+                    <MudText>Position: @aek?.Position</MudText>
+                    <MudText>Matches: @aek?.MatchesPlayed</MudText>
+                    <MudText>Points: @aek?.Points</MudText>
+                    <MudText>Competition: @aek?.Competition.Humanize(LetterCasing.Title)</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="4" Square="false" Class="pa-4"
+                          Style="background-color:white; border-radius:10px; height:100%; border:1px solid #000;">
+                    <MudButton Variant="Variant.Text"
+                               Class="px-0 text-start"
+                               Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue"
+                               OnClick="() => OpenTeamMatchesAsync(osfp)">
+                        @osfp?.Name.Humanize(LetterCasing.Title)
+                    </MudButton>
+                    <MudDivider Class="my-2" />
+                    <MudText>Position: @osfp?.Position</MudText>
+                    <MudText>Matches: @osfp?.MatchesPlayed</MudText>
+                    <MudText>Points: @osfp?.Points</MudText>
+                    <MudText>Competition: @osfp?.Competition.Humanize(LetterCasing.Title)</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="4" Square="false" Class="pa-4"
+                          Style="background-color:white; border-radius:10px; height:100%; border:1px solid #000;">
+                    <MudButton Variant="Variant.Text"
+                               Class="px-0 text-start"
+                               Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue"
+                               OnClick="() => OpenTeamMatchesAsync(pao)">
+                        @pao?.Name.Humanize(LetterCasing.Title)
+                    </MudButton>				<MudDivider Class="my-2" />
+                    <MudText>Position:@pao?.Position</MudText>
+                    <MudText>Matches:@pao?.MatchesPlayed</MudText>
+                    <MudText>Points:@pao?.Points</MudText>
+                    <MudText>Competition:@pao?.Competition.Humanize(LetterCasing.Title)</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="4" Square="false" Class="pa-4"
+                          Style="background-color:white; border-radius:10px; height:100%; border:1px solid #000;">
+                    <MudButton Variant="Variant.Text"
+                               Class="px-0 text-start"
+                               Style="font-size:1.25rem; font-weight:500; text-decoration:underline; text-decoration-color:blue"
+                               OnClick="() => OpenTeamMatchesAsync(paok)">
+                        @paok?.Name.Humanize(LetterCasing.Title)
+                    </MudButton>				<MudDivider Class="my-2" />
+                    <MudText>Position: @paok?.Position</MudText>
+                    <MudText>Matches: @paok?.MatchesPlayed</MudText>
+                    <MudText>Points: @paok?.Points</MudText>
+                    <MudText>Competition: @paok?.Competition.Humanize(LetterCasing.Title)</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</MudPaper>
 
 @code {
-	private TeamResponse? aek, osfp, pao, paok;
+    private TeamResponse aek = new(), osfp = new(), pao = new(), paok = new();
 
-	protected override async Task OnInitializedAsync()
-	{
-		TeamResponse[]? greekTeams = await TeamsClient.GetTeams();
-		if (greekTeams != null && !greekTeams.Any())
-		{
-			return;
-		}
+    protected override async Task OnInitializedAsync()
+    {
+        TeamResponse[]? greekTeams = await TeamsClient.GetTeams();
+        if (greekTeams != null && !greekTeams.Any())
+        {
+            return;
+        }
 
-		aek = greekTeams!.FirstOrDefault(t => t.Name.Equals("AEK"));
-		pao = greekTeams!.FirstOrDefault(t => t.Name.Equals("Panathinaikos")); ;
-		paok = greekTeams!.FirstOrDefault(t => t.Name.Equals("PAOK")); ;
-		osfp = greekTeams!.FirstOrDefault(t => t.Name.Equals("Olympiacos")); ;
+        aek = greekTeams!.FirstOrDefault(t => t.Name.Equals("AEK"))!;
+        pao = greekTeams!.FirstOrDefault(t => t.Name.Equals("Panathinaikos"))!;
+        paok = greekTeams!.FirstOrDefault(t => t.Name.Equals("PAOK"))!;
+        osfp = greekTeams!.FirstOrDefault(t => t.Name.Equals("Olympiacos"))!;
 
-		StateHasChanged();
-	}
+        StateHasChanged();
+    }
 
-	private async Task OpenTeamMatchesAsync(TeamResponse team)
-	{
-		var parameters = new DialogParameters { ["Team"] = team };
-		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+    private async Task OpenTeamMatchesAsync(TeamResponse team)
+    {
+        var parameters = new DialogParameters { ["Team"] = team };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-		var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
+        var dialog = await DialogService.ShowAsync<TeamMatches>("Team Matches", parameters, options);
 
-		var result = await dialog.Result;
-	}
+        var result = await dialog.Result;
+    }
 
 }
