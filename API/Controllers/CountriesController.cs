@@ -174,7 +174,7 @@ public class CountriesController : ControllerBase
 
     //    return NoContent();
     //}
-
+        
     [HttpDelete]
     [SwaggerOperation(Tags = new[] { "Countries – Delete" })]
     public async Task<ActionResult> DeleteCountries()
@@ -187,6 +187,47 @@ public class CountriesController : ControllerBase
         }
 
         return NoContent();
+    }
+    public async Task<int> GetCountryPoints(int countryId)
+    {
+        var country = await countryRepository.GetCountryById(countryId);
+        if (country is null)
+        {
+            return 0;
+        }
+        return country.TotalPoints;
+    }
+
+    public async Task<bool> UpdateCountryCoefficient(int countryId, int matchResult)
+    {
+        var country = await countryRepository.GetCountryById(countryId);
+        if (country is null)
+        {
+            return false;
+        }
+
+        int countryNewPoints = await CalculateCountryMatch(country, matchResult);
+
+        var countryNewTotalPoints = country.TotalPoints + countryNewPoints;
+
+        return await countryRepository.UpdateCountry(country, countryNewTotalPoints);
+    }
+
+    private async Task<int> CalculateCountryMatch(Country country, int matchResult)
+    {
+        int countryInitialTeams = (await teamRepository.GetTeamsByCountryId(country.Id)).Count;
+        switch (matchResult)
+        {
+            case 1: // win
+                return 2000 / countryInitialTeams;
+            case 2: // draw
+                return 1000 / countryInitialTeams;
+            case 3: // loss
+                return 0;
+            default:
+                break;
+        }
+        return 0;
     }
 
     private async Task<int> GetCountryPosition(int points)
