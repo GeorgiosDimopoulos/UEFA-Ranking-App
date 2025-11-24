@@ -1,12 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="uefa.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1713"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="0"/><expanded_item id="2" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Teams" custom_title="0" dock_id="1" table="4,5:mainTeams"/><dock_state state="000000ff00000000fd0000000100000002000005bb0000038efc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000000005bb0000011f00ffffff000002590000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Countries" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="124"/><column index="3" value="135"/><column index="4" value="135"/><column index="5" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Matches" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="171"/><column index="3" value="171"/><column index="4" value="102"/><column index="6" value="44"/><column index="7" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Teams" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="171"/><column index="3" value="54"/><column index="4" value="76"/><column index="5" value="67"/><column index="6" value="43"/></column_widths><filter_values><column index="3" value="1"/></filter_values><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">INSERT INTO Matches VALUES (NULL, 'Qarabag', 'Chelsea', 2, 2, 4, 1);
-INSERT INTO Matches VALUES (NULL, 'Pafos', 'Villareal', 1, 0, 4, 1);
-INSERT INTO Matches VALUES (NULL, 'Manchester City', 'Borussia Dortmund', 4, 1, 4, 1);
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="uefa.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1713"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Countries" custom_title="0" dock_id="1" table="4,9:mainCountries"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011800ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">INSERT INTO Matches VALUES (NULL, 'Ajax', 'Benfica', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Galatasaray', 'Union SG', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Copenhagen', 'Kairat Almaty', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Pafos', 'Monaco', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Manchester City', 'Bayer Leverkusen', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Chelsea', 'Barcelona', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Borussia Dortmund', 'Villareal', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Napoli', 'Qarabag', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Slavia Praha', 'Athletic Bilbao', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Bodo Glimt', 'Juventus', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Marseille', 'Newcastle', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Paris Saint-Germain', 'Tottenham', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Liverpool', 'PSV', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Arsenal', 'Bayern Munich', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Atletico Madrid', 'Inter', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Eintracht Frankfurt', 'Atalanta', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Sporting CP', 'Club Brugge', NULL, NULL, 5, 1);
+INSERT INTO Matches VALUES (NULL, 'Olympiacos', 'Real Madrid', NULL, NULL, 5, 1);
 
-INSERT INTO Matches VALUES (NULL, 'Inter', 'Kairat Almaty', 2, 1, 4, 1);
-INSERT INTO Matches VALUES (NULL, 'Benfica', 'Bayer Leverkusen', 0, 1, 4, 1);
-INSERT INTO Matches VALUES (NULL, 'Club Brugge', 'Barcelona', 3, 3, 4, 1);
-
-INSERT INTO Matches VALUES (NULL, 'Ajax', 'Galatasaray', 0, 3, 4, 1);
-INSERT INTO Matches VALUES (NULL, 'Marseille', 'Atalanta', 0, 1, 4, 1);
-INSERT INTO Matches VALUES (NULL, 'Newcastle', 'Athletic Bilbao', 2, 0, 4, 1);
+DELETE FROM Matches
+WHERE Round = 5
+  AND Competition = 1;
 </sql><current_tab id="0"/></tab_sql></sqlb_project>

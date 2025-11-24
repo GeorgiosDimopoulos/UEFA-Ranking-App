@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Core.Models;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -80,14 +81,16 @@ public class MatchRepository : IMatchRepository
         }
         else
         {
-            var team1Matches = await connection.QueryAsync<Match>("SELECT * FROM Matches WHERE HomeTeamName = @HomeTeamName OR AwayTeamName = @HomeTeamName", new { m.HomeTeamName });
-            var team2Matches = await connection.QueryAsync<Match>("SELECT * FROM Matches WHERE HomeTeamName = @AwayTeamName OR AwayTeamName = @AwayTeamName", new { m.AwayTeamName, });
-            if (m.Round <= team1Matches.Count() || m.Round <= team2Matches.Count())
+            var team1MatchInRound = await connection.QuerySingleOrDefaultAsync<Match>(@"SELECT * FROM Matches WHERE Round = @Round AND (HomeTeamName = @Team OR AwayTeamName = @Team)", new { Round = m.Round, Team = m.HomeTeamName });
+            var team2MatchInRound = await connection.QuerySingleOrDefaultAsync<Match>(@"SELECT * FROM Matches WHERE Round = @Round AND (HomeTeamName = @Team OR AwayTeamName = @Team)", new { Round = m.Round, Team = m.AwayTeamName, });
+            if (team1MatchInRound is not null || team2MatchInRound is not null)
+            {
                 return false;
+            }
         }
 
         string createQuery;
-        if (m.AwayTeamGoals != null && m.AwayTeamGoals != null)
+        if (m.AwayTeamGoals != null && m.HomeTeamGoals != null)
             createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
         else
             createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";

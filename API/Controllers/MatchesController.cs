@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Runtime.InteropServices;
 
 namespace API.Controllers;
 
@@ -154,11 +155,15 @@ public class MatchesController : ControllerBase
         if (matchRequest is null)
             return BadRequest("Match data is null.");
 
+        if (matchRequest.HomeTeamName == matchRequest.AwayTeamName)
+            return BadRequest("A team cannot play against itself.");
+
         var allRoundMatches = await matchRepository.GetMatchesByRound((int)matchRequest.Round);
-        if (allRoundMatches.Any(m => m.HomeTeamName == matchRequest.HomeTeamName && m.AwayTeamName == matchRequest.AwayTeamName))
-        {
-            return BadRequest("Match between these teams for this round already exists.");
-        }
+        var duplicateExists = allRoundMatches.Any(m => (m.HomeTeamName == matchRequest.HomeTeamName && m.AwayTeamName == matchRequest.AwayTeamName)
+            || (m.HomeTeamName == matchRequest.AwayTeamName && m.AwayTeamName == matchRequest.HomeTeamName));
+
+        if (duplicateExists)        
+            return BadRequest("Match between these teams for this round already exists.");        
 
         var match = new Match
         {
@@ -168,6 +173,7 @@ public class MatchesController : ControllerBase
             Competition = matchRequest.Competition
         };
 
+        bool hasScore = false;
         if (!string.IsNullOrWhiteSpace(matchRequest.Score))
         {
             var goals = ParseScore(matchRequest.Score);
@@ -176,18 +182,22 @@ public class MatchesController : ControllerBase
                 var (homeGoals, awayGoals) = goals.Value;
                 match.HomeTeamGoals = homeGoals;
                 match.AwayTeamGoals = awayGoals;
+                hasScore = true;
             }
         }
-
+        
         var result = await matchRepository.AddMatch(match);
         if (!result)
             return StatusCode(500, "Could not insert match into DB");
 
-        var result2 = await teamRepository.UpdateTeamPoints(match.HomeTeamName);
-        var result3 = await teamRepository.UpdateTeamPoints(match.AwayTeamName);
-        if (!result3 || !result2)
-            return StatusCode(500, "Could not update match's teams points");
-
+        if (hasScore)
+        {
+            var result2 = await teamRepository.UpdateTeamPoints(match.HomeTeamName);
+            var result3 = await teamRepository.UpdateTeamPoints(match.AwayTeamName);
+            if (!result3 || !result2)
+                return StatusCode(500, "Could not update match's teams points");
+        }
+        
         return Ok("Match added successfully.");
     }
 
