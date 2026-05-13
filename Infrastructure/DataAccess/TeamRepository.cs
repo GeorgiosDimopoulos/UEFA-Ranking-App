@@ -20,23 +20,12 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
-        var sql = @"SELECT t.Id, t.Name, t.IsActive, t.Points, t.CountryId, t.Competition, c.Id, c.Name FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
+        var sql = @"SELECT t.Id, t.Name, t.IsActive, t.CountryId, t.Competition, c.Id, c.Name FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
         var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) =>
         {
             team.CountryId = country.Id; return team;
         }, splitOn: "Id");
         return teams.ToList();
-    }
-
-    public async Task<Dictionary<string, int>> GetTeamsNamesAndPoints()
-    {
-        using var connection = new SqliteConnection(_connectionString);
-        await connection.OpenAsync();
-
-        var sql = @"SELECT Name, Points FROM Teams";
-        var teams = await connection.QueryAsync<(string Name, int Points)>(sql);
-
-        return teams.ToDictionary(t => t.Name, t => t.Points);
     }
 
     public async Task<Team?> GetTeamById(int id)
@@ -96,11 +85,10 @@ public class TeamRepository : ITeamRepository
             CountryId = availableCountry.Id,
             Competition = team.Competition,
             IsActive = team.IsActive,
-            Points = team.Points,
             Matches = [],
         };
 
-        var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, Points, CountryId, Competition) VALUES (@Name, @IsActive, @Points, @CountryId, @Competition)";
+        var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, CountryId, Competition) VALUES (@Name, @IsActive, @CountryId, @Competition)";
         var result = await connection.ExecuteAsync(insertTeamQuery, newTeam);
 
         return result > 0;
@@ -111,8 +99,8 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
-        const string query = "UPDATE Teams SET Name = @NewName, IsActive = @IsActive, Points = @Points, Competition = @Competition WHERE Name = @CurrentName";
-        var result = await connection.ExecuteAsync(query, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Points, t.Competition });
+        const string query = "UPDATE Teams SET Name = @NewName, IsActive = @IsActive, Competition = @Competition WHERE Name = @CurrentName";
+        var result = await connection.ExecuteAsync(query, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Competition });
 
         return result > 0;
     }

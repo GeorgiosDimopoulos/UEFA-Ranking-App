@@ -55,8 +55,7 @@ public class DatabaseFeeder
                 Name = "AEK",
                 Competition = Competition.ConferenceLeague,
                 CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Greece")) ?? throw new InvalidOperationException("Country not found")).Id,
-                IsActive = true,
-                Points = 0
+                IsActive = true
             };
             await teamRepository.AddTeam(team, "Greece");
 
@@ -66,8 +65,7 @@ public class DatabaseFeeder
                 Name = "Vfb",
                 Competition = Competition.EuropaLeague,
                 CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Germany")) ?? throw new InvalidOperationException("Country not found")).Id,
-                IsActive = false,
-                Points = 0
+                IsActive = false
             };
             await teamRepository.AddTeam(team, "Germany");
 
@@ -77,8 +75,7 @@ public class DatabaseFeeder
                 Name = "Sevilla",
                 Competition = Competition.None,
                 CountryId = (countries.FirstOrDefault(c => c.Name.Equals("Spain")) ?? throw new InvalidOperationException("Country not found")).Id,
-                IsActive = false,
-                Points = 0
+                IsActive = false
             };
             await teamRepository.AddTeam(team, "Spain");
         }

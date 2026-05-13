@@ -56,8 +56,7 @@ public class TeamsController : ControllerBase
 
         var teamsPositions = teams.GroupBy(t => t.Competition)
                                   .SelectMany(g => g
-                                  .OrderByDescending(t => t.Points)
-                                  .ThenByDescending(t => CalculateGoalsDifference(t, matchesByTeams[t.Id]))
+                                  .OrderByDescending(t => CalculateGoalsDifference(t, matchesByTeams[t.Id]))
                                   .Select((t, i) => new { t.Id, Position = i + 1 }))
                                   .ToDictionary(x => x.Id, x => x.Position);
 
@@ -67,7 +66,6 @@ public class TeamsController : ControllerBase
             Name = t.Name,
             IsActive = t.IsActive,
             CountryPoints = countries.FirstOrDefault(c => c.Id == t.CountryId)!.TotalPoints,
-            Points = t.Points,
             GoalsDifference = CalculateGoalsDifference(t, matchesByTeams[t.Id]),
             Position = teamsPositions[t.Id],
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
@@ -102,14 +100,13 @@ public class TeamsController : ControllerBase
             Id = team.Id,
             Name = team.Name,
             IsActive = team.IsActive,
-            Points = team.Points,
-            Position = await GetTeamPosition(team.Points),
             CountryName = teamCountry!.Name,
             Competition = team.Competition,
             Matches = (queryParameters.IncludeMatches && team.IsActive) ? teamMatches[team.Id] : null,
             MatchesPlayed = (team.IsActive && queryParameters.IncludeMatches) ? teamMatches[team.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
         };
 
+        teamDto.Points = GetTeamPoints(team.Matches, team.Name);
         return Ok(teamDto);
     }
 
@@ -147,16 +144,16 @@ public class TeamsController : ControllerBase
             var teamDto = new TeamResponse
             {
                 Id = team!.Id,
+                Points = GetTeamPoints(team.Matches, team.Name),
                 Name = team.Name,
                 IsActive = team.IsActive,
-                Points = team.Points,
-                Position = await GetTeamPosition(team.Points),
                 CountryName = teamCountry.Name,
                 Competition = team.Competition,
                 Matches = (queryParameters.IncludeMatches && team.IsActive) ? matchesByTeams[team.Id] : null,
                 MatchesPlayed = (team.IsActive && queryParameters.IncludeMatches) ? matchesByTeams[team.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
             };
 
+            teamDto.Position = await GetTeamPosition(teamDto.Name, teamDto.Competition);
             teamsDto.Add(teamDto);
         }
 
@@ -187,8 +184,7 @@ public class TeamsController : ControllerBase
         {
             Name = team.Name,
             IsActive = team.IsActive,
-            Points = team.Points,
-            Position = await GetTeamPosition(team.Points),
+            Points = GetTeamPoints(team.Matches, team.Name),
             CountryName = teamCountry!.Name, // ToDo: include via JOIN in GetTeamByName
             Competition = team.Competition,
             CountryPoints = teamCountry!.TotalPoints,
@@ -196,6 +192,7 @@ public class TeamsController : ControllerBase
             MatchesPlayed = (team.IsActive && queryParameters.IncludeMatches) ? teamMatches[team.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
         };
 
+        teamDto.Position = await GetTeamPosition(teamDto.Name, team.Competition);
         return Ok(teamDto);
     }
 
@@ -211,7 +208,6 @@ public class TeamsController : ControllerBase
         {
             IsActive = t.IsActive,
             Name = t.Name,
-            Points = t.Points,
             Competition = t.Competition
         };
         var result = await teamRepository.AddTeam(team, t.CountryName);
@@ -227,7 +223,7 @@ public class TeamsController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Teams - Put" })]
     public async Task<ActionResult> UpdateTeam(string name, [FromQuery] TeamRequest t)
     {
-        var team = new Team { Competition = t.Competition, IsActive = t.IsActive, Name = t.Name, Points = t.Points };
+        var team = new Team { Competition = t.Competition, IsActive = t.IsActive, Name = t.Name };
         var result = await teamRepository.UpdateTeam(team, name);
         if (result == false)
         {
@@ -271,9 +267,56 @@ public class TeamsController : ControllerBase
         return matches.Sum(m => m.HomeTeamName.Equals(t.Name) ? (m.HomeTeamGoals ?? 0) - (m.AwayTeamGoals ?? 0) : (m.AwayTeamGoals ?? 0) - (m.HomeTeamGoals ?? 0));
     }
 
-    private async Task<int> GetTeamPosition(int points)
+    private async Task<int> GetTeamPosition(string teamName, Competition competition)
     {
-        var teamsPoints = await teamRepository.GetTeamsNamesAndPoints();
-        return 1 + teamsPoints.Values.Count(p => p > points);
+        var teams = await teamRepository.GetAllTeams();
+        var competitionTeams = teams.Where(t => t.Competition == competition);
+        var teamNameAndPointsDict = new Dictionary<string, int>();
+        var compMatches = await matchRepository.GetMatchesByCompetition(competition);
+        compMatches = compMatches.Where(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null).ToList();
+        foreach (var team in competitionTeams)
+        {
+            var teamMatches = compMatches.Where(m => m.HomeTeamName.Equals(team.Name, StringComparison.OrdinalIgnoreCase) || m.AwayTeamName.Equals(team.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+            var teamPoints = GetTeamPoints(teamMatches, team.Name);
+            teamNameAndPointsDict[team.Name] = teamPoints;
+        }
+
+        var teamPosition = teamNameAndPointsDict.OrderByDescending(kv => kv.Value)
+                                                .ThenBy(kv => kv.Key)
+                                                .Select((kv, index) => new { TeamName = kv.Key, Position = index + 1 })
+                                                .FirstOrDefault(kv => kv.TeamName.Equals(teamName))?.Position ?? 0;
+        return teamPosition;
+    }
+
+    private int GetTeamPoints(IEnumerable<Match> matches, string teamName)
+    {
+        int points = 0;
+        foreach (var match in matches)
+        {
+            if (match.HomeTeamName.Equals(teamName))
+            {
+                if (match.HomeTeamGoals > match.AwayTeamGoals)
+                {
+                    points += 3;
+                }
+                else if (match.HomeTeamGoals == match.AwayTeamGoals)
+                {
+                    points += 1;
+                }
+            }
+            else if (match.AwayTeamName.Equals(teamName))
+            {
+                if (match.HomeTeamGoals < match.AwayTeamGoals)
+                {
+                    points += 3;
+                }
+                else if (match.HomeTeamGoals == match.AwayTeamGoals)
+                {
+                    points += 1;
+                }
+            }
+        }
+
+        return points;
     }
 }
