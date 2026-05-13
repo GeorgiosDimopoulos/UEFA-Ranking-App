@@ -190,6 +190,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpGet("points/{countryId}")]
+    [SwaggerOperation(Tags = new[] { "Countries - Get" })]
     public async Task<int> GetCountryPoints(int countryId)
     {
         var country = await countryRepository.GetCountryById(countryId);
@@ -201,6 +202,7 @@ public class CountriesController : ControllerBase
     }
 
     [HttpPut("update-coefficient/{countryId}/{matchResult}")]
+    [SwaggerOperation(Tags = new[] { "Countries – Put" })]
     public async Task<bool> UpdateCountryCoefficient(int countryId, int matchResult)
     {
         var country = await countryRepository.GetCountryById(countryId);
