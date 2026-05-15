@@ -67,7 +67,7 @@ public class CountriesController : ControllerBase
             Position = await GetCountryPosition(country.TotalPoints),
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
             NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
-            //TotalPoints = countryTeams?.Sum(t => t.Points) ?? 0
+            TotalPoints = country.TotalPoints
         };
 
         return Ok(countryDto);
@@ -93,7 +93,7 @@ public class CountriesController : ControllerBase
             Position = await GetCountryPosition(country.TotalPoints),
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
             NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
-            //TotalPoints = countryTeams?.Sum(t => t.Points) ?? 0
+            TotalPoints = country.TotalPoints
         };
 
         return Ok(countryDto);
@@ -174,7 +174,7 @@ public class CountriesController : ControllerBase
 
     //    return NoContent();
     //}
-        
+
     [HttpDelete]
     [SwaggerOperation(Tags = new[] { "Countries – Delete" })]
     public async Task<ActionResult> DeleteCountries()
@@ -237,7 +237,9 @@ public class CountriesController : ControllerBase
 
     private async Task<int> GetCountryPosition(int points)
     {
-        var teamsPoints = await countryRepository.GetCountriesNamesAndPoints();
-        return 1 + teamsPoints.Values.Count(p => p > points);
+        var teams = await countryRepository.GetCountriesNamesAndPoints();
+        var orderedTeams = teams.OrderByDescending(t => t.Value).ToList();
+        var teamPosition = orderedTeams.FindIndex(t => t.Value == points) + 1;
+        return teamPosition;
     }
 }
