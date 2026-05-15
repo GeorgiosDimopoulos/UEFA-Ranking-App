@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Core.QueryParameters;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -49,7 +50,7 @@ public class TeamRepository : ITeamRepository
         return team;
     }
 
-    public async Task<List<Team?>> GetTeamsByCountryId(int countryId)
+    public async Task<List<Team?>> GetTeamsByCountryId(int countryId, CountryQueryParameters parameters)
     {
         if (countryId <= 0)
             return [];

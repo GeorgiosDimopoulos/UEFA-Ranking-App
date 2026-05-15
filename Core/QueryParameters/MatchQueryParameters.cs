@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.QueryParameters;
+﻿namespace Core.QueryParameters;
 
 public class MatchQueryParameters
 {

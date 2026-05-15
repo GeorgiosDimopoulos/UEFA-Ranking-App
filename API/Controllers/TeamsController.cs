@@ -1,7 +1,7 @@
 using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
-using Infrastructure.QueryParameters;
+using Core.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -40,13 +40,10 @@ public class TeamsController : ControllerBase
         var countries = await countryRepository.GetAllCountries();
 
         Dictionary<int, List<Match>> matchesByTeams = [];
-        if (queryParameters.IncludeMatches)
+        foreach (var t in teams)
         {
-            foreach (var t in teams)
-            {
-                var matchByTeam = await matchRepository.GetMatchesByTeamName(t.Name);
-                matchesByTeams[t.Id] = matchByTeam;
-            }
+            var matchByTeam = await matchRepository.GetMatchesByTeamName(t.Name);
+            matchesByTeams[t.Id] = matchByTeam;
         }
 
         if (queryParameters.Competition != null)
@@ -54,17 +51,27 @@ public class TeamsController : ControllerBase
             teams = (teams.Where(t => t.Competition == queryParameters.Competition)).ToList();
         }
 
-        var teamsPositions = teams.GroupBy(t => t.Competition)
-                                  .SelectMany(g => g
-                                  .OrderByDescending(t => CalculateGoalsDifference(t, matchesByTeams[t.Id]))
-                                  .Select((t, i) => new { t.Id, Position = i + 1 }))
-                                  .ToDictionary(x => x.Id, x => x.Position);
+        var competitionTeams = teams.GroupBy(t => t.Competition);
+
+        Dictionary<int, int> pointsByTeamId = [];
+        foreach (var t in teams)
+        {
+            var teamPoints = GetTeamPoints(matchesByTeams[t.Id], t.Name);
+            pointsByTeamId[t.Id] = teamPoints;
+        }
+
+        var teamsPositions = competitionTeams.SelectMany(gr => gr
+                                             .OrderByDescending(t => pointsByTeamId[t.Id])
+                                             .ThenByDescending(t => CalculateGoalsDifference(t, matchesByTeams[t.Id]))
+                                             .Select((t, i) => new { t.Id, Position = i + 1 }))
+                                             .ToDictionary(x => x.Id, x => x.Position);
 
         return teams.Select(t => new TeamResponse
         {
             Id = t.Id,
             Name = t.Name,
             IsActive = t.IsActive,
+            Points = pointsByTeamId[t.Id],
             CountryPoints = countries.FirstOrDefault(c => c.Id == t.CountryId)!.TotalPoints,
             GoalsDifference = CalculateGoalsDifference(t, matchesByTeams[t.Id]),
             Position = teamsPositions[t.Id],
@@ -112,7 +119,7 @@ public class TeamsController : ControllerBase
 
     [HttpGet("by-country/{countryId:int}")]
     [SwaggerOperation(Tags = new[] { "Teams - Get" })]
-    public async Task<ActionResult<List<TeamResponse>>> GetTeamsByCountryId(int countryId, [FromQuery] TeamQueryParameters queryParameters)
+    public async Task<ActionResult<List<TeamResponse>>> GetTeamsByCountryId(int countryId, [FromQuery] CountryQueryParameters queryParameters)
     {
         var teamCountry = await countryRepository.GetCountryById(countryId);
         if (teamCountry == null)
@@ -121,7 +128,7 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        var teams = await teamRepository.GetTeamsByCountryId(countryId);
+        var teams = await teamRepository.GetTeamsByCountryId(countryId, queryParameters);
         if (teams == null)
         {
             _logger.LogWarning($"Teams with country id: {countryId} not found");
@@ -293,6 +300,9 @@ public class TeamsController : ControllerBase
         int points = 0;
         foreach (var match in matches)
         {
+            if (match.HomeTeamGoals == null || match.AwayTeamGoals == null)
+                continue;
+
             if (match.HomeTeamName.Equals(teamName))
             {
                 if (match.HomeTeamGoals > match.AwayTeamGoals)
@@ -316,7 +326,6 @@ public class TeamsController : ControllerBase
                 }
             }
         }
-
         return points;
     }
 }

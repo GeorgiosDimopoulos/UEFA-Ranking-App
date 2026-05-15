@@ -1,7 +1,7 @@
 using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
-using Infrastructure.QueryParameters;
+using Core.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -51,14 +51,14 @@ public class CountriesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
     public async Task<ActionResult<CountryResponse>> GetCountryById(int id, [FromQuery] CountryQueryParameters queryParameters)
     {
-        var country = await countryRepository.GetCountryById(id) ?? new();
+        var country = await countryRepository.GetCountryById(id);
         if (country == null)
         {
             _logger.LogWarning($"Country with id {id} not found");
             return NotFound();
         }
 
-        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id);
+        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, queryParameters);
 
         var countryDto = new CountryResponse
         {
@@ -73,18 +73,18 @@ public class CountriesController : ControllerBase
         return Ok(countryDto);
     }
 
-    [HttpGet("{name}")]
+    [HttpGet("by-name/{name}")]
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
     public async Task<ActionResult<CountryResponse>> GetCountryByName(string name, [FromQuery] CountryQueryParameters queryParameters)
     {
-        var country = await countryRepository.GetCountryByName(name) ?? new();
+        var country = await countryRepository.GetCountryByName(name);
         if (country == null)
         {
             _logger.LogWarning($"Country with name {name} not found");
             return NotFound();
         }
 
-        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id);
+        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, queryParameters);
 
         var countryDto = new CountryResponse
         {
@@ -133,7 +133,7 @@ public class CountriesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Countries – Delete" })]
     public async Task<ActionResult> DeleteCountry(int id)
     {
-        var countryTeams = await teamRepository.GetTeamsByCountryId(id);
+        var countryTeams = await teamRepository.GetTeamsByCountryId(id, null);
         if (countryTeams.Count > 0)
         {
             foreach (var team in countryTeams)
@@ -220,7 +220,7 @@ public class CountriesController : ControllerBase
 
     private async Task<int> CalculateCountryMatch(Country country, int matchResult)
     {
-        int countryInitialTeams = (await teamRepository.GetTeamsByCountryId(country.Id)).Count;
+        int countryInitialTeams = (await teamRepository.GetTeamsByCountryId(country.Id, null)).Count;
         switch (matchResult)
         {
             case 1: // win
