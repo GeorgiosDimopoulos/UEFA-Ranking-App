@@ -78,7 +78,7 @@ public class TeamsController : ControllerBase
             CountryName = countries.FirstOrDefault(c => c.Id == t.CountryId)!.Name,
             Competition = t.Competition,
             Matches = (tqueryParameters.IncludeMatches && t.IsActive) ? matchesByTeams[t.Id] : null,
-            MatchesPlayed = (t.IsActive && tqueryParameters.IncludeMatches) ? matchesByTeams[t.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
+            MatchesPlayed = t.IsActive ? matchesByTeams[t.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
         }).ToList();
     }
 
