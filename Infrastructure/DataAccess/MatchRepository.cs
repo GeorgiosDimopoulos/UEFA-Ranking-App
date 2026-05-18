@@ -52,9 +52,9 @@ public class MatchRepository : IMatchRepository
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
-        var competition = (int)c;
+
         var sqlQuery = @"SELECT * FROM Matches WHERE Competition = @competition";
-        var matches = await connection.QueryAsync<Match>(sqlQuery, new { c });
+        var matches = await connection.QueryAsync<Match>(sqlQuery, new { competition = (int)c });
         return matches.ToList();
     }
 

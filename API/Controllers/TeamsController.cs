@@ -27,7 +27,7 @@ public class TeamsController : ControllerBase
 
     [HttpGet()]
     [SwaggerOperation(Tags = new[] { "Teams - Get" })]
-    public async Task<List<TeamResponse>> GetTeams([FromQuery] TeamQueryParameters tqueryParameters, [FromQuery] CountryQueryParameters cqueryParameters)
+    public async Task<List<TeamResponse>> GetTeams([FromQuery] TeamQueryParameters tqueryParameters)
     {
         var teams = await teamRepository.GetAllTeams(tqueryParameters);
 
@@ -37,7 +37,7 @@ public class TeamsController : ControllerBase
             return [];
         }
 
-        var countries = await countryRepository.GetAllCountries(cqueryParameters);
+        var countries = await countryRepository.GetAllCountries(new() { IncludeTeams = false, IncludeMatches = false });
 
         Dictionary<int, List<Match>> matchesByTeams = [];
         foreach (var t in teams)
@@ -84,7 +84,7 @@ public class TeamsController : ControllerBase
 
     [HttpGet("{id:int}")]
     [SwaggerOperation(Tags = new[] { "Teams - Get" })]
-    public async Task<ActionResult<TeamResponse>> GetTeamById(int id, [FromQuery] TeamQueryParameters tqueryParameters, [FromQuery] CountryQueryParameters cqueryParameters)
+    public async Task<ActionResult<TeamResponse>> GetTeamById(int id, [FromQuery] TeamQueryParameters tqueryParameters)
     {
         var team = await teamRepository.GetTeamById(id, tqueryParameters);
         if (team == null)
@@ -93,7 +93,7 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        var teamCountry = await countryRepository.GetCountryById(team.CountryId, cqueryParameters);
+        var teamCountry = await countryRepository.GetCountryById(team.CountryId, new() { IncludeMatches = false, IncludeTeams = false });
 
         Dictionary<int, List<Match>> teamMatches = [];
         if (tqueryParameters.IncludeMatches)
@@ -119,9 +119,9 @@ public class TeamsController : ControllerBase
 
     [HttpGet("by-country/{countryId:int}")]
     [SwaggerOperation(Tags = new[] { "Teams - Get" })]
-    public async Task<ActionResult<List<TeamResponse>>> GetTeamsByCountryId(int countryId, [FromQuery] TeamQueryParameters tqueryParameters, [FromQuery] CountryQueryParameters cqueryParameters)
+    public async Task<ActionResult<List<TeamResponse>>> GetTeamsByCountryId(int countryId, [FromQuery] TeamQueryParameters tqueryParameters)
     {
-        var teamCountry = await countryRepository.GetCountryById(countryId, cqueryParameters);
+        var teamCountry = await countryRepository.GetCountryById(countryId, new() { IncludeTeams = false, IncludeMatches = false });
         if (teamCountry == null)
         {
             _logger.LogWarning($"Country with id: {countryId} not found");
@@ -169,7 +169,7 @@ public class TeamsController : ControllerBase
 
     [HttpGet("{name}")]
     [SwaggerOperation(Tags = new[] { "Teams - Get" })]
-    public async Task<ActionResult<TeamResponse>> GetTeamByName(string name, [FromQuery] TeamQueryParameters tqueryParameters, [FromQuery] CountryQueryParameters cqueryParameters)
+    public async Task<ActionResult<TeamResponse>> GetTeamByName(string name, [FromQuery] TeamQueryParameters tqueryParameters)
     {
         var team = await teamRepository.GetTeamByName(name, tqueryParameters);
         if (team == null)
@@ -178,7 +178,13 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        var teamCountry = await countryRepository.GetCountryById(team.CountryId, cqueryParameters);
+        var teamCountry = await countryRepository.GetCountryById(team.CountryId, new() { IncludeMatches = false, IncludeTeams = false });
+
+        if (teamCountry is null)
+        {
+            _logger.LogWarning($"Team country not found {name}");
+            return NotFound();
+        }
 
         Dictionary<int, List<Match>> teamMatches = [];
         if (tqueryParameters.IncludeMatches)
@@ -192,9 +198,9 @@ public class TeamsController : ControllerBase
             Name = team.Name,
             IsActive = team.IsActive,
             Points = GetTeamPoints(team.Matches, team.Name),
-            CountryName = teamCountry!.Name, // ToDo: include via JOIN in GetTeamByName
+            CountryName = teamCountry.Name, // ToDo: include via JOIN in GetTeamByName
             Competition = team.Competition,
-            CountryPoints = teamCountry!.TotalPoints,
+            CountryPoints = teamCountry.TotalPoints,
             Matches = (tqueryParameters.IncludeMatches && team.IsActive) ? teamMatches[team.Id] : null,
             MatchesPlayed = (team.IsActive && tqueryParameters.IncludeMatches) ? teamMatches[team.Id].Count(m => m.HomeTeamGoals != null && m.AwayTeamGoals != null) : 0
         };

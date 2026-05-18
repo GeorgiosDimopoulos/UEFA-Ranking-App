@@ -75,7 +75,7 @@ public class CountriesController : ControllerBase
 
     [HttpGet("by-name/{name}")]
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
-    public async Task<ActionResult<CountryResponse>> GetCountryByName(string name, [FromQuery] TeamQueryParameters tqueryParameters, CountryQueryParameters cqueryParameters)
+    public async Task<ActionResult<CountryResponse>> GetCountryByName(string name, [FromQuery] CountryQueryParameters cqueryParameters)
     {
         var country = await countryRepository.GetCountryByName(name, cqueryParameters);
         if (country == null)
@@ -84,7 +84,7 @@ public class CountriesController : ControllerBase
             return NotFound();
         }
 
-        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, tqueryParameters);
+        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, new() { IncludeMatches = cqueryParameters.IncludeMatches, IncludeCountry = false });
 
         var countryDto = new CountryResponse
         {
@@ -191,9 +191,9 @@ public class CountriesController : ControllerBase
 
     [HttpGet("points/{countryId}")]
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
-    public async Task<int> GetCountryPoints(int countryId, CountryQueryParameters cqueryParameters)
+    public async Task<int> GetCountryPoints(int countryId)
     {
-        var country = await countryRepository.GetCountryById(countryId, cqueryParameters);
+        var country = await countryRepository.GetCountryById(countryId, new() { IncludeMatches = false, IncludeTeams = false });
         if (country is null)
         {
             return 0;
@@ -237,7 +237,7 @@ public class CountriesController : ControllerBase
 
     private async Task<int> GetCountryPosition(int points)
     {
-        var teams = await countryRepository.GetCountriesNamesAndPoints(null!);
+        var teams = await countryRepository.GetCountriesNamesAndPoints(new());
         var orderedTeams = teams.OrderByDescending(t => t.Value).ToList();
         var teamPosition = orderedTeams.FindIndex(t => t.Value == points) + 1;
         return teamPosition;

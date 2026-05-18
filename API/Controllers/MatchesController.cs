@@ -1,6 +1,7 @@
 ﻿using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
+using Core.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Runtime.InteropServices;
@@ -162,8 +163,8 @@ public class MatchesController : ControllerBase
         var duplicateExists = allRoundMatches.Any(m => (m.HomeTeamName == matchRequest.HomeTeamName && m.AwayTeamName == matchRequest.AwayTeamName)
             || (m.HomeTeamName == matchRequest.AwayTeamName && m.AwayTeamName == matchRequest.HomeTeamName));
 
-        if (duplicateExists)        
-            return BadRequest("Match between these teams for this round already exists.");        
+        if (duplicateExists)
+            return BadRequest("Match between these teams for this round already exists.");
 
         var match = new Match
         {
@@ -185,7 +186,7 @@ public class MatchesController : ControllerBase
                 hasScore = true;
             }
         }
-        
+
         var result = await matchRepository.AddMatch(match);
         if (!result)
             return StatusCode(500, "Could not insert match into DB");
@@ -197,7 +198,7 @@ public class MatchesController : ControllerBase
             if (!result3 || !result2)
                 return StatusCode(500, "Could not update match's teams points");
         }
-        
+
         return Ok("Match added successfully.");
     }
 
