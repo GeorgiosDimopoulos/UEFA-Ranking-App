@@ -1,12 +1,14 @@
-﻿namespace Core.Interfaces;
+﻿using Core.QueryParameters;
+
+namespace Core.Interfaces;
 
 public interface ICountryRepository
 {
-    public Task<List<Country>> GetAllCountries();
-    public Task<Country?> GetCountryById(int id);
-    public Task<Country?> GetCountryByName(string name);
+    public Task<List<Country>> GetAllCountries(CountryQueryParameters cqueryParameters);
+    public Task<Country?> GetCountryById(int id, CountryQueryParameters cqueryParameters);
+    public Task<Country?> GetCountryByName(string name, CountryQueryParameters cqueryParameters);
 
-    public Task<Dictionary<string, int>> GetCountriesNamesAndPoints();
+    public Task<Dictionary<string, int>> GetCountriesNamesAndPoints(CountryQueryParameters cqueryParameters);
     public Task<bool> AddCountry(Country c);
     public Task<bool> UpdateCountry(Country c, int id);
     public Task<bool> DeleteCountry(int id);

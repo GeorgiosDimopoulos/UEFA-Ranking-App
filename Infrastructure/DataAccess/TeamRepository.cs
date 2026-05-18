@@ -16,10 +16,15 @@ public class TeamRepository : ITeamRepository
             throw new InvalidOperationException("Connection string is not set.");
     }
 
-    public async Task<List<Team>> GetAllTeams()
+    public async Task<List<Team>> GetAllTeams(TeamQueryParameters parameters)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
+
+        if (parameters.IncludeMatches)
+        {
+            // ToDO: Implement the logic to include matches when fetching teams by country ID.
+        }
 
         var sql = @"SELECT t.Id, t.Name, t.IsActive, t.CountryId, t.Competition, c.Id, c.Name FROM Teams t JOIN Countries c ON t.CountryId = c.Id";
         var teams = await connection.QueryAsync<Team, Country, Team>(sql, (team, country) =>
@@ -29,7 +34,7 @@ public class TeamRepository : ITeamRepository
         return teams.ToList();
     }
 
-    public async Task<Team?> GetTeamById(int id)
+    public async Task<Team?> GetTeamById(int id, TeamQueryParameters parameters)
     {
         if (id <= 0)
             return null;
@@ -37,26 +42,41 @@ public class TeamRepository : ITeamRepository
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
+        if (parameters.IncludeMatches)
+        {
+            // ToDO: Implement the logic to include matches when fetching teams by country ID.
+        }
+
         var team = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Id = @Id", new { Id = id });
         return team;
     }
 
-    public async Task<Team?> GetTeamByName(string name)
+    public async Task<Team?> GetTeamByName(string name, TeamQueryParameters parameters)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
+
+        if (parameters.IncludeMatches)
+        {
+            // ToDO: Implement the logic to include matches when fetching teams by country ID.
+        }
 
         var team = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { Name = name });
         return team;
     }
 
-    public async Task<List<Team?>> GetTeamsByCountryId(int countryId, CountryQueryParameters parameters)
+    public async Task<List<Team?>> GetTeamsByCountryId(int countryId, TeamQueryParameters parameters)
     {
         if (countryId <= 0)
             return [];
 
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
+
+        if (parameters.IncludeMatches)
+        {
+            // ToDO: Implement the logic to include matches when fetching teams by country ID.
+        }
 
         var countryTeams = await connection.QueryAsync<Team>("SELECT * FROM Teams WHERE CountryId = @CountryId", new { CountryId = countryId });
         if (!countryTeams.Any())

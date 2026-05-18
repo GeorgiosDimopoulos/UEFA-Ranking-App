@@ -4,10 +4,10 @@ namespace Core.Interfaces;
 
 public interface ITeamRepository
 {
-    public Task<List<Team>> GetAllTeams();
-    public Task<Team?> GetTeamById(int id);
-    public Task<Team?> GetTeamByName(string name);
-    public Task<List<Team?>> GetTeamsByCountryId(int countryId, CountryQueryParameters queryParameters);
+    public Task<List<Team>> GetAllTeams(TeamQueryParameters parameters);
+    public Task<Team?> GetTeamById(int id, TeamQueryParameters parameters);
+    public Task<Team?> GetTeamByName(string name, TeamQueryParameters parameters);
+    public Task<List<Team?>> GetTeamsByCountryId(int countryId, TeamQueryParameters queryParameters);
 
     public Task<bool> AddTeam(Team team, string country);
     public Task<bool> UpdateTeam(Team t, string name);

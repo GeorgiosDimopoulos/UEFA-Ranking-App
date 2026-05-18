@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Core.QueryParameters;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -15,25 +16,43 @@ public class CountryRepository : ICountryRepository
             throw new InvalidOperationException("Connection string is not set.");
     }
 
-    public async Task<List<Country>> GetAllCountries()
+    public async Task<List<Country>> GetAllCountries(CountryQueryParameters cqueryParameters)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
+
+        if (cqueryParameters.IncludeTeams)
+        {
+
+        }
+        if (cqueryParameters.IncludeMatches)
+        {
+
+        }
 
         var countries = await connection.QueryAsync<Country>("SELECT Id, Name, TotalPoints, NumberOfActiveTeams, NumberOfInitialTeams FROM Countries");
         return countries.ToList();
     }
 
-    public async Task<Dictionary<string, int>> GetCountriesNamesAndPoints()
+    public async Task<Dictionary<string, int>> GetCountriesNamesAndPoints(CountryQueryParameters cqueryParameters)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
+
+        if (cqueryParameters.IncludeTeams)
+        {
+
+        }
+        if (cqueryParameters.IncludeMatches)
+        {
+
+        }
 
         var countriesNamesAndPoints = await connection.QueryAsync<(string Name, int Points)>("SELECT Name, TotalPoints FROM Countries");
         return countriesNamesAndPoints.ToDictionary(c => c.Name, c => c.Points);
     }
 
-    public async Task<Country?> GetCountryById(int id)
+    public async Task<Country?> GetCountryById(int id, CountryQueryParameters cqueryParameters)
     {
         if (id <= 0)
             return null;
@@ -45,13 +64,22 @@ public class CountryRepository : ICountryRepository
         return country;
     }
 
-    public async Task<Country?> GetCountryByName(string name)
+    public async Task<Country?> GetCountryByName(string name, CountryQueryParameters cqueryParameters)
     {
         if (string.IsNullOrWhiteSpace(name))
             return null;
 
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
+
+        if (cqueryParameters.IncludeTeams)
+        {
+
+        }
+        if (cqueryParameters.IncludeMatches)
+        {
+
+        }
 
         var country = await connection.QuerySingleOrDefaultAsync<Country>("SELECT Id, Name, TotalPoints FROM Countries WHERE Name = @Name", new { Name = name });
         return country;

@@ -25,10 +25,10 @@ public class CountriesController : ControllerBase
 
     [HttpGet(Name = "Countries")]
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
-    public async Task<IEnumerable<CountryResponse>> GetCountries([FromQuery] CountryQueryParameters queryParameters)
+    public async Task<IEnumerable<CountryResponse>> GetCountries([FromQuery] CountryQueryParameters cqueryParameters, [FromQuery] TeamQueryParameters tqueryParameters)
     {
-        var countries = await countryRepository.GetAllCountries();
-        var teams = await teamRepository.GetAllTeams();
+        var countries = await countryRepository.GetAllCountries(cqueryParameters);
+        var teams = await teamRepository.GetAllTeams(tqueryParameters);
 
         var countriesPositions = countries.Select(c => c.TotalPoints)
                                           .Distinct()
@@ -49,16 +49,16 @@ public class CountriesController : ControllerBase
 
     [HttpGet("{id:int}")]
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
-    public async Task<ActionResult<CountryResponse>> GetCountryById(int id, [FromQuery] CountryQueryParameters queryParameters)
+    public async Task<ActionResult<CountryResponse>> GetCountryById(int id, [FromQuery] TeamQueryParameters tqueryParameters, [FromQuery] CountryQueryParameters cqueryParameters)
     {
-        var country = await countryRepository.GetCountryById(id);
+        var country = await countryRepository.GetCountryById(id, cqueryParameters);
         if (country == null)
         {
             _logger.LogWarning($"Country with id {id} not found");
             return NotFound();
         }
 
-        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, queryParameters);
+        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, tqueryParameters);
 
         var countryDto = new CountryResponse
         {
@@ -75,16 +75,16 @@ public class CountriesController : ControllerBase
 
     [HttpGet("by-name/{name}")]
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
-    public async Task<ActionResult<CountryResponse>> GetCountryByName(string name, [FromQuery] CountryQueryParameters queryParameters)
+    public async Task<ActionResult<CountryResponse>> GetCountryByName(string name, [FromQuery] TeamQueryParameters tqueryParameters, CountryQueryParameters cqueryParameters)
     {
-        var country = await countryRepository.GetCountryByName(name);
+        var country = await countryRepository.GetCountryByName(name, cqueryParameters);
         if (country == null)
         {
             _logger.LogWarning($"Country with name {name} not found");
             return NotFound();
         }
 
-        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, queryParameters);
+        var countryTeams = await teamRepository.GetTeamsByCountryId(country.Id, tqueryParameters);
 
         var countryDto = new CountryResponse
         {
@@ -182,7 +182,7 @@ public class CountriesController : ControllerBase
         var result = await countryRepository.DeleteCountries();
         if (result == false)
         {
-            _logger.LogWarning("Could not delete some countries");
+            _logger.LogWarning("Could not delete countries");
             return NotFound();
         }
 
@@ -191,9 +191,9 @@ public class CountriesController : ControllerBase
 
     [HttpGet("points/{countryId}")]
     [SwaggerOperation(Tags = new[] { "Countries - Get" })]
-    public async Task<int> GetCountryPoints(int countryId)
+    public async Task<int> GetCountryPoints(int countryId, CountryQueryParameters cqueryParameters)
     {
-        var country = await countryRepository.GetCountryById(countryId);
+        var country = await countryRepository.GetCountryById(countryId, cqueryParameters);
         if (country is null)
         {
             return 0;
@@ -205,7 +205,7 @@ public class CountriesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Countries – Put" })]
     public async Task<bool> UpdateCountryCoefficient(int countryId, int matchResult)
     {
-        var country = await countryRepository.GetCountryById(countryId);
+        var country = await countryRepository.GetCountryById(countryId, null!);
         if (country is null)
         {
             return false;
@@ -237,7 +237,7 @@ public class CountriesController : ControllerBase
 
     private async Task<int> GetCountryPosition(int points)
     {
-        var teams = await countryRepository.GetCountriesNamesAndPoints();
+        var teams = await countryRepository.GetCountriesNamesAndPoints(null!);
         var orderedTeams = teams.OrderByDescending(t => t.Value).ToList();
         var teamPosition = orderedTeams.FindIndex(t => t.Value == points) + 1;
         return teamPosition;
