@@ -1,51 +1,54 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
-	<div class="container-fluid">
-		<a class="navbar-brand" href="">UEFA Ranks 2025 - 2026</a>
-	</div>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">UEFA Ranks 2025 - 2026</a>
+    </div>
 </div>
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" style="background: linear-gradient(180deg, #0d0b33 0%, #3f1a61 100%);" />
 
 <div class="nav-scrollable">
-	<nav class="nav flex-column">
-		<MudNavGroup Title="Champions League"
-					 Expanded="true"
-					 IconColor="Color.Primary"
-					 Class="text-white"
-					 Icon="@Icons.Material.Filled.EmojiEvents"
-					 Style="background: linear-gradient(90deg, #1e1f7a 0%, #3f51b5 100%); border-radius:10px; margin:3px 0;">
-			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="championsSchedule">Matches</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Outlined.TableChart" Href="champions">Table</MudNavLink>
-		</MudNavGroup>
-		<MudNavGroup Title="Europa League"
-					 Expanded="true"
-					 IconColor="Color.Primary"
-					 Class="text-white"
-					 Icon="@Icons.Material.Outlined.EmojiEvents"
-					 Style="background: linear-gradient(90deg, #4a148c 0%, #ffb300 100%); border-radius:10px; margin:3px 0;">
-			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="europaSchedule">Matches</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Outlined.TableChart" Href="europa">Table</MudNavLink>
-		</MudNavGroup>
-		<MudNavGroup Title="Conference League"
-					 Expanded="true"
-					 IconColor="Color.Primary"
-					 Class="text-white"
-					 Icon="@Icons.Material.Outlined.LocalDrink"
-					 Style="background: linear-gradient(90deg, #004d40 0%, #00e676 100%); border-radius:10px; margin:3px 0;">
-			<MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="conferenceSchedule">Matches</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Outlined.TableChart" Href="conference">Table</MudNavLink>
-		</MudNavGroup>
-		<MudNavGroup Title="Management"
-					 Expanded="true" Class="text-white"
-					 Icon="@Icons.Material.Filled.ManageAccounts"
-					 Style="background: linear-gradient(90deg, #000000 0%, #424242  100%); border-radius:10px; margin:3px 0;">
-			<MudNavLink Icon="@Icons.Material.Filled.Flag" href="countries">Countries</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Filled.SportsBaseball" href="teams">Teams</MudNavLink>
-		</MudNavGroup>
-		<NavLink class="nav-link d-flex align-items-center" href="statistics">
-			<span class="bi bi-dice-5 me-3" aria-hidden="true"></span> My Guesses
-		</NavLink>
-		@* <a class="nav-link" href="/learnBlazor/bindprop">
+    <nav class="nav flex-column">
+        <MudNavGroup Title="Champions League"
+                     Expanded="true"
+                     IconColor="Color.Primary"
+                     Class="text-white"
+                     Icon="@Icons.Material.Filled.EmojiEvents"
+                     Style="background: linear-gradient(90deg, #1e1f7a 0%, #3f51b5 100%); border-radius:10px; margin:3px 0;">
+            <MudNavLink Icon="@Icons.Material.Outlined.TableChart" Href="championsTable">Phase Table</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="championsSchedule">Group Matches</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Outlined.AccountTree" Href="championsKnockouts">Knockout Matches</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Europa League"
+                     Expanded="true"
+                     IconColor="Color.Primary"
+                     Class="text-white"
+                     Icon="@Icons.Material.Outlined.EmojiEvents"
+                     Style="background: linear-gradient(90deg, #4a148c 0%, #ffb300 100%); border-radius:10px; margin:3px 0;">
+            <MudNavLink Icon="@Icons.Material.Outlined.TableChart" Href="europaTable">Phase Table</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="europaSchedule">Group Matches</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Outlined.AccountTree" Href="europaKnockouts">Knockout Matches</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Conference League"
+                     Expanded="true"
+                     IconColor="Color.Primary"
+                     Class="text-white"
+                     Icon="@Icons.Material.Outlined.LocalDrink"
+                     Style="background: linear-gradient(90deg, #004d40 0%, #00e676 100%); border-radius:10px; margin:3px 0;">
+            <MudNavLink Icon="@Icons.Material.Outlined.TableChart" Href="conferenceTable">Phase Table</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Filled.SportsSoccer" Href="conferenceSchedule">Group Matches</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Outlined.AccountTree" Href="conferenceKnockouts">Knockout Matches</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Management"
+                     Expanded="true" Class="text-white"
+                     Icon="@Icons.Material.Filled.ManageAccounts"
+                     Style="background: linear-gradient(90deg, #000000 0%, #424242  100%); border-radius:10px; margin:3px 0;">
+            <MudNavLink Icon="@Icons.Material.Filled.Flag" href="countries">Countries</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Filled.SportsBaseball" href="teams">Teams</MudNavLink>
+        </MudNavGroup>
+        <NavLink class="nav-link d-flex align-items-center" href="statistics">
+            <span class="bi bi-dice-5 me-3" aria-hidden="true"></span> My Guesses
+        </NavLink>
+        @* <a class="nav-link" href="/learnBlazor/bindprop">
 			<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Bind prop
 		</a>
 		<a class="nav-link d-flex align-items-center" href="/learnBlazor/demo-product">
@@ -54,6 +57,6 @@
 		<a class="nav-link d-flex align-items-center" href="/learnBlazor/parentComponent">
 			<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Parent - Child Relation
 		</a> *@
-	</nav>
+    </nav>
 </div>
 
