@@ -2,6 +2,24 @@
 
 <h3>ChampionsLeague Knockouts</h3>
 
-@code {
+<MudGrid>
+    <MudItem xs="12" md="3">
+        <h5>Round of 16</h5>
+    </MudItem>
+    <MudItem xs="12" md="3">
+        <h5>Quarter Finals</h5>
+    </MudItem>
+    <MudItem xs="12" md="3">
+        <h5>Semi Finals</h5>
+    </MudItem>
+    <MudItem xs="12" md="3">
+        <h5>Final</h5>
+    </MudItem>
+</MudGrid>
 
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
 }
