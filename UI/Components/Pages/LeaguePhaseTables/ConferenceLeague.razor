@@ -1,24 +1,21 @@
-﻿@page "/europa"
+﻿@page "/conferenceTable"
 
 @using API.Data.DTOs
 @using Core.Models
-@using Humanizer
-@using Infrastructure
-@using Infrastructure.DataAccess
 @using UI.Clients
 @using UI.Components.Pages.Components
 
-<h3>Europa League Phase</h3>
+<h3>Conference League Phase</h3>
+
+<PageTitle>Conference League Phase</PageTitle>
 
 @inject TeamsClient TeamsClient
 @inject IDialogService DialogService
 
-<PageTitle>Europa League Phase</PageTitle>
-
 <div class="col-12">
 	@if (_teams == null)
 	{
-		<p><em>Loading Europa League teams...</em></p>
+		<p><em>Loading Conference League teams...</em></p>
 	}
 	else
 	{
@@ -36,7 +33,7 @@
 				<MudTh Style="font-weight:bold; width:40px">Position</MudTh>
 				<MudTh Style="font-weight:bold;">Name</MudTh>
 				<MudTh Style="font-weight:bold;">Country</MudTh>
-				<MudTh Style="font-weight:bold;">+ -</MudTh>
+				<MudTh>+ -</MudTh>
 				<MudTh Style="font-weight:bold;">Played</MudTh>
 				<MudTh Style="font-weight:bold;">Points</MudTh>
 				<MudTh Style="font-weight:bold;">Matches:</MudTh>
@@ -66,14 +63,14 @@
 {
 	private string _searchText = string.Empty;
 
-	private TeamResponse[]? _teams = default!;
+	private TeamResponse[]? _teams = default!; 
 	private TeamResponse[]? _allTeams = default!;
 	private CountryResponse[]? _countries = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		var data = await TeamsClient.GetTeamsByCompetition(Competition.EuropaLeague) ?? Array.Empty<TeamResponse>();
+		var data = await TeamsClient.GetTeamsByCompetition(Competition.ConferenceLeague) ?? Array.Empty<TeamResponse>();		
 		_allTeams = data.Where(t => t.IsActive)
 					 .OrderByDescending(t => t.Points)
 					 .ThenByDescending(t => t.GoalsDifference)
