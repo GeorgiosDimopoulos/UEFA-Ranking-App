@@ -30,7 +30,7 @@ public class MatchesController : ControllerBase
     {
         var matches = await matchRepository.GetAllMatches();
 
-        if (matches is null)
+        if (matches.Count == 0)
         {
             _logger.LogWarning("No matches found in the database.");
             return [];

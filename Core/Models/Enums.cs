@@ -18,9 +18,9 @@ public enum Round
     Sixth = 6,
     Seventh = 7,
     Eighth = 8,
-    PlayOffs,
-    RoundOf16,
-    Quarter,
-    SemiFinals,
-    Final,
+    PlayOffs,      // 9
+    RoundOf16,     // 10
+    Quarter,       // 11
+    SemiFinals,    // 12
+    Final,         // 13
 }
