@@ -82,7 +82,7 @@ public class MatchRepository : IMatchRepository
             return false;
 
         var existingMatchInRound = await connection.QuerySingleOrDefaultAsync<Match>(
-            @"SELECT * FROM Matches WHERE Round = @Round AND (HomeTeamName = @HomeTeamName OR AwayTeamName = @HomeTeamName OR HomeTeamName = @AwayTeamName OR AwayTeamName = @AwayTeamName)",
+            @"SELECT * FROM Matches WHERE Round = @Round AND HomeTeamName = @HomeTeamName AND AwayTeamName = @AwayTeamName",
             new
             {
                 m.Round,

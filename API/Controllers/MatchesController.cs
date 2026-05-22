@@ -160,8 +160,7 @@ public class MatchesController : ControllerBase
             return BadRequest("A team cannot play against itself.");
 
         var allRoundMatches = await matchRepository.GetMatchesByRound((int)matchRequest.Round);
-        var duplicateExists = allRoundMatches.Any(m => (m.HomeTeamName == matchRequest.HomeTeamName && m.AwayTeamName == matchRequest.AwayTeamName)
-            || (m.HomeTeamName == matchRequest.AwayTeamName && m.AwayTeamName == matchRequest.HomeTeamName));
+        var duplicateExists = allRoundMatches.Any(m => (m.HomeTeamName == matchRequest.HomeTeamName && m.AwayTeamName == matchRequest.AwayTeamName));
 
         if (duplicateExists)
             return BadRequest("Match between these teams for this round already exists.");
