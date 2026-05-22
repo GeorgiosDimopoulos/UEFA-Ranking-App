@@ -9,8 +9,8 @@
 
 <h3>EuropaLeague Knockouts</h3>
 
-<MudGrid>
-    <MudItem xs="12" md="3">
+<MudGrid Spacing="2" Justify="Justify.Center">
+    <MudItem xs="12" sm="6" md="2">
         <MudText Typo="Typo.h6" Class="mb-3">
             Playoffs
         </MudText>
@@ -32,7 +32,7 @@
         }
 
     </MudItem>
-    <MudItem xs="12" md="3">
+    <MudItem xs="12" sm="6" md="2">
         <MudText Typo="Typo.h6" Class="mb-3">
             Round of 16
         </MudText>
@@ -53,7 +53,7 @@
             }
         }
     </MudItem>
-    <MudItem xs="12" md="3">
+    <MudItem xs="12" sm="6" md="2">
         <MudText Typo="Typo.h6" Class="mb-3">
             Quarter Finals
         </MudText>
@@ -74,7 +74,7 @@
             }
         }
     </MudItem>
-    <MudItem xs="12" md="3">
+    <MudItem xs="12" sm="6" md="2">
         <MudText Typo="Typo.h6" Class="mb-3">
             Semi Finals
         </MudText>
@@ -94,7 +94,7 @@
             }
         }
     </MudItem>
-    <MudItem xs="12" md="3">
+    <MudItem xs="12" sm="6" md="2">
         <MudText Typo="Typo.h6" Class="mb-3">
             Finals
         </MudText>
@@ -121,13 +121,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _allMatches = await MatchesClient.GetMatches() ?? new List<MatchResponse>();
-        if (_allMatches is null ||_allMatches.Count == 0)
-        {
-            Snackbar.Add("No matches found.", Severity.Warning);
+        var allMatches = await MatchesClient.GetMatches();
+        if (allMatches is null)
             return;
-        }
-        playoffs = _allMatches.Where(m => m.Round == Round.RoundOf16 && m.Competition == Competition.EuropaLeague).ToList();
+
+        _allMatches = allMatches.ToList();
+
+        playoffs = _allMatches.Where(m => m.Round == Round.PlayOffs && m.Competition == Competition.EuropaLeague).ToList();
         roundOf16matches = _allMatches.Where(m => m.Round == Round.RoundOf16 && m.Competition == Competition.EuropaLeague).ToList();
         quartermatches = _allMatches.Where(m => m.Round == Round.Quarter && m.Competition == Competition.EuropaLeague).ToList();
         semifinals = _allMatches.Where(m => m.Round == Round.SemiFinals && m.Competition == Competition.EuropaLeague).ToList();

@@ -70,30 +70,31 @@ public class MatchRepository : IMatchRepository
 
     public async Task<bool> AddMatch(Match m) // ToDo: change it to IResult with more details
     {
+        if (m.HomeTeamName == m.AwayTeamName)
+            return false;
+
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
         var homeTeamExists = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.HomeTeamName });
         var awayTeamExists = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { Name = m.AwayTeamName });
         if (homeTeamExists is null || awayTeamExists is null)
-        {
             return false;
-        }
-        else
-        {
-            var team1MatchInRound = await connection.QuerySingleOrDefaultAsync<Match>(@"SELECT * FROM Matches WHERE Round = @Round AND (HomeTeamName = @Team OR AwayTeamName = @Team)", new { Round = m.Round, Team = m.HomeTeamName });
-            var team2MatchInRound = await connection.QuerySingleOrDefaultAsync<Match>(@"SELECT * FROM Matches WHERE Round = @Round AND (HomeTeamName = @Team OR AwayTeamName = @Team)", new { Round = m.Round, Team = m.AwayTeamName, });
-            if (team1MatchInRound is not null || team2MatchInRound is not null)
-            {
-                return false;
-            }
-        }
 
-        string createQuery;
-        if (m.AwayTeamGoals != null && m.HomeTeamGoals != null)
-            createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
-        else
-            createQuery = @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName);SELECT last_insert_rowid()";
+        var existingMatchInRound = await connection.QuerySingleOrDefaultAsync<Match>(
+            @"SELECT * FROM Matches WHERE Round = @Round AND (HomeTeamName = @HomeTeamName OR AwayTeamName = @HomeTeamName OR HomeTeamName = @AwayTeamName OR AwayTeamName = @AwayTeamName)",
+            new
+            {
+                m.Round,
+                m.HomeTeamName,
+                m.AwayTeamName
+            });
+
+        if (existingMatchInRound is not null)
+            return false;
+
+        string createQuery =
+            @"INSERT INTO Matches (HomeTeamGoals, AwayTeamGoals, Round, HomeTeamName, Competition, AwayTeamName) VALUES (@HomeTeamGoals, @AwayTeamGoals, @Round, @HomeTeamName, @Competition, @AwayTeamName); SELECT last_insert_rowid()";
 
         var insertMatchesResult = await connection.ExecuteScalarAsync<long>(createQuery, new
         {
@@ -106,9 +107,8 @@ public class MatchRepository : IMatchRepository
         });
 
         if (insertMatchesResult <= 0)
-        {
             return false;
-        }
+
 
         // ToDo: update also teams' countries points
         return true;
