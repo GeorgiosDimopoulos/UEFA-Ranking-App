@@ -2,6 +2,7 @@
 @using API.Data.DTOs
 @using Core.Models
 @using UI.Clients
+@using UI.Components.Pages.Components
 
 @inject MatchesClient MatchesClient
 @inject IDialogService DialogService
@@ -18,16 +19,29 @@
         {
             @foreach (var match in playoffs)
             {
-                <MudPaper Class="pa-3 mb-4">
-                    <div class="d-flex justify-space-between">
-                        <span>@match.HomeTeamName </span>
-                        <span>@GetHomeGoals(match)</span>
-                        <span>@GetHomeGoals(match)</span>
-                    </div>
-                    <div class="d-flex justify-space-between mt-2">
-                        <span>@match.AwayTeamName</span>
-                        <span>@GetAwayGoals(match)</span>
-                        <span>@GetAwayGoals(match)</span>
+                var returnMatch = playoffs.FirstOrDefault(m => m.HomeTeamName == match.AwayTeamName && m.AwayTeamName == match.HomeTeamName);
+                <MudPaper Class="pa-3 mb-4" Style="min-width:220px;">
+                    <div style="display:grid; grid-template-columns: 1fr 35px 35px; gap:12px; align-items:center;">
+                        <div>
+                            <div>@match.HomeTeamName </div>
+                            <div class="mt-2">@match.AwayTeamName</div>
+                        </div>
+                        <div class="text-center">
+                            <div>@GetHomeGoals(match)</div>
+                            <div class="mt-2">@GetAwayGoals(match)</div>
+                            @if (match is not null)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" OnClick="() => EditMatch(match)" />
+                            }
+                        </div>
+                        <div class="text-center">
+                            <div>@GetHomeGoals(returnMatch)</div>
+                            <div class="mt-2">@GetAwayGoals(returnMatch)</div>
+                            @if (returnMatch is not null)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" OnClick="() => EditMatch(returnMatch)" />
+                            }
+                        </div>
                     </div>
                 </MudPaper>
             }
@@ -42,16 +56,16 @@
         {
             @foreach (var match in roundOf16matches)
             {
-                var secondLeg = roundOf16matches.FirstOrDefault(m => m.HomeTeamName == match.AwayTeamName && m.AwayTeamName == match.HomeTeamName);
+                var returnMatch = roundOf16matches.FirstOrDefault(m => m.HomeTeamName == match.AwayTeamName && m.AwayTeamName == match.HomeTeamName);
                 <MudPaper Class="pa-3 mb-4">
                     <div class="d-flex justify-space-between">
                         <span>@match.HomeTeamName </span>
                         <span>@GetHomeGoals(match)</span>
-                        <span>@GetHomeGoals(secondLeg)</span>
+                        <span>@GetHomeGoals(returnMatch)</span>
                     </div>
                     <div class="d-flex justify-space-between mt-2">
                         <span>@match.AwayTeamName</span>
-                        <span>@GetAwayGoals(secondLeg)</span>
+                        <span>@GetAwayGoals(returnMatch)</span>
                         <span>@GetAwayGoals(match)</span>
                     </div>
                 </MudPaper>
@@ -66,14 +80,17 @@
         {
             @foreach (var match in quartermatches)
             {
+                var returnMatch = quartermatches.FirstOrDefault(m => m.HomeTeamName == match.AwayTeamName && m.AwayTeamName == match.HomeTeamName);
                 <MudPaper Class="pa-3 mb-4">
                     <div class="d-flex justify-space-between">
                         <span>@match.HomeTeamName </span>
                         <span>@GetHomeGoals(match)</span>
+                        <span>@GetHomeGoals(returnMatch)</span>
                     </div>
                     <div class="d-flex justify-space-between mt-2">
                         <span>@match.AwayTeamName</span>
                         <span>@GetAwayGoals(match)</span>
+                        <span>@GetAwayGoals(returnMatch)</span>
                     </div>
                 </MudPaper>
             }
@@ -86,14 +103,17 @@
         @if (semifinals is not null)
         { @foreach (var match in semifinals)
             {
+                var returnMatch = semifinals.FirstOrDefault(m => m.HomeTeamName == match.AwayTeamName && m.AwayTeamName == match.HomeTeamName);
                 <MudPaper Class="pa-3 mb-4">
                     <div class="d-flex justify-space-between">
                         <span>@match.HomeTeamName </span>
                         <span>@GetHomeGoals(match)</span>
+                        <span>@GetHomeGoals(returnMatch)</span>
                     </div>
                     <div class="d-flex justify-space-between mt-2">
                         <span>@match.AwayTeamName</span>
                         <span>@GetAwayGoals(match)</span>
+                        <span>@GetAwayGoals(returnMatch)</span>
                     </div>
                 </MudPaper>
             }
@@ -157,5 +177,28 @@
             return "-";
 
         return matchResponse.Score.Split('-')[1].Trim();
+    }
+
+    private async Task EditMatch(MatchResponse match)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Match"] = match
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<MatchDetails>("Edit Match", parameters, options);
+
+        var result = dialog.Result;
+
+        // if (result != null && !result!.Canceled && result.Data is MatchResponse mr)
+        if (result is not null && result.IsCompletedSuccessfully && result.IsCanceled == false)
+        {
+        }
     }
 }
