@@ -1,10 +1,8 @@
 ﻿using API.Data.DTOs;
 using Core.Interfaces;
 using Core.Models;
-using Core.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Runtime.InteropServices;
 
 namespace API.Controllers;
 
@@ -190,6 +188,26 @@ public class MatchesController : ControllerBase
         if (!result)
             return StatusCode(500, "Could not insert match into DB");
 
+        var hasReturnMatch = HasReturnMatch((Round)match.Round);
+        if (hasReturnMatch)
+        {
+            var returnMatch = new Match
+            {
+                HomeTeamName = match.AwayTeamName,
+                AwayTeamName = match.HomeTeamName,
+                Round = (int)matchRequest.Round,
+                Competition = matchRequest.Competition
+            };
+
+            var returnMatchAlreadyExists = allRoundMatches.Any(m => m.HomeTeamName == returnMatch.HomeTeamName && m.AwayTeamName == returnMatch.AwayTeamName);
+            if (returnMatchAlreadyExists)
+                return BadRequest("Return match between these teams for this round already exists.");
+
+            var returnMatchResult = await matchRepository.AddMatch(returnMatch);
+            if (!returnMatchResult)
+                return StatusCode(500, "Could not insert the return match into DB");
+        }
+
         if (hasScore)
         {
             var result2 = await teamRepository.UpdateTeamPoints(match.HomeTeamName);
@@ -237,14 +255,6 @@ public class MatchesController : ControllerBase
             _logger.LogInformation("Match updated successfully. Now lets update the teams with points");
         }
 
-        var result2 = await teamRepository.UpdateTeamPoints(match.HomeTeamName);
-        var result3 = await teamRepository.UpdateTeamPoints(match.AwayTeamName);
-        if (!result2 || !result3)
-        {
-            _logger.LogError("Failed to update the match's teams points to the database.");
-            return StatusCode(500, "A problem happened while handling your request.");
-        }
-
         return Ok("Match and its teams updated successfully.");
     }
 
@@ -270,5 +280,10 @@ public class MatchesController : ControllerBase
         }
 
         return (homeGoals, awayGoals);
+    }
+
+    private static bool HasReturnMatch(Round round)
+    {
+        return round is Round.PlayOffs or Round.RoundOf16 or Round.Quarter or Round.SemiFinals;
     }
 }

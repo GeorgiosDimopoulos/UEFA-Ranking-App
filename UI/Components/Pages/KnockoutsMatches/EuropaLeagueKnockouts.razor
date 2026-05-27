@@ -20,9 +20,13 @@
             @foreach (var match in playoffs)
             {
                 var returnMatch = playoffs.FirstOrDefault(m => m.HomeTeamName == match.AwayTeamName && m.AwayTeamName == match.HomeTeamName);
+                if (returnMatch is not null && match.Id > returnMatch.Id)
+                {
+                    continue;
+                }
                 <MudPaper Class="pa-3 mb-4" Style="min-width:220px;">
-                    <div style="display:grid; grid-template-columns: 1fr 35px 35px; gap:12px; align-items:center;">
-                        <div>
+                    <div style="display:grid; grid-template-columns: 1fr 35px 35px; gap:12px; align-items:start;">
+                        <div class="text-center">
                             <div>@match.HomeTeamName </div>
                             <div class="mt-2">@match.AwayTeamName</div>
                         </div>
@@ -57,16 +61,32 @@
             @foreach (var match in roundOf16matches)
             {
                 var returnMatch = roundOf16matches.FirstOrDefault(m => m.HomeTeamName == match.AwayTeamName && m.AwayTeamName == match.HomeTeamName);
-                <MudPaper Class="pa-3 mb-4">
-                    <div class="d-flex justify-space-between">
-                        <span>@match.HomeTeamName </span>
-                        <span>@GetHomeGoals(match)</span>
-                        <span>@GetHomeGoals(returnMatch)</span>
-                    </div>
-                    <div class="d-flex justify-space-between mt-2">
-                        <span>@match.AwayTeamName</span>
-                        <span>@GetAwayGoals(returnMatch)</span>
-                        <span>@GetAwayGoals(match)</span>
+                if (returnMatch is not null && match.Id > returnMatch.Id)
+                {
+                    continue;
+                }
+                <MudPaper Class="pa-3 mb-4" Style="min-width:220px;">
+                    <div style="display:grid; grid-template-columns: 1fr 35px 35px; gap:12px; align-items:start;">
+                        <div class="text-center">
+                            <div>@match.HomeTeamName </div>
+                            <div class="mt-2">@match.AwayTeamName</div>
+                        </div>
+                        <div class="text-center">
+                            <div>@GetHomeGoals(match)</div>
+                            <div class="mt-2">@GetAwayGoals(match)</div>
+                            @if (match is not null)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" OnClick="() => EditMatch(match)" />
+                            }
+                        </div>
+                        <div class="text-center">
+                            <div>@GetHomeGoals(returnMatch)</div>
+                            <div class="mt-2">@GetAwayGoals(returnMatch)</div>
+                            @if (returnMatch is not null)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" OnClick="() => EditMatch(returnMatch)" />
+                            }
+                        </div>
                     </div>
                 </MudPaper>
             }
