@@ -183,6 +183,10 @@
                 <span>@finalmatch?.AwayTeamName</span>
                 <span>@GetAwayGoals(finalmatch)</span>
             </div>
+            @if (finalmatch is not null)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Small" OnClick="() => EditMatch(finalmatch)" />
+            }
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -193,7 +197,7 @@
     private List<MatchResponse> roundOf16matches = [];
     private List<MatchResponse> quartermatches = [];
     private List<MatchResponse> semifinals = [];
-    private MatchResponse finalmatch = new();
+    private MatchResponse? finalmatch = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -207,7 +211,7 @@
         roundOf16matches = _allMatches.Where(m => m.Round == Round.RoundOf16 && m.Competition == Competition.EuropaLeague).ToList();
         quartermatches = _allMatches.Where(m => m.Round == Round.Quarter && m.Competition == Competition.EuropaLeague).ToList();
         semifinals = _allMatches.Where(m => m.Round == Round.SemiFinals && m.Competition == Competition.EuropaLeague).ToList();
-        finalmatch = _allMatches.FirstOrDefault(m => m.Round == Round.Final && m.Competition == Competition.EuropaLeague) ?? new();
+        finalmatch = _allMatches.FirstOrDefault(m => m.Round == Round.Final && m.Competition == Competition.EuropaLeague);
     }
 
     private string GetHomeGoals(MatchResponse? matchResponse)
