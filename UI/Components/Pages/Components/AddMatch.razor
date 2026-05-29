@@ -63,6 +63,27 @@
         var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
         _teams = data.OrderBy(c => c.Position).ToList();
         _competitionTeams = _teams;
+
+        matchRes.Competition = GetCompetitionFromUrl();
+    }
+
+    private Competition GetCompetitionFromUrl()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (uri.AbsolutePath.Contains("champion", StringComparison.OrdinalIgnoreCase))
+        {
+            return Competition.ChampionsLeague;
+        }
+        else if (uri.AbsolutePath.Contains("europa", StringComparison.OrdinalIgnoreCase))
+        {
+            return Competition.EuropaLeague;
+        }
+        else if (uri.AbsolutePath.Contains("conference", StringComparison.OrdinalIgnoreCase))
+        {
+            return Competition.ConferenceLeague;
+        }
+
+        return Competition.None;
     }
 
     private void OnCompetitionChanged(Competition comp)
@@ -81,9 +102,7 @@
         if ((!string.IsNullOrEmpty(matchRes.AwayTeamName)) && (!string.IsNullOrEmpty(homeTeam)))
         {
             if (AreTeamsSame(matchRes.AwayTeamName, homeTeam) || IsCompetitionNone(matchRes.Competition) || AreTeamsCountriesSame(homeTeam, matchReq.AwayTeamName, matchReq.Round))
-            {
                 return;
-            }
         }
 
         matchRes.HomeTeamName = homeTeam;
