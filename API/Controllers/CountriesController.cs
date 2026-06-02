@@ -105,7 +105,7 @@ public class CountriesController : ControllerBase
     {
         var country = new Country { Name = c.Name, TotalPoints = c.TotalPoints };
         var result = await countryRepository.AddCountry(country);
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning($"Could not add country {c.Name}");
             return BadRequest();
@@ -120,7 +120,7 @@ public class CountriesController : ControllerBase
     {
         var country = new Country { Name = c.Name, TotalPoints = c.TotalPoints };
         var result = await countryRepository.UpdateCountry(country, id);
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning($"Could not update country {c.Name}");
             return NotFound();
@@ -143,7 +143,7 @@ public class CountriesController : ControllerBase
         }
 
         var result = await countryRepository.DeleteCountry(id);
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning($"Could not delete country with id {id}");
             return NotFound();
@@ -180,7 +180,7 @@ public class CountriesController : ControllerBase
     public async Task<ActionResult> DeleteCountries()
     {
         var result = await countryRepository.DeleteCountries();
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning("Could not delete countries");
             return NotFound();
@@ -215,7 +215,14 @@ public class CountriesController : ControllerBase
 
         var countryNewTotalPoints = country.TotalPoints + countryNewPoints;
 
-        return await countryRepository.UpdateCountry(country, countryNewTotalPoints);
+        var result = await countryRepository.UpdateCountry(country, countryNewTotalPoints);
+        if (result.IsFailed)
+        {
+            _logger.LogWarning($"Could not update country with id {countryId}");
+            return false;
+        }
+
+        return true;
     }
 
     private async Task<int> CalculateCountryMatch(Country country, int matchResult)

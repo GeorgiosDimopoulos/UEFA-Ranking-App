@@ -185,7 +185,7 @@ public class MatchesController : ControllerBase
         }
 
         var result = await matchRepository.AddMatch(match);
-        if (!result)
+        if (result.IsFailed)
             return StatusCode(500, "Could not insert match into DB");
 
         var hasReturnMatch = HasReturnMatch((Round)match.Round);
@@ -204,7 +204,7 @@ public class MatchesController : ControllerBase
                 return BadRequest("Return match between these teams for this round already exists.");
 
             var returnMatchResult = await matchRepository.AddMatch(returnMatch);
-            if (!returnMatchResult)
+            if (returnMatchResult.IsFailed)
                 return StatusCode(500, "Could not insert the return match into DB");
         }
 
@@ -212,7 +212,7 @@ public class MatchesController : ControllerBase
         {
             var result2 = await teamRepository.UpdateTeamPoints(match.HomeTeamName);
             var result3 = await teamRepository.UpdateTeamPoints(match.AwayTeamName);
-            if (!result3 || !result2)
+            if (result3.IsFailed || result2.IsFailed)
                 return StatusCode(500, "Could not update match's teams points");
         }
 
@@ -245,7 +245,7 @@ public class MatchesController : ControllerBase
         };
 
         var result = await matchRepository.UpdateMatch(match, match.Id);
-        if (!result)
+        if (result.IsFailed)
         {
             _logger.LogError("Failed to update the match to the database.");
             return StatusCode(500, "A problem happened while handling your request.");
@@ -263,7 +263,7 @@ public class MatchesController : ControllerBase
     public async Task<IActionResult> DeleteMatch(int id)
     {
         var result = await matchRepository.DeleteMatch(id);
-        if (!result)
+        if (result.IsFailed)
         {
             _logger.LogError("Failed to delete the match in the database.");
             return StatusCode(500, "A problem happened while handling your request.");

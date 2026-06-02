@@ -1,5 +1,6 @@
 ﻿using Core.QueryParameters;
 using Dapper;
+using FluentResults;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
@@ -85,72 +86,142 @@ public class CountryRepository : ICountryRepository
         return country;
     }
 
-    public async Task<bool> AddCountry(Country c)
+    public async Task<Result<Country>> AddCountry(Country c)
     {
-        using var connection = new SqliteConnection(_connectionString);
-        await connection.OpenAsync();
+        if (string.IsNullOrWhiteSpace(c.Name))
+            return Result.Fail<Country>("Country name is required.");
 
-        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
-        if (availableCountry != null)
+        try
         {
-            return false;
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { c.Name });
+            if (availableCountry != null)
+            {
+                return Result.Fail<Country>("A country with the same name already exists.");
+            }
+
+            var newCountry = new Country
+            {
+                Name = c.Name,
+                TotalPoints = c.TotalPoints,
+            };
+
+            var insertCountryQuery = @"INSERT INTO Countries (Name, TotalPoints) VALUES (@Name, @TotalPoints)";
+            var result = await connection.ExecuteAsync(insertCountryQuery, new { newCountry.Name, newCountry.TotalPoints });
+
+            if (result <= 0)
+            {
+                return Result.Fail<Country>("Failed to add the country.");
+            }
+
+            return Result.Ok(newCountry).WithSuccess("Country added successfully.");
         }
-
-        var newCountry = new Country
+        catch (Exception ex)
         {
-            Name = c.Name,
-            TotalPoints = c.TotalPoints,
-        };
-
-        var insertCountryQuery = @"INSERT INTO Countries (Name, TotalPoints) VALUES (@Name, @TotalPoints)";
-        var result = await connection.ExecuteAsync(insertCountryQuery, new { newCountry.Name, newCountry.TotalPoints });
-
-        return result > 0;
+            return Result.Fail<Country>($"An error occurred while adding the country: {ex.Message}");
+        }
     }
 
-    public async Task<bool> UpdateCountry(Country c, int id)
+    public async Task<Result> UpdateCountry(Country c, int id)
     {
-        using var connection = new SqliteConnection(_connectionString);
+        if (string.IsNullOrWhiteSpace(c.Name))
+            return Result.Fail("Country name is required.");
+        if (id <= 0)
+            return Result.Fail("Country Id must be greater than 0.");
 
-        var updateCountryQuery = "UPDATE Countries SET Name = @Name, TotalPoints = @TotalPoints WHERE Id = @Id";
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            var updateCountryQuery = "UPDATE Countries SET Name = @Name, TotalPoints = @TotalPoints WHERE Id = @Id";
 
-        var result = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, Id = id, c.TotalPoints });
-        return result > 0;
+            var rowsAffected = await connection.ExecuteAsync(updateCountryQuery, new { c.Name, Id = id, c.TotalPoints });
+            if (rowsAffected <= 0)
+            {
+                return Result.Fail($"No country found with id {id} to update.");
+            }
+
+            return Result.Ok().WithSuccess($"Country with id {id} was updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"An error occurred while updating the country: {ex.Message}");
+        }
     }
 
-    public async Task<bool> DeleteCountry(int id)
+    public async Task<Result> DeleteCountry(int id)
     {
-        using var connection = new SqliteConnection(_connectionString);
+        if (id <= 0)
+            return Result.Fail("Country Id must be greater than 0.");
 
-        var deleteTeamsQuery = "DELETE FROM Teams WHERE CountryId = @CountryId";
-        await connection.ExecuteAsync(deleteTeamsQuery, new { CountryId = id });
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
 
-        var deleteCountryQuery = "DELETE FROM Countries WHERE Id = @Id";
+            await connection.ExecuteAsync( "DELETE FROM Teams WHERE CountryId = @CountryId", new { CountryId = id }, transaction);
+            
+            var rowsAffected = await connection.ExecuteAsync("DELETE FROM Countries WHERE Id = @Id", new { Id = id }, transaction);
+            if (rowsAffected <= 0)
+            {
+                await transaction.RollbackAsync();
+                return Result.Fail($"No country found with id {id} to delete.");
+            }
 
-        var result = await connection.ExecuteAsync(deleteCountryQuery, new { Id = id });
-        return result > 0;
+            transaction.Commit();
+            return Result.Ok().WithSuccess($"Country with id {id} was deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"An error occurred while deleting the country: {ex.Message}");
+        }
     }
 
-    public async Task<bool> DeleteCountryByName(string name)
+    public async Task<Result> DeleteCountryByName(string name)
     {
-        using var connection = new SqliteConnection(_connectionString);
+        if (string.IsNullOrWhiteSpace(name))
+            return Result.Fail("Country name must not be empty or whitespace.");
 
-        var countryId = "SELECT Id FROM Countries WHERE Id = @Id";
-        var deleteTeamsQuery = "DELETE FROM Teams WHERE CountryId = @countryId";
-        await connection.ExecuteAsync(deleteTeamsQuery, new { CountryId = countryId });
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
 
-        var deleteCountryQuery = "DELETE FROM Countries WHERE Id = @countryId";
+            var countryId = await connection.QuerySingleOrDefaultAsync<int?>("SELECT Id FROM Countries WHERE Name = @Name", new { Name = name.Trim() }, transaction);
+            if (countryId is null)
+            {
+                transaction.Rollback();
+                return Result.Fail($"No country found with name '{name}' to delete.");
+            }
 
-        var result = await connection.ExecuteAsync(deleteCountryQuery, new { Id = name });
-        return result > 0;
+            await connection.ExecuteAsync("DELETE FROM Teams WHERE CountryId = @CountryId", new { CountryId = countryId.Value }, transaction);
+            var rowsAffected = await connection.ExecuteAsync( "DELETE FROM Countries WHERE Id = @Id", new { Id = countryId.Value },transaction);
+
+            if (rowsAffected <= 0)
+            {
+                transaction.Rollback();
+                return Result.Fail($"Country with name '{name}' was found, but could not be deleted.");
+            }
+            
+            transaction.Commit();
+            return Result.Ok().WithSuccess($"Country with name {name} was deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"An error occurred while deleting the country: {ex.Message}");
+        }
     }
 
-    public async Task<bool> DeleteCountries()
+    public async Task<Result> DeleteCountries()
     {
-        using var connection = new SqliteConnection(_connectionString);
+        throw new NotImplementedException("This method is not implemented yet. Deleting all countries is not allowed to prevent accidental data loss.");
+        //using var connection = new SqliteConnection(_connectionString);
 
-        var result = await connection.ExecuteAsync("DELETE FROM Teams");
-        var result2 = await connection.ExecuteAsync("DELETE FROM Countries");
-        return result > 0 && result2 > 0;
+        //var result = await connection.ExecuteAsync("DELETE FROM Teams");
+        //var result2 = await connection.ExecuteAsync("DELETE FROM Countries");
+        //return result > 0 && result2 > 0;
     }
 }

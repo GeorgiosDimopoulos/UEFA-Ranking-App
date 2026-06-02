@@ -224,7 +224,7 @@ public class TeamsController : ControllerBase
             Competition = t.Competition
         };
         var result = await teamRepository.AddTeam(team, t.CountryName);
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning($"Could not add team {t.Name}");
             return BadRequest();
@@ -238,7 +238,7 @@ public class TeamsController : ControllerBase
     {
         var team = new Team { Competition = t.Competition, IsActive = t.IsActive, Name = t.Name };
         var result = await teamRepository.UpdateTeam(team, name);
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning($"Could not update team {t.Name}");
             return NotFound();
@@ -252,7 +252,7 @@ public class TeamsController : ControllerBase
     public async Task<ActionResult> DeleteTeam(int id)
     {
         var result = await teamRepository.DeleteTeam(id);
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning($"Could not delete team with id {id}");
             return NotFound();
@@ -266,7 +266,7 @@ public class TeamsController : ControllerBase
     public async Task<ActionResult> DeleteTeamByName(string n)
     {
         var result = await teamRepository.DeleteTeamByName(n);
-        if (result == false)
+        if (result.IsFailed)
         {
             _logger.LogWarning($"Could not delete country with name {n}");
             return NotFound();

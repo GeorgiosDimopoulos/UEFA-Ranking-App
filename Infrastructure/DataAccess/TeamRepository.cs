@@ -1,7 +1,10 @@
 ﻿using Core.QueryParameters;
 using Dapper;
+using FluentResults;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.DataAccess;
 
@@ -86,19 +89,28 @@ public class TeamRepository : ITeamRepository
         return countryTeams.ToList()!;
     }
 
-    public async Task<bool> AddTeam(Team team, string country)
+    public async Task<Result<Team>> AddTeam(Team team, string country)
     {
+        if (string.IsNullOrWhiteSpace(team.Name))
+            return Result.Fail<Team>("Team name is required.");
+
+        if (string.IsNullOrWhiteSpace(country))
+            return Result.Fail<Team>("Country name is required.");
+
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
         var teamExists = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { team.Name });
         if (teamExists != null)
         {
-            return false;
+            return Result.Fail<Team>("Team with the same name already exists.");
         }
 
-        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = country })
-            ?? throw new InvalidOperationException("Country does not exist in the database.");
+        var availableCountry = await connection.QuerySingleOrDefaultAsync<Country>("SELECT * FROM Countries WHERE Name = @Name", new { Name = country });
+        if (availableCountry is null)
+        {
+            return Result.Fail<Team>($"Country '{country}' does not exist in the database.");
+        }
 
         var newTeam = new Team
         {
@@ -112,21 +124,43 @@ public class TeamRepository : ITeamRepository
         var insertTeamQuery = "INSERT INTO Teams (Name, IsActive, CountryId, Competition) VALUES (@Name, @IsActive, @CountryId, @Competition)";
         var result = await connection.ExecuteAsync(insertTeamQuery, newTeam);
 
-        return result > 0;
+        if (result > 0)
+        {
+            var insertedTeam = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Name = @Name", new { team.Name });
+            return Result.Ok(insertedTeam!);
+        }
+        else
+        {
+            return Result.Fail<Team>("Failed to add the team to the database.");
+        }
     }
 
-    public async Task<bool> UpdateTeam(Team t, string currentName)
+    public async Task<Result> UpdateTeam(Team t, string currentName)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
+        using var transaction = connection.BeginTransaction();
+
         const string query = "UPDATE Teams SET Name = @NewName, IsActive = @IsActive, Competition = @Competition WHERE Name = @CurrentName";
         var result = await connection.ExecuteAsync(query, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Competition });
 
-        return result > 0;
+        if (result > 0)
+        {
+            await connection.ExecuteAsync("UPDATE Matches SET HomeTeamName = @NewName WHERE HomeTeamName = @CurrentName", new { CurrentName = currentName, NewName = t.Name }, transaction);
+            await connection.ExecuteAsync("UPDATE Matches SET AwayTeamName = @NewName WHERE AwayTeamName = @CurrentName", new { CurrentName = currentName, NewName = t.Name }, transaction);
+
+            transaction.Commit();
+            return Result.Ok();
+        }
+        else
+        {
+            transaction.Rollback();
+            return Result.Fail("Failed to update the team in the database.");
+        }
     }
 
-    public async Task<bool> UpdateTeamPoints(string team)
+    public async Task<Result> UpdateTeamPoints(string team)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
@@ -166,14 +200,14 @@ public class TeamRepository : ITeamRepository
         if (updateHomeTeamPointsResult == 0)
         {
             await transaction.RollbackAsync();
-            return false;
+            return Result.Fail("Failed to update the team's points in the database.");
         }
 
         await transaction.CommitAsync();
-        return true;
+        return Result.Ok().WithSuccess($"Team points updated successfully. New points: {teamPoints}");
     }
 
-    public async Task<bool> DeleteTeam(int id)
+    public async Task<Result> DeleteTeam(int id)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
@@ -181,10 +215,17 @@ public class TeamRepository : ITeamRepository
         var deleteQuery = "DELETE FROM Teams WHERE Id = @Id";
         var result = await connection.ExecuteAsync(deleteQuery, new { Id = id });
 
-        return result > 0;
+        if (result > 0)
+        {
+            return Result.Ok();
+        }
+        else
+        {
+            return Result.Fail("Failed to delete the team from the database.");
+        }
     }
 
-    public async Task<bool> DeleteTeamByName(string Name)
+    public async Task<Result> DeleteTeamByName(string Name)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
@@ -192,6 +233,13 @@ public class TeamRepository : ITeamRepository
         var deleteQuery = "DELETE FROM Teams WHERE Name = @Name";
         var result = await connection.ExecuteAsync(deleteQuery, new { Name });
 
-        return result > 0;
+        if (result > 0)
+        {
+            return Result.Ok();
+        }
+        else
+        {
+            return Result.Fail("Failed to delete the team from the database.");
+        }
     }
 }
