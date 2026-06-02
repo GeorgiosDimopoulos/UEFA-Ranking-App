@@ -1,20 +1,22 @@
-﻿@page "/championsTable"
+﻿@page "/{CompetitionType}Table"
 
 @using API.Data.DTOs
 @using Core.Models
+@using Humanizer
 @using UI.Clients
 @using UI.Components.Pages.Components
-<h3>Champions League Phase</h3>
-
-<PageTitle>Champions League Phase</PageTitle>
 
 @inject TeamsClient TeamsClient
 @inject IDialogService DialogService
 
+<h3>@CompetitionType.Humanize(LetterCasing.Title) League Phase</h3>
+
+<PageTitle>@CompetitionType.Humanize(LetterCasing.Title) League Phase</PageTitle>
+
 <div class="col-12">
     @if (_teams == null)
     {
-        <p><em>Loading Champions League teams...</em></p>
+        <p><em>Loading @CompetitionType.Humanize(LetterCasing.Title) League teams...</em></p>
     }
     else
     {
@@ -30,7 +32,7 @@
             <HeaderContent>
                 <MudTh Style="font-weight:bold; width:40px">Position</MudTh>
                 <MudTh Style="font-weight:bold;">Name</MudTh>
-                <MudTh Style="font-weight:bold;">Country</MudTh>                
+                <MudTh Style="font-weight:bold;">Country</MudTh>
                 <MudTh Style="font-weight:bold;">+ -</MudTh>
                 <MudTh Style="font-weight:bold;">Played</MudTh>
                 <MudTh Style="font-weight:bold;">Points</MudTh>
@@ -60,20 +62,31 @@
 @code
 {
     private string _searchText = string.Empty;
-    
+    private Competition selectedCompetition = default!;
+
     private TeamResponse[]? _allTeams = default!;
     private TeamResponse[]? _teams = default!;
-    private CountryResponse[]? _countries = default!;
+    
+    [Parameter] public string CompetitionType { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        await Task.Delay(500);
-        var data = await TeamsClient.GetTeamsByCompetition(Competition.ChampionsLeague) ?? Array.Empty<TeamResponse>();
+        // await Task.Delay(500);
+
+        selectedCompetition = CompetitionType.ToLowerInvariant() switch
+        {
+            "champions" => Competition.ChampionsLeague,
+            "europa" => Competition.EuropaLeague,
+            "conference" => Competition.ConferenceLeague,
+            _ => Competition.None
+        };
+
+        var data = await TeamsClient.GetTeamsByCompetition(selectedCompetition) ?? Array.Empty<TeamResponse>();
         _allTeams = data.Where(t => t.IsActive)
                      .OrderByDescending(t => t.Points)
-                     .ThenByDescending(t =>t.GoalsDifference)
+                     .ThenByDescending(t => t.GoalsDifference)
                      .ToArray();
-		_teams = _allTeams;
+        _teams = _allTeams;
     }
 
     private async Task OpenTeamAsync(TeamResponse t)

@@ -217,8 +217,8 @@
             "conference" => Competition.ConferenceLeague,
             _ => Competition.None
         };
+        
         _allMatches = allMatches.ToList();
-
         playoffs = _allMatches.Where(m => m.Round == Round.PlayOffs && m.Competition == selectedCompetition).ToList();
         roundOf16matches = _allMatches.Where(m => m.Round == Round.RoundOf16 && m.Competition == selectedCompetition).ToList();
         quartermatches = _allMatches.Where(m => m.Round == Round.Quarter && m.Competition == selectedCompetition).ToList();
