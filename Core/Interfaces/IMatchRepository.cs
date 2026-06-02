@@ -1,4 +1,6 @@
-﻿namespace Core.Interfaces;
+﻿using FluentResults;
+
+namespace Core.Interfaces;
 
 public interface IMatchRepository
 {
@@ -10,7 +12,7 @@ public interface IMatchRepository
 
     public Task<List<Match>> GetMatchesByCompetition(Competition c); 
 
-    public Task<bool> AddMatch(Match match);
-    public Task<bool> UpdateMatch(Match t, int id);
-    public Task<bool> DeleteMatch(int id);
+    public Task<Result<Match>> AddMatch(Match match);
+    public Task<Result> UpdateMatch(Match t, int id);
+    public Task<Result> DeleteMatch(int id);
 }
