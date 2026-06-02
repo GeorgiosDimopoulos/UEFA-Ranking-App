@@ -3,8 +3,6 @@ using Dapper;
 using FluentResults;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
-using System.Net.Http.Headers;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.DataAccess;
 
@@ -137,13 +135,19 @@ public class TeamRepository : ITeamRepository
 
     public async Task<Result> UpdateTeam(Team t, string currentName)
     {
+        if (string.IsNullOrWhiteSpace(currentName))
+            return Result.Fail("Current team name is required.");
+
+        if (string.IsNullOrWhiteSpace(t.Name))
+            return Result.Fail("New team name is required.");
+
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
 
         using var transaction = connection.BeginTransaction();
 
         const string query = "UPDATE Teams SET Name = @NewName, IsActive = @IsActive, Competition = @Competition WHERE Name = @CurrentName";
-        var result = await connection.ExecuteAsync(query, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Competition });
+        var result = await connection.ExecuteAsync(query, new { CurrentName = currentName, NewName = t.Name, t.IsActive, t.Competition }, transaction);
 
         if (result > 0)
         {
@@ -209,26 +213,56 @@ public class TeamRepository : ITeamRepository
 
     public async Task<Result> DeleteTeam(int id)
     {
+        if (id <= 0)
+            return Result.Fail("Invalid team ID.");
+
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
+
+        var team = await connection.QuerySingleOrDefaultAsync<Team>("SELECT * FROM Teams WHERE Id = @Id", new { Id = id });
+        if (team is null)
+        {
+            return Result.Fail($"No team found with id {id}.");
+        }
+
+        var matchCount = await connection.ExecuteScalarAsync<int>("""        
+            SELECT COUNT(*)
+            FROM Matches
+            WHERE HomeTeamName = @Name OR AwayTeamName = @Name
+            """, new { team.Name });
+
+        if (matchCount > 0)
+            return Result.Fail($"Team cannot be deleted because it has existing matches.");
 
         var deleteQuery = "DELETE FROM Teams WHERE Id = @Id";
         var result = await connection.ExecuteAsync(deleteQuery, new { Id = id });
 
         if (result > 0)
         {
-            return Result.Ok();
+            return Result.Ok().WithSuccess($"Team '{team.Name}' was deleted successfully.");
         }
         else
         {
-            return Result.Fail("Failed to delete the team from the database.");
+            return Result.Fail($"No team found with id {id} to delete.");
         }
     }
 
     public async Task<Result> DeleteTeamByName(string Name)
     {
+        if (string.IsNullOrWhiteSpace(Name))
+            return Result.Fail("Team name is required.");
+
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
+
+        var matchCount = await connection.ExecuteScalarAsync<int>("""        
+            SELECT COUNT(*)
+            FROM Matches
+            WHERE HomeTeamName = @Name OR AwayTeamName = @Name
+            """, new { Name = Name });
+
+        if (matchCount > 0)
+            return Result.Fail($"Team cannot be deleted because it has existing matches.");
 
         var deleteQuery = "DELETE FROM Teams WHERE Name = @Name";
         var result = await connection.ExecuteAsync(deleteQuery, new { Name });
