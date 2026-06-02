@@ -17,161 +17,178 @@
 <PageTitle>Countries Statistics</PageTitle>
 
 <div>
-	@if (_countries is null)
-	{
-		<p><em>Loading countries...</em></p>
-	}
-	else
-	{
+    @if (_countries is null)
+    {
+        <p><em>Loading countries...</em></p>
+    }
+    else
+    {
 
-		<MudTextField @bind-Value="_searchText" 
-					  Label="Search teams..."
-					  Variant="Variant.Outlined"
-					  Adornment="Adornment.End"
-					  AdornmentIcon="@Icons.Material.Filled.Search"
-					  Immediate="true"
-					  OnAdornmentClick="@OnSearchClick"
-					  OnKeyDown="@OnEnterPressed"/>
-		<MudTable Items="_countries">
-			<HeaderContent>
-				<MudTh Style="font-weight:bold;">Name</MudTh>
-				@* <MudTh Style="font-weight:bold;">Initial Position</MudTh> *@
-				<MudTh Style="font-weight:bold;">Active Position</MudTh>
-				<MudTh Style="font-weight:bold;">Points</MudTh>
-				<MudTh Style="font-weight:bold;">Initial Teams</MudTh>
-				<MudTh Style="font-weight:bold;">Active Teams</MudTh>
-				<MudTh Style="font-weight:bold;">Show Teams</MudTh>
-				<MudTh Style="font-weight:bold;">Delete</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				<MudTd>
-					<MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenCountryAsync(context)">
-						<span style="text-decoration:underline"> @context.Name.Humanize(LetterCasing.Title) </span>
-					</MudButton>
-				</MudTd>
-				@* <MudTd>@context.Position</MudTd> *@
-				<MudTd>@context.Position</MudTd>
-				<MudTd>@context.TotalPoints</MudTd>
-				<MudTd>@context.NumberOfInitialTeams</MudTd>
-				<MudTd>@context.NumberOfActiveTeams</MudTd>
-				<MudTd>
-					<MudSwitch T="bool"
-							   Checked="@expanded.Contains(context.Name)"
-							   Color="Color.Primary"
-							   CheckedChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
-				</MudTd>
-				<MudTd Style="vertical-align: middle;">
-					<MudButton Color="Color.Error"
-							   Variant="Variant.Filled"
-							   Style="min-width:40px; width:40px; height:30px; display:flex;"
-							   OnClick="@(() => DeleteCountryAsync(context))">
-						<MudIcon Icon="@Icons.Material.Filled.Delete" />
-					</MudButton>
-				</MudTd>
-			</RowTemplate>
-			<ChildRowContent>
-				@if (expanded.Contains(context.Name) && _countryTeams != null)
-				{
-					foreach (var team in _countryTeams)
-					{
-						<MudTd Colspan="3">@team.Name, has @team.Points points, is in @team.Competition cup, in @team.Position place. </MudTd>
-					}
-				}
-			</ChildRowContent>
-		</MudTable>
-	}
+        <MudTextField @bind-Value="_searchText"
+                      Label="Search teams..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Immediate="true"
+                      OnAdornmentClick="@OnSearchClick"
+                      OnKeyDown="@OnEnterPressed" />
+        <MudTable Items="_countries">
+            <HeaderContent>
+                <MudTh Style="font-weight:bold;">Name</MudTh>
+                @* <MudTh Style="font-weight:bold;">Initial Position</MudTh> *@
+                <MudTh Style="font-weight:bold;">Active Position</MudTh>
+                <MudTh Style="font-weight:bold;">Points</MudTh>
+                <MudTh Style="font-weight:bold;">Initial Teams</MudTh>
+                <MudTh Style="font-weight:bold;">Active Teams</MudTh>
+                <MudTh Style="font-weight:bold;">Show Teams</MudTh>
+                <MudTh Style="font-weight:bold;">Delete</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Class="p-0" OnClick="() => OpenCountryAsync(context)">
+                        <span style="text-decoration:underline"> @context.Name.Humanize(LetterCasing.Title) </span>
+                    </MudButton>
+                </MudTd>
+                @* <MudTd>@context.Position</MudTd> *@
+                <MudTd>@context.Position</MudTd>
+                <MudTd>@context.TotalPoints</MudTd>
+                <MudTd>@context.NumberOfInitialTeams</MudTd>
+                <MudTd>@context.NumberOfActiveTeams</MudTd>
+                <MudTd>
+                    <MudSwitch T="bool"
+                               Checked="@expanded.Contains(context.Name)"
+                               Color="Color.Primary"
+                               CheckedChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
+                </MudTd>
+                <MudTd Style="vertical-align: middle;">
+                    <MudButton Color="Color.Error"
+                               Variant="Variant.Filled"
+                               Style="min-width:40px; width:40px; height:30px; display:flex;"
+                               OnClick="@(() => DeleteCountryAsync(context))">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+                @if (expanded.Contains(context.Name) && _countryTeams.TryGetValue(context.Name, out var teams))
+                {
+                    <MudTr>
+                        <MudTd ColSpan="7">
+                            <MudTable Items="teams" Dense="true" Hover="true" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh Style="font-weight:bold;">Team Name</MudTh>
+                                    <MudTh Style="font-weight:bold;">Points</MudTh>
+                                    <MudTh Style="font-weight:bold;">Competition</MudTh>
+                                    <MudTh Style="font-weight:bold;">Position</MudTh>
+                                </HeaderContent>
+                                <RowTemplate Context="team">
+                                    <MudTd>@team.Name</MudTd>
+                                    <MudTd>@team.Points</MudTd>
+                                    <MudTd>@team.Competition</MudTd>
+                                    <MudTd>@team.Position</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudTd>
+                    </MudTr>
+                }
+            </ChildRowContent>
+        </MudTable>
+    }
 </div>
 
 @code {
-	private string _searchText = string.Empty;
+    private string _searchText = string.Empty;
 
-	private CountryResponse[]? _allCountries = default!;
-	private CountryResponse[]? _countries = default!;
-	private TeamResponse[]? _countryTeams = default!;
+    private CountryResponse[]? _allCountries = default!;
+    private CountryResponse[]? _countries = default!;
+    private Dictionary<string, TeamResponse[]> _countryTeams = new();
 
-	private HashSet<string> expanded = new();
+    private HashSet<string> expanded = new();
 
-	protected override async Task OnInitializedAsync()
-	{
-		await Task.Delay(500);
-		_allCountries = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
-		_countries = _allCountries.OrderBy(c => c.Position).ToArray();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        _allCountries = await CountriesClient.GetCountries() ?? Array.Empty<CountryResponse>();
+        _countries = _allCountries.OrderBy(c => c.Position).ToArray();
+    }
 
-	private void OnSearchClick()
-	{
-		if (string.IsNullOrEmpty(_searchText))
-		{
-			_countries = _allCountries;
-		}
-		else
-		{
-			_countries = _allCountries?.Where(t => t.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToArray();
-		}
-		StateHasChanged();
-	}
+    private void OnSearchClick()
+    {
+        if (string.IsNullOrEmpty(_searchText))
+        {
+            _countries = _allCountries;
+        }
+        else
+        {
+            _countries = _allCountries?.Where(t => t.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToArray();
+        }
+        StateHasChanged();
+    }
 
-	private void OnEnterPressed(KeyboardEventArgs e)
-	{
-		if (e.Key == "Enter")
-		{
-			OnSearchClick();
-		}
-	}
+    private void OnEnterPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            OnSearchClick();
+        }
+    }
 
-	private async Task ToggleTeamId(string countryName, bool isChecked)
-	{
-		if (isChecked)
-		{
-			_countryTeams = await TeamsClient.GetTeamsByCountry(countryName);
-			expanded.Add(countryName);
-		}
-		else
-		{
-			expanded.Remove(countryName);
-		}
-		StateHasChanged();
-	}
+    private async Task ToggleTeamId(string countryName, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!_countryTeams.ContainsKey(countryName))
+            {
+                _countryTeams[countryName] = await TeamsClient.GetTeamsByCountry(countryName) ?? Array.Empty<TeamResponse>();
+                expanded.Add(countryName);
+            }
+            else
+            {
+                expanded.Remove(countryName);
+            }
+            StateHasChanged();
+        }
+    }
 
-	private async Task OpenCountryAsync(CountryResponse country)
-	{
-		var parameters = new DialogParameters
-		{
-			["Country"] = country
-		};
-
-		var dialogRef = await DialogService.ShowAsync<CountryDetails>(country.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
-		var result = await dialogRef.Result;
-		if (result != null && !result!.Canceled && result.Data is CountryResponse updatedCountry)
-		{
-			StateHasChanged();
-		}
-	}
-
-	private async Task DeleteCountryAsync(CountryResponse country)
-	{
-		var countryReq = new CountryRequest
-		{
-			Name = country.Name,
-            Id = country.Id,
-			TotalPoints = country.TotalPoints			
+    private async Task OpenCountryAsync(CountryResponse country)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Country"] = country
         };
 
-		bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the country: {countryReq.Name} and its teams?", yesText: "Delete", cancelText: "Cancel");
-		if (confirmation== true)
-		{
-			var result = await CountriesClient.DeleteCountry(countryReq.Id);
-			if (result != null && result == true)
-			{
-				Snackbar.Add($"Country {countryReq.Name} deleted successfully.", Severity.Success);
-			}
-			else
-			{
-				Snackbar.Add($"Failed to delete country {countryReq.Name}.", Severity.Error);
-            }
-		}
+        var dialogRef = await DialogService.ShowAsync<CountryDetails>(country.Name, parameters, new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
+        var result = await dialogRef.Result;
+        if (result != null && !result!.Canceled && result.Data is CountryResponse updatedCountry)
+        {
+            StateHasChanged();
+        }
+    }
 
-		// StateHasChanged();
+    private async Task DeleteCountryAsync(CountryResponse country)
+    {
+        var countryReq = new CountryRequest
+        {
+            Name = country.Name,
+            Id = country.Id,
+            TotalPoints = country.TotalPoints
+        };
+
+        bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the country: {countryReq.Name} and its teams?", yesText: "Delete", cancelText: "Cancel");
+        if (confirmation == true)
+        {
+            var result = await CountriesClient.DeleteCountry(countryReq.Id);
+            if (result != null && result == true)
+            {
+                Snackbar.Add($"Country {countryReq.Name} deleted successfully.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Failed to delete country {countryReq.Name}.", Severity.Error);
+            }
+        }
+
+        // StateHasChanged();
         await OnInitializedAsync();
-	}
+    }
 }
