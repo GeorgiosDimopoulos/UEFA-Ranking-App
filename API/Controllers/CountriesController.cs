@@ -133,7 +133,7 @@ public class CountriesController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Countries – Delete" })]
     public async Task<ActionResult> DeleteCountry(int id)
     {
-        var countryTeams = await teamRepository.GetTeamsByCountryId(id, null);
+        var countryTeams = await teamRepository.GetTeamsByCountryId(id, null!);
         if (countryTeams.Count > 0)
         {
             foreach (var team in countryTeams)
@@ -220,7 +220,7 @@ public class CountriesController : ControllerBase
 
     private async Task<int> CalculateCountryMatch(Country country, int matchResult)
     {
-        int countryInitialTeams = (await teamRepository.GetTeamsByCountryId(country.Id, null)).Count;
+        int countryInitialTeams = (await teamRepository.GetTeamsByCountryId(country.Id, null!)).Count;
         switch (matchResult)
         {
             case 1: // win

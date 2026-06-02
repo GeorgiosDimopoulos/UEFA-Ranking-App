@@ -1,7 +1,8 @@
-﻿@page "/championsKnockouts"
+﻿@page "/{CompetitionType}Knockouts"
 
 @using API.Data.DTOs
 @using Core.Models
+@using Humanizer
 @using UI.Clients
 @using UI.Components.Pages.Components
 
@@ -9,7 +10,7 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<h3>ChampionsLeague Knockouts</h3>
+<h3>@CompetitionType.Humanize(LetterCasing.Title) Knockouts</h3>
 
 <MudGrid Spacing="4" Justify="Justify.SpaceEvenly">
     <MudItem Class="d-flex flex-column align-start">
@@ -199,20 +200,30 @@
     private List<MatchResponse> quartermatches = [];
     private List<MatchResponse> semifinals = [];
     private MatchResponse? finalmatch = default!;
+    private Competition selectedCompetition = default!;
 
-    protected override async Task OnInitializedAsync()
+    [Parameter] public string CompetitionType { get; set; } = default!;
+
+    protected override async Task OnParametersSetAsync()
     {
         var allMatches = await MatchesClient.GetMatches();
         if (allMatches is null)
             return;
 
+        selectedCompetition = CompetitionType.ToLowerInvariant() switch
+        {
+            "champions" => Competition.ChampionsLeague,
+            "europa" => Competition.EuropaLeague,
+            "conference" => Competition.ConferenceLeague,
+            _ => Competition.None
+        };
         _allMatches = allMatches.ToList();
 
-        playoffs = _allMatches.Where(m => m.Round == Round.PlayOffs && m.Competition == Competition.ChampionsLeague).ToList();
-        roundOf16matches = _allMatches.Where(m => m.Round == Round.RoundOf16 && m.Competition == Competition.ChampionsLeague).ToList();
-        quartermatches = _allMatches.Where(m => m.Round == Round.Quarter && m.Competition == Competition.ChampionsLeague).ToList();
-        semifinals = _allMatches.Where(m => m.Round == Round.SemiFinals && m.Competition == Competition.ChampionsLeague).ToList();
-        finalmatch = _allMatches.FirstOrDefault(m => m.Round == Round.Final && m.Competition == Competition.ChampionsLeague);
+        playoffs = _allMatches.Where(m => m.Round == Round.PlayOffs && m.Competition == selectedCompetition).ToList();
+        roundOf16matches = _allMatches.Where(m => m.Round == Round.RoundOf16 && m.Competition == selectedCompetition).ToList();
+        quartermatches = _allMatches.Where(m => m.Round == Round.Quarter && m.Competition == selectedCompetition).ToList();
+        semifinals = _allMatches.Where(m => m.Round == Round.SemiFinals && m.Competition == selectedCompetition).ToList();
+        finalmatch = _allMatches.FirstOrDefault(m => m.Round == Round.Final && m.Competition == selectedCompetition);
     }
 
     private string GetHomeGoals(MatchResponse? matchResponse)
