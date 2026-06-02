@@ -22,6 +22,12 @@
                     <MudSelectItem Value="@c">@c.ToString().Humanize(LetterCasing.Title)</MudSelectItem>
                 }
             </MudSelect>
+            <MudSelect T="Round" Label="Round" @bind-Value="matchRes.Round">
+                @foreach (var r in Enum.GetValues<Round>())
+                {
+                    <MudSelectItem Value="@r">@r.ToString()</MudSelectItem>
+                }
+            </MudSelect>
             <MudSelect T="string" Label="Home Team" Value="matchRes.HomeTeamName" ValueChanged="OnHomeTeamChanged">
                 @foreach (var tr in _competitionTeams)
                 {
@@ -32,12 +38,6 @@
                 @foreach (var tr in _competitionTeams)
                 {
                     <MudSelectItem Value="@tr.Name">@tr.Name.Humanize(LetterCasing.Title)</MudSelectItem>
-                }
-            </MudSelect>
-            <MudSelect T="Round" Label="Round" @bind-Value="matchRes.Round">
-                @foreach (var r in Enum.GetValues<Round>())
-                {
-                    <MudSelectItem Value="@r">@r.ToString()</MudSelectItem>
                 }
             </MudSelect>
         </MudForm>
@@ -62,9 +62,12 @@
     {
         var data = await TeamsClient.GetTeams() ?? Array.Empty<TeamResponse>();
         _teams = data.OrderBy(c => c.Position).ToList();
-        _competitionTeams = _teams;
 
         matchRes.Competition = GetCompetitionFromUrl();
+
+        _competitionTeams = _teams.Where(t => t.Competition == matchRes.Competition)
+                                  .OrderBy(t => t.Name)
+                                  .ToList();
     }
 
     private Competition GetCompetitionFromUrl()
