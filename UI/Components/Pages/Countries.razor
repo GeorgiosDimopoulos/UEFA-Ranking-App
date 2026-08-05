@@ -58,7 +58,7 @@
                     <MudSwitch T="bool"
                                Checked="@expanded.Contains(context.Name)"
                                Color="Color.Primary"
-                               CheckedChanged="@(async (bool v) => await ToggleTeamId(context.Name, v))" />
+                               CheckedChanged="@((bool v) => ToggleTeamId(context.Name, v))" />
                 </MudTd>
                 <MudTd Style="vertical-align: middle;">
                     <MudButton Color="Color.Error"
@@ -135,6 +135,8 @@
 
     private async Task ToggleTeamId(string countryName, bool isChecked)
     {
+        Snackbar.Add($"Toggle clicked: {countryName} - {isChecked}", Severity.Info);
+
         if (isChecked)
         {
             if (!_countryTeams.ContainsKey(countryName))

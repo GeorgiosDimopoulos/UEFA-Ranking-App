@@ -71,8 +71,6 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // await Task.Delay(500);
-
         selectedCompetition = CompetitionType.ToLowerInvariant() switch
         {
             "champions" => Competition.ChampionsLeague,
@@ -81,11 +79,12 @@
             _ => Competition.None
         };
 
-        var data = await TeamsClient.GetTeamsByCompetition(selectedCompetition) ?? Array.Empty<TeamResponse>();
-        _allTeams = data.Where(t => t.IsActive)
-                     .OrderByDescending(t => t.Points)
-                     .ThenByDescending(t => t.GoalsDifference)
-                     .ToArray();
+        _allTeams = (await TeamsClient.GetLeaguePhaseTableByCompetition(selectedCompetition) ?? Enumerable.Empty<TeamResponse>())
+                        .Where(t => t.IsActive)
+                        .OrderByDescending(t => t.Points)
+                        .ThenByDescending(t => t.GoalsDifference)
+                        .ToArray();
+
         _teams = _allTeams;
     }
 
