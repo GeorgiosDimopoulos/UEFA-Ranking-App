@@ -15,7 +15,7 @@
 <MudPaper Class="pa-6" Elevation="0" Style="background-color:#f9fafb;">
     <MudContainer Class="py-6 statistics-page">
         <MudText Typo="Typo.h5" Class="mb-4">Greek Teams Stats:</MudText>
-        <MudGrid GutterSize="2" Class="mt-2">
+        <MudGrid Spacing="2" Class="mt-2">
             <MudItem xs="12" sm="6">
                 <MudPaper Elevation="4" Square="false" Class="pa-4"
                           Style="background-color:white; border-radius:10px; height:100%; border:1px solid #000;">
@@ -25,7 +25,7 @@
                                OnClick="() => OpenTeamMatchesAsync(aek)">
                         @aek?.Name.Humanize(LetterCasing.Title)
                     </MudButton>
-                    <MudDivider Class="my-2" DividerType="DividerType.Middle" Color="Color.Primary" />
+                    <MudDivider DividerType="DividerType.Middle" Class="my-2 mud-border-primary" />
                     <MudText Class="mb-1">Position: @aek?.Position</MudText>
                     <MudText Class="mb-1">Matches: @aek?.MatchesPlayed</MudText>
                     <MudText Class="mb-1">Points: @aek?.Points</MudText>
@@ -41,7 +41,7 @@
                                OnClick="() => OpenTeamMatchesAsync(osfp)">
                         @osfp?.Name.Humanize(LetterCasing.Title)
                     </MudButton>
-                    <MudDivider Class="my-2" DividerType="DividerType.Middle" Color="Color.Primary" />
+                    <MudDivider DividerType="DividerType.Middle" Class="my-2 mud-border-primary" />
                     <MudText Class="mb-1">Position: @osfp?.Position</MudText>
                     <MudText Class="mb-1">Matches: @osfp?.MatchesPlayed</MudText>
                     <MudText Class="mb-1">Points: @osfp?.Points</MudText>
@@ -57,7 +57,7 @@
                                OnClick="() => OpenTeamMatchesAsync(pao)">
                         @pao?.Name.Humanize(LetterCasing.Title)
                     </MudButton>				
-                    <MudDivider Class="my-2" DividerType="DividerType.Middle" Color="Color.Primary" />
+                    <MudDivider DividerType="DividerType.Middle" Class="my-2 mud-border-primary" />
                     <MudText Class="mb-1">Position:@pao?.Position</MudText>
                     <MudText Class="mb-1">Matches:@pao?.MatchesPlayed</MudText>
                     <MudText Class="mb-1">Points:@pao?.Points</MudText>
@@ -73,7 +73,7 @@
                                OnClick="() => OpenTeamMatchesAsync(paok)">
                         @paok?.Name.Humanize(LetterCasing.Title)
                     </MudButton>				
-                    <MudDivider Class="my-2" DividerType="DividerType.Middle" Color="Color.Primary" />
+                    <MudDivider DividerType="DividerType.Middle" Class="my-2 mud-border-primary" />
                     <MudText Class="mb-1">Position: @paok?.Position</MudText>
                     <MudText Class="mb-1">Matches: @paok?.MatchesPlayed</MudText>
                     <MudText Class="mb-1">Points: @paok?.Points</MudText>

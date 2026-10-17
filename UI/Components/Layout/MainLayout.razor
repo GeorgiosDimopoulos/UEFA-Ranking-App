@@ -3,7 +3,6 @@
 @inherits LayoutComponentBase
 
 @inject IDialogService DialogService
-@inject NavigationManager Nav
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -22,9 +21,9 @@
                      StartIcon="@Icons.Material.Filled.Add"
                      Dense="true"
                      Class="m-2">
-                <MudMenuItem StartIcon="@Icons.Material.Filled.Add" OnClick="AddCountry">Add Country</MudMenuItem>
-                <MudMenuItem StartIcon="@Icons.Material.Filled.Add" OnClick="AddTeam">Add Team</MudMenuItem>
-                <MudMenuItem StartIcon="@Icons.Material.Filled.Add" OnClick="AddMatch">Add Match</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Flag" OnClick="AddCountry">Add Country</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Shield" OnClick="AddTeam">Add Team</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.SportsSoccer" OnClick="AddMatch">Add Match</MudMenuItem>
             </MudMenu>
         </div>
         <article class="content px-4">
@@ -40,18 +39,11 @@
 </div>
 
 @code {
-    int _idx;
-    void OnTabChanged(int i)
-    {
-        var routes = new[] { "schedule", "countries", "teams", "statistics" };
-        Nav.NavigateTo(routes[i]);
-    }
-
     private async Task AddCountry()
     {
         var dialogRef = await DialogService.ShowAsync<AddCountry>("Add Country", new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
         var result = await dialogRef.Result;
-        if (result != null && !result!.Canceled && result.Data is CountryResponse updatedCountry)
+        if (result != null && !result!.Canceled && result.Data is CountryResponse)
         {
             // Countries.Add(newCountry);
             StateHasChanged();
@@ -62,7 +54,7 @@
     {
         var dialogRef = await DialogService.ShowAsync<AddTeam>("Add Team", new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
         var result = await dialogRef.Result;
-        if (result != null && !result!.Canceled && result.Data is TeamResponse updatedCountry)
+        if (result != null && !result!.Canceled && result.Data is TeamResponse)
         {
             StateHasChanged();
         }
@@ -72,7 +64,7 @@
     {
         var dialogRef = await DialogService.ShowAsync<AddMatch>("Add Match", new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });
         var result = await dialogRef.Result;
-        if (result != null && !result!.Canceled && result.Data is MatchResponse updatedCountry)
+        if (result != null && !result!.Canceled && result.Data is MatchResponse)
         {
             StateHasChanged();
         }

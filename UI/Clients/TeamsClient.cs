@@ -73,7 +73,7 @@ public class TeamsClient
 
     public async Task<List<TeamResponse>> GetLeaguePhaseTableByCompetition(Competition competition)
     {
-        return await _httpClient.GetFromJsonAsync<List<TeamResponse>>($"api/teams/leaguePhaseTable?competition={competition}");
+        return await _httpClient.GetFromJsonAsync<List<TeamResponse>>($"api/teams/leaguePhaseTable?competition={competition}") ?? [];
     }
 
     public async Task<bool?> AddTeam(TeamRequest tr)

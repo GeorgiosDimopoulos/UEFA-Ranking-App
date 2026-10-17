@@ -40,7 +40,7 @@
 
 	private async Task Save(MouseEventArgs _)
 	{
-		await addForm.Validate();
+		await addForm.ValidateAsync();
 		if (!addForm.IsValid)
 			return;
 

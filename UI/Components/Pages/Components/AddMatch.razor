@@ -149,13 +149,13 @@
             switch (matchReq.Competition)
             {
                 case Competition.ChampionsLeague:
-                    Navigation.NavigateTo("/championsSchedule", forceLoad: true);
+                    Navigation.NavigateTo("/champions/matches", forceLoad: true);
                     break;
                 case Competition.EuropaLeague:
-                    Navigation.NavigateTo("/europaSchedule", forceLoad: true);
+                    Navigation.NavigateTo("/europa/matches", forceLoad: true);
                     break;
                 case Competition.ConferenceLeague:
-                    Navigation.NavigateTo("/conferenceSchedule", forceLoad: true);
+                    Navigation.NavigateTo("/conference/matches", forceLoad: true);
                     break;
                 default:
                     Navigation.NavigateTo("/");

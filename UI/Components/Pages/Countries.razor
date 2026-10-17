@@ -56,9 +56,9 @@
                 <MudTd>@context.NumberOfActiveTeams</MudTd>
                 <MudTd>
                     <MudSwitch T="bool"
-                               Checked="@expanded.Contains(context.Name)"
+                               Value="@expanded.Contains(context.Name)"
                                Color="Color.Primary"
-                               CheckedChanged="@((bool v) => ToggleTeamId(context.Name, v))" />
+                               ValueChanged="@((bool v) => ToggleTeamId(context.Name, v))" />
                 </MudTd>
                 <MudTd Style="vertical-align: middle;">
                     <MudButton Color="Color.Error"
@@ -73,7 +73,7 @@
                 @if (expanded.Contains(context.Name) && _countryTeams.TryGetValue(context.Name, out var teams))
                 {
                     <MudTr>
-                        <MudTd ColSpan="7">
+                        <MudTd colspan="7">
                             <MudTable Items="teams" Dense="true" Hover="true" Elevation="0">
                                 <HeaderContent>
                                     <MudTh Style="font-weight:bold;">Team Name</MudTh>
@@ -176,7 +176,7 @@
             TotalPoints = country.TotalPoints
         };
 
-        bool? confirmation = await DialogService.ShowMessageBoxAsync("Confirm Delete", $"Are you sure you want to delete the country: {countryReq.Name} and its teams?", yesText: "Delete", cancelText: "Cancel");
+        bool? confirmation = await DialogService.ShowMessageBoxAsync("Delete Country", $"Are you sure you want to delete the country '{countryReq.Name}' and all its teams? This action cannot be undone.", yesText: "Delete", cancelText: "Cancel");
         if (confirmation == true)
         {
             var result = await CountriesClient.DeleteCountry(countryReq.Id);

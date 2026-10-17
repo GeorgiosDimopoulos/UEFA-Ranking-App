@@ -1,4 +1,4 @@
-﻿@page "/{CompetitionType}Schedule"
+﻿@page "/{CompetitionType}/matches"
 
 @using API.Data.DTOs
 @using Core.Models
@@ -10,9 +10,9 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<h3>@CompetitionType.Humanize(LetterCasing.Title) League Phase</h3>
+<h3>@CompetitionType.Humanize(LetterCasing.Title) League Phase Matches</h3>
 
-<PageTitle>@CompetitionType.Humanize(LetterCasing.Title) League Phase</PageTitle>
+<PageTitle>@CompetitionType.Humanize(LetterCasing.Title) League Phase Matches</PageTitle>
 
 <div>
     @if (_allMatches is null)
@@ -124,7 +124,7 @@
 
     private async Task DeleteMatchAsync(MatchResponse m)
     {
-        bool? confirmation = await DialogService.ShowMessageBoxAsync("Confirm Delete", "Are you sure you want to delete the match?", yesText: "Delete", cancelText: "Cancel");
+        bool? confirmation = await DialogService.ShowMessageBoxAsync("Delete Match", "Are you sure you want to delete this match? This action cannot be undone.", yesText: "Delete", cancelText: "Cancel");
 
         if (confirmation == true)
         {

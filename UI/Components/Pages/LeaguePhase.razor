@@ -1,4 +1,4 @@
-﻿@page "/{CompetitionType}Table"
+﻿@page "/{CompetitionType}/table"
 
 @using API.Data.DTOs
 @using Core.Models
@@ -9,9 +9,9 @@
 @inject TeamsClient TeamsClient
 @inject IDialogService DialogService
 
-<h3>@CompetitionType.Humanize(LetterCasing.Title) League Phase</h3>
+<h3>@CompetitionType.Humanize(LetterCasing.Title) League Phase Table</h3>
 
-<PageTitle>@CompetitionType.Humanize(LetterCasing.Title) League Phase</PageTitle>
+<PageTitle>@CompetitionType.Humanize(LetterCasing.Title) League Phase Table</PageTitle>
 
 <div class="col-12">
     @if (_teams == null)

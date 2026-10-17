@@ -8,19 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 
-builder.Services.AddHttpClient<CountriesClient>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-});
-builder.Services.AddHttpClient<TeamsClient>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-});
-
-builder.Services.AddHttpClient<MatchesClient>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-});
+var apiBaseUrl = new Uri(builder.Configuration["ApiBaseUrl"]!);
+builder.Services.AddHttpClient<CountriesClient>(client => client.BaseAddress = apiBaseUrl);
+builder.Services.AddHttpClient<TeamsClient>(client => client.BaseAddress = apiBaseUrl);
+builder.Services.AddHttpClient<MatchesClient>(client => client.BaseAddress = apiBaseUrl);
 
 var app = builder.Build();
 

@@ -105,13 +105,13 @@
             switch (matchReq.Competition)
             {
                 case Competition.ChampionsLeague:
-                    Navigation.NavigateTo("/championsSchedule", forceLoad: true);
+                    Navigation.NavigateTo("/champions/matches", forceLoad: true);
                     break;
                 case Competition.EuropaLeague:
-                    Navigation.NavigateTo("/europaSchedule", forceLoad: true);
+                    Navigation.NavigateTo("/europa/matches", forceLoad: true);
                     break;
                 case Competition.ConferenceLeague:
-                    Navigation.NavigateTo("/conferenceSchedule", forceLoad: true);
+                    Navigation.NavigateTo("/conference/matches", forceLoad: true);
                     break;
                 default:
                     Navigation.NavigateTo("/");
@@ -134,7 +134,7 @@
 
     private async Task Delete(MouseEventArgs args)
     {
-        var confirmed = await DialogService.ShowMessageBoxAsync("Confirm Delete", "Are you sure you want to delete this match?", yesText: "Delete", cancelText: "Cancel");
+        var confirmed = await DialogService.ShowMessageBoxAsync("Delete Match", "Are you sure you want to delete this match? This action cannot be undone.", yesText: "Delete", cancelText: "Cancel");
         if (confirmed == false)
             return;
 
