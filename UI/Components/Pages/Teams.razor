@@ -167,7 +167,7 @@
 			IsActive = t.IsActive
 		};
 
-		bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the team: {teamReq.Name}", yesText: "Delete", cancelText: "Cancel");
+		bool? confirmation = await DialogService.ShowMessageBoxAsync("Confirm Delete", $"Are you sure you want to delete the team: {teamReq.Name}", yesText: "Delete", cancelText: "Cancel");
 		if (confirmation == true)
 		{
 			var result = await TeamsClient.DeleteTeam(teamReq.Id);

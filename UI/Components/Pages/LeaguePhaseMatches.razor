@@ -124,7 +124,7 @@
 
     private async Task DeleteMatchAsync(MatchResponse m)
     {
-        bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", "Are you sure you want to delete the match?", yesText: "Delete", cancelText: "Cancel");
+        bool? confirmation = await DialogService.ShowMessageBoxAsync("Confirm Delete", "Are you sure you want to delete the match?", yesText: "Delete", cancelText: "Cancel");
 
         if (confirmation == true)
         {

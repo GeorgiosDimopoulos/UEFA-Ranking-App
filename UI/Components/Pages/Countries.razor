@@ -176,7 +176,7 @@
             TotalPoints = country.TotalPoints
         };
 
-        bool? confirmation = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure you want to delete the country: {countryReq.Name} and its teams?", yesText: "Delete", cancelText: "Cancel");
+        bool? confirmation = await DialogService.ShowMessageBoxAsync("Confirm Delete", $"Are you sure you want to delete the country: {countryReq.Name} and its teams?", yesText: "Delete", cancelText: "Cancel");
         if (confirmation == true)
         {
             var result = await CountriesClient.DeleteCountry(countryReq.Id);

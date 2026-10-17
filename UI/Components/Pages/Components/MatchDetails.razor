@@ -134,7 +134,7 @@
 
     private async Task Delete(MouseEventArgs args)
     {
-        var confirmed = await DialogService.ShowMessageBox("Confirm Delete", "Are you sure you want to delete this match?", yesText: "Delete", cancelText: "Cancel");
+        var confirmed = await DialogService.ShowMessageBoxAsync("Confirm Delete", "Are you sure you want to delete this match?", yesText: "Delete", cancelText: "Cancel");
         if (confirmed == false)
             return;
 
