@@ -138,7 +138,7 @@ public class TeamsController : ControllerBase
         Dictionary<int, List<Match>> matchesByTeams = [];
         if (tqueryParameters.IncludeMatches)
         {
-            foreach (var t in teams)
+            foreach (var t in teams.OfType<Team>())
             {
                 var matchByTeam = await matchRepository.GetMatchesByTeamName(t.Name);
                 matchesByTeams[t.Id] = matchByTeam;

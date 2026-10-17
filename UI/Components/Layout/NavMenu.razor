@@ -1,13 +1,4 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">UEFA Ranks 2025 - 2026</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" style="background: linear-gradient(180deg, #0d0b33 0%, #3f1a61 100%);" />
-
-<div class="nav-scrollable">
-    <nav class="nav flex-column">
+<MudNavMenu Class="pa-2">
         <MudNavGroup Title="Champions League"
                      Expanded="true"
                      IconColor="Color.Primary"
@@ -45,9 +36,6 @@
             <MudNavLink Icon="@Icons.Material.Filled.Flag" href="countries">Countries</MudNavLink>
             <MudNavLink Icon="@Icons.Material.Filled.Shield" href="teams">Teams</MudNavLink>
         </MudNavGroup>
-        <NavLink class="nav-link d-flex align-items-center" href="statistics">
-            <span class="bi bi-dice-5 me-3" aria-hidden="true"></span> My Guesses
-        </NavLink>
-    </nav>
-</div>
+        <MudNavLink Icon="@Icons.Material.Filled.Casino" Href="statistics">My Guesses</MudNavLink>
+</MudNavMenu>
 

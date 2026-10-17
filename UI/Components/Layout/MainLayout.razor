@@ -3,34 +3,50 @@
 @inherits LayoutComponentBase
 
 @inject IDialogService DialogService
+@inject IJSRuntime JS
 
-<MudThemeProvider />
+<MudThemeProvider Theme="_theme" @bind-IsDarkMode="_isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
 
-<div class="page">
-    <div class="sidebar">
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="ToggleDrawer"
+                       title="Toggle navigation" />
+        <MudText Typo="Typo.h6" Class="ml-2">UEFA Ranks 2025 - 2026</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+                       Color="Color.Inherit"
+                       OnClick="ToggleDarkMode"
+                       title="Toggle dark / light mode" />
+        <MudMenu Color="Color.Secondary"
+                 Variant="Variant.Filled"
+                 Label="Add"
+                 StartIcon="@Icons.Material.Filled.Add"
+                 Dense="true"
+                 Class="ml-2">
+            <MudMenuItem Icon="@Icons.Material.Filled.Flag" OnClick="AddCountry">Add Country</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Shield" OnClick="AddTeam">Add Team</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.SportsSoccer" OnClick="AddMatch">Add Match</MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen"
+               Variant="DrawerVariant.Responsive"
+               ClipMode="DrawerClipMode.Always"
+               Elevation="0"
+               Class="app-drawer">
         <NavMenu />
-    </div>    
-    <main>        
-        <div class="top-row px-4">
-            <MudMenu Color="Color.Primary"
-                     Variant="Variant.Filled"
-                     Label="Add"
-                     StartIcon="@Icons.Material.Filled.Add"
-                     Dense="true"
-                     Class="m-2">
-                <MudMenuItem Icon="@Icons.Material.Filled.Flag" OnClick="AddCountry">Add Country</MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Filled.Shield" OnClick="AddTeam">Add Team</MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Filled.SportsSoccer" OnClick="AddMatch">Add Match</MudMenuItem>
-            </MudMenu>
-        </div>
-        <article class="content px-4">
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="pt-4 pb-6">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -39,6 +55,53 @@
 </div>
 
 @code {
+    private const string DarkModeKey = "darkMode";
+    private bool _isDarkMode;
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+
+    private readonly MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#1e1f7a",
+            Secondary = "#4a148c",
+            AppbarBackground = "#1e1f7a"
+        },
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#7986cb",
+            Secondary = "#ba68c8"
+        }
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            var saved = await JS.InvokeAsync<string?>("localStorage.getItem", DarkModeKey);
+            if (saved is not null && bool.TryParse(saved, out var isDark) && isDark != _isDarkMode)
+            {
+                _isDarkMode = isDark;
+                StateHasChanged();
+            }
+        }
+        catch (JSException) { }
+    }
+
+    private async Task ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", DarkModeKey, _isDarkMode.ToString());
+        }
+        catch (JSException) { }
+    }
+
     private async Task AddCountry()
     {
         var dialogRef = await DialogService.ShowAsync<AddCountry>("Add Country", new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true });

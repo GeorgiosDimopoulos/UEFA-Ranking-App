@@ -66,7 +66,7 @@ public class CountriesController : ControllerBase
             Name = country.Name,
             Position = await GetCountryPosition(country.TotalPoints),
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
-            NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
+            NumberOfActiveTeams = countryTeams?.Count(t => t?.IsActive == true) ?? 0,
             TotalPoints = country.TotalPoints
         };
 
@@ -92,7 +92,7 @@ public class CountriesController : ControllerBase
             Name = country.Name,
             Position = await GetCountryPosition(country.TotalPoints),
             NumberOfInitialTeams = countryTeams?.Count() ?? 0,
-            NumberOfActiveTeams = countryTeams?.Where(t => t.IsActive).Count() ?? 0,
+            NumberOfActiveTeams = countryTeams?.Count(t => t?.IsActive == true) ?? 0,
             TotalPoints = country.TotalPoints
         };
 
