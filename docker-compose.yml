@@ -11,7 +11,7 @@ services:
     volumes:
       - ./API/Data:/app/Data
     environment:
-      ASPNETCORE_ENVIRONEMTN: Development
+      ASPNETCORE_ENVIRONMENT: Development
       ConnectionString_Default: "Data Source=/app/Data/uefa.db"
 
   ui:

@@ -8,7 +8,7 @@ public class MainPageTests
     private const string baseUrl = "https://localhost:5001/";
 
     [Fact]
-    public void MainPage_Loaded_WithSucces()
+    public void MainPage_Loaded_WithSuccess()
     {
         var driver = new ChromeDriver();
         driver.Navigate().GoToUrl(baseUrl);

@@ -21,7 +21,7 @@ This .NET project follows a layered architecture pattern:
 - **Infrastructure**
   - Database Access Repositories
   - Query Parameters for API
-  - Helpder and External Services
+  - Helper and External Services
 
 - **API**
   - REST API endpoints with Swagger format
