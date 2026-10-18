@@ -67,13 +67,19 @@ public class TeamsClient
 
     public async Task<TeamResponse?> GetTeamByName(string name)
     {
-        var t = await _httpClient.GetFromJsonAsync<TeamResponse?>($"api/teams/name/{Uri.EscapeDataString(name)}");
+        var t = await _httpClient.GetFromJsonAsync<TeamResponse?>($"api/teams/{Uri.EscapeDataString(name)}");
         return t;
     }
 
     public async Task<List<TeamResponse>> GetLeaguePhaseTableByCompetition(Competition competition)
     {
-        return await _httpClient.GetFromJsonAsync<List<TeamResponse>>($"api/teams/leaguePhaseTable?competition={competition}") ?? [];
+        var jsonOpts = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
+        return await _httpClient.GetFromJsonAsync<List<TeamResponse>>($"api/teams/leaguePhaseTable?competition={competition}", jsonOpts) ?? [];
     }
 
     public async Task<bool?> AddTeam(TeamRequest tr)

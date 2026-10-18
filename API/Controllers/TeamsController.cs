@@ -167,6 +167,32 @@ public class TeamsController : ControllerBase
         return Ok(teamsDto);
     }
 
+    [HttpGet("leaguePhaseTable")]
+    [SwaggerOperation(Tags = new[] { "Teams - Get" })]
+    public async Task<ActionResult<List<TeamResponse>>> GetLeaguePhaseTable([FromQuery] Competition competition)
+    {
+        if (competition == Competition.None)
+        {
+            _logger.LogWarning("League phase table requested without a valid competition.");
+            return BadRequest("A valid competition is required.");
+        }
+
+        var teams = await GetTeams(new TeamQueryParameters { Competition = competition });
+
+        var table = teams
+            .Where(t => t.IsActive)
+            .OrderByDescending(t => t.Points)
+            .ThenByDescending(t => t.GoalsDifference)
+            .ToList();
+
+        for (var i = 0; i < table.Count; i++)
+        {
+            table[i].Position = i + 1;
+        }
+
+        return Ok(table);
+    }
+
     [HttpGet("{name}")]
     [SwaggerOperation(Tags = new[] { "Teams - Get" })]
     public async Task<ActionResult<TeamResponse>> GetTeamByName(string name, [FromQuery] TeamQueryParameters tqueryParameters)
