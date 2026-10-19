@@ -201,46 +201,29 @@ public class CountriesController : ControllerBase
         return country.TotalPoints;
     }
 
-    [HttpPut("update-coefficient/{countryId}/{matchResult}")]
-    [SwaggerOperation(Tags = new[] { "Countries – Put" })]
-    public async Task<bool> UpdateCountryCoefficient(int countryId, int matchResult)
-    {
-        var country = await countryRepository.GetCountryById(countryId, null!);
-        if (country is null)
-        {
-            return false;
-        }
+    //[HttpPut("update-coefficient/{countryId}/{matchResult}")]
+    //[SwaggerOperation(Tags = new[] { "Countries – Put" })]
+    //public async Task<bool> UpdateCountryCoefficient(int countryId, int matchResult)
+    //{
+    //    var country = await countryRepository.GetCountryById(countryId, null!);
+    //    if (country is null)
+    //    {
+    //        return false;
+    //    }
 
-        int countryNewPoints = await CalculateCountryMatch(country, matchResult);
+    //    int countryNewPoints = await countryRepository.CalculateCountryMatch(country, matchResult);
 
-        var countryNewTotalPoints = country.TotalPoints + countryNewPoints;
+    //    var countryNewTotalPoints = country.TotalPoints + countryNewPoints;
 
-        var result = await countryRepository.UpdateCountry(country, countryNewTotalPoints);
-        if (result.IsFailed)
-        {
-            _logger.LogWarning($"Could not update country with id {countryId}");
-            return false;
-        }
+    //    var result = await countryRepository.UpdateCountry(country, countryNewTotalPoints);
+    //    if (result.IsFailed)
+    //    {
+    //        _logger.LogWarning($"Could not update country with id {countryId}");
+    //        return false;
+    //    }
 
-        return true;
-    }
-
-    private async Task<int> CalculateCountryMatch(Country country, int matchResult)
-    {
-        int countryInitialTeams = (await teamRepository.GetTeamsByCountryId(country.Id, null!)).Count;
-        switch (matchResult)
-        {
-            case 1: // win
-                return 2000 / countryInitialTeams;
-            case 2: // draw
-                return 1000 / countryInitialTeams;
-            case 3: // loss
-                return 0;
-            default:
-                break;
-        }
-        return 0;
-    }
+    //    return true;
+    //}
 
     private async Task<int> GetCountryPosition(int points)
     {

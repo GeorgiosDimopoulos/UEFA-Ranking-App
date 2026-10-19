@@ -208,7 +208,7 @@ public class TeamRepository : ITeamRepository
         }
 
         await transaction.CommitAsync();
-        return Result.Ok().WithSuccess($"Team points updated successfully. New points: {teamPoints}");
+        return Result.Ok().WithSuccess($"Team points and updated successfully. New points: {teamPoints}");
     }
 
     public async Task<Result> DeleteTeam(int id)

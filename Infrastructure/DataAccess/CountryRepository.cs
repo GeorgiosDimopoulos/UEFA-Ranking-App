@@ -3,6 +3,7 @@ using Dapper;
 using FluentResults;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using System.Transactions;
 
 namespace Infrastructure.DataAccess;
 
@@ -161,8 +162,8 @@ public class CountryRepository : ICountryRepository
             await connection.OpenAsync();
             using var transaction = connection.BeginTransaction();
 
-            await connection.ExecuteAsync( "DELETE FROM Teams WHERE CountryId = @CountryId", new { CountryId = id }, transaction);
-            
+            await connection.ExecuteAsync("DELETE FROM Teams WHERE CountryId = @CountryId", new { CountryId = id }, transaction);
+
             var rowsAffected = await connection.ExecuteAsync("DELETE FROM Countries WHERE Id = @Id", new { Id = id }, transaction);
             if (rowsAffected <= 0)
             {
@@ -170,7 +171,7 @@ public class CountryRepository : ICountryRepository
                 return Result.Fail($"No country found with id {id} to delete.");
             }
 
-            transaction.Commit();
+            await transaction.CommitAsync();
             return Result.Ok().WithSuccess($"Country with id {id} was deleted successfully.");
         }
         catch (Exception ex)
@@ -198,15 +199,15 @@ public class CountryRepository : ICountryRepository
             }
 
             await connection.ExecuteAsync("DELETE FROM Teams WHERE CountryId = @CountryId", new { CountryId = countryId.Value }, transaction);
-            var rowsAffected = await connection.ExecuteAsync( "DELETE FROM Countries WHERE Id = @Id", new { Id = countryId.Value },transaction);
+            var rowsAffected = await connection.ExecuteAsync("DELETE FROM Countries WHERE Id = @Id", new { Id = countryId.Value }, transaction);
 
             if (rowsAffected <= 0)
             {
                 transaction.Rollback();
                 return Result.Fail($"Country with name '{name}' was found, but could not be deleted.");
             }
-            
-            transaction.Commit();
+
+            await transaction.CommitAsync();
             return Result.Ok().WithSuccess($"Country with name {name} was deleted successfully.");
         }
         catch (Exception ex)
@@ -218,10 +219,38 @@ public class CountryRepository : ICountryRepository
     public async Task<Result> DeleteCountries()
     {
         throw new NotImplementedException("This method is not implemented yet. Deleting all countries is not allowed to prevent accidental data loss.");
-        //using var connection = new SqliteConnection(_connectionString);
+    }
 
-        //var result = await connection.ExecuteAsync("DELETE FROM Teams");
-        //var result2 = await connection.ExecuteAsync("DELETE FROM Countries");
-        //return result > 0 && result2 > 0;
+    public async Task<int> AddCountryPointsAfterMatch(string teamName, int res)
+    {
+        using var connection = new SqliteConnection(_connectionString);
+        await connection.OpenAsync();
+        using var transaction = connection.BeginTransaction();
+
+        var countryId = await connection.ExecuteScalarAsync<int?>("SELECT CountryId FROM Teams WHERE Name = @Name", new { Name = teamName }, transaction);
+        if (countryId is null)
+        {
+            await transaction.RollbackAsync();
+            return 0;
+        }
+
+        var countryInitialTeams = await connection.ExecuteScalarAsync<int?>("SELECT NumberOfInitialTeams FROM Countries WHERE Id = @CountryId", new { CountryId = countryId }, transaction);
+        if (countryInitialTeams is null or 0)
+        {
+            await transaction.RollbackAsync();
+            return 0;
+        }
+
+        var earnedCoefficientPoints = res / countryInitialTeams;
+        var countryUpdated = await connection.ExecuteAsync(@"UPDATE Countries SET TotalPoints = TotalPoints + @NewPoints WHERE Id = @CountryId",
+            new { NewPoints = earnedCoefficientPoints, CountryId = countryId }, transaction);
+        if (countryUpdated == 0)
+        {
+            await transaction.RollbackAsync();
+            return 0;
+        }
+
+        await transaction.CommitAsync();
+        return 1;
     }
 }

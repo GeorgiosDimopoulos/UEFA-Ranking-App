@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Diagnostics.Metrics;
 
 namespace API.Controllers;
 
@@ -14,16 +15,18 @@ public class MatchesController : ControllerBase
     private readonly ILogger<MatchesController> _logger;
     private readonly IMatchRepository matchRepository;
     private readonly ITeamRepository teamRepository;
+    private readonly ICountryRepository countryRepository;
 
-    public MatchesController(IMatchRepository matchRepository, ILogger<MatchesController> logger, ITeamRepository teamRepository)
+    public MatchesController(IMatchRepository matchRepository, ILogger<MatchesController> logger, ITeamRepository teamRepository, ICountryRepository countryRepository)
     {
         this.matchRepository = matchRepository;
         this.teamRepository = teamRepository;
+        this.countryRepository = countryRepository;
         _logger = logger;
     }
 
     [HttpGet()]
-    [SwaggerOperation(Tags = new[] { "Matches - Get" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Get" })]
     public async Task<List<MatchResponse>> GetAllMatches()
     {
         var matches = await matchRepository.GetAllMatches();
@@ -48,7 +51,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("by-country/")]
-    [SwaggerOperation(Tags = new[] { "Matches - Get" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Get" })]
     public async Task<List<MatchResponse>> GetMatchesByCountry(int countryId)
     {
         var matches = await matchRepository.GetMatchesByCountryId(countryId);
@@ -73,7 +76,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("by-team")]
-    [SwaggerOperation(Tags = new[] { "Matches - Get" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Get" })]
     public async Task<List<MatchResponse>> GetMatchesByTeamName(string n)
     {
         var matches = await matchRepository.GetMatchesByTeamName(n);
@@ -98,7 +101,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("by-round")]
-    [SwaggerOperation(Tags = new[] { "Matches - Get" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Get" })]
     public async Task<List<MatchResponse>> GetMatchesByRound(int round)
     {
         var matches = await matchRepository.GetMatchesByRound(round);
@@ -123,7 +126,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("by-competition")]
-    [SwaggerOperation(Tags = new[] { "Matches - Get" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Get" })]
     public async Task<List<MatchResponse>> GetMatchesByCompetition(Competition competition)
     {
         var matches = await matchRepository.GetMatchesByCompetition(competition);
@@ -148,7 +151,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpPost]
-    [SwaggerOperation(Tags = new[] { "Matches - Post" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Post" })]
     public async Task<IActionResult> AddMatch([FromQuery] MatchRequest matchRequest)
     {
         if (matchRequest is null)
@@ -214,13 +217,20 @@ public class MatchesController : ControllerBase
             var result3 = await teamRepository.UpdateTeamPoints(match.AwayTeamName);
             if (result3.IsFailed || result2.IsFailed)
                 return StatusCode(500, "Could not update match's teams points");
+
+            var resultHome = match.HomeTeamGoals > match.AwayTeamGoals ? 2000 : match.HomeTeamGoals == match.AwayTeamGoals ? 1000 : 0;
+            var resultAway = match.AwayTeamGoals > match.HomeTeamGoals ? 2000 : match.AwayTeamGoals == match.HomeTeamGoals ? 1000 : 0;
+            var homeTeamCountryPointsResult = await countryRepository.AddCountryPointsAfterMatch(match.HomeTeamName, resultHome);
+            var awayTeamCountryPointsResult = await countryRepository.AddCountryPointsAfterMatch(match.AwayTeamName, resultAway);
+            if (homeTeamCountryPointsResult == 0 || awayTeamCountryPointsResult == 0)
+                return StatusCode(500, "Could not update teams country points");
         }
 
         return Ok("Match added successfully.");
     }
 
     [HttpPut]
-    [SwaggerOperation(Tags = new[] { "Matches - Put" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Put" })]
     public async Task<IActionResult> UpdateMatch([FromQuery] MatchRequest matchRequest)
     {
         if (matchRequest is null || string.IsNullOrWhiteSpace(matchRequest.Score))
@@ -259,7 +269,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [SwaggerOperation(Tags = new[] { "Matches - Delete" })]
+    [SwaggerOperation(Tags = new [] { "Matches - Delete" })]
     public async Task<IActionResult> DeleteMatch(int id)
     {
         var result = await matchRepository.DeleteMatch(id);
@@ -273,8 +283,8 @@ public class MatchesController : ControllerBase
 
     private static (int, int)? ParseScore(string score)
     {
-        string[] matchResultParts = score.Split('-', StringSplitOptions.TrimEntries);
-        if (matchResultParts.Length != 2 || !int.TryParse(matchResultParts[0], out var homeGoals) || !int.TryParse(matchResultParts[1], out var awayGoals) || homeGoals < 0 || awayGoals < 0)
+        string [] matchResultParts = score.Split('-', StringSplitOptions.TrimEntries);
+        if (matchResultParts.Length != 2 || !int.TryParse(matchResultParts [0], out var homeGoals) || !int.TryParse(matchResultParts [1], out var awayGoals) || homeGoals < 0 || awayGoals < 0)
         {
             return null;
         }

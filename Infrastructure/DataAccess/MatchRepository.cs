@@ -111,8 +111,6 @@ public class MatchRepository : IMatchRepository
 
             if (insertMatchesResult <= 0)
                 return Result.Fail<Match>($"Unexpected error while inserting match");
-
-            // ToDo: update also teams' countries points
             return Result.Ok(m).WithSuccess($"Match between {m.HomeTeamName} and {m.AwayTeamName} was added successfully with id {m.Id}.");
         }
         catch (Exception ex)
