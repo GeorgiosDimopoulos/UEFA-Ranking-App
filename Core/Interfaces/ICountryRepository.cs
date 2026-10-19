@@ -16,5 +16,5 @@ public interface ICountryRepository
     public Task<Result> DeleteCountryByName(string n);
     public Task<Result> DeleteCountries();
 
-    public Task<int> AddCountryPointsAfterMatch(string teamName, int res);
+    public Task<int> AddMatchCountriesPoints(string homeTeamName, string awayTeamName, int homeTeamRes, int awayTeamRes);
 }

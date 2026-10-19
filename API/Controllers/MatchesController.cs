@@ -220,9 +220,8 @@ public class MatchesController : ControllerBase
 
             var resultHome = match.HomeTeamGoals > match.AwayTeamGoals ? 2000 : match.HomeTeamGoals == match.AwayTeamGoals ? 1000 : 0;
             var resultAway = match.AwayTeamGoals > match.HomeTeamGoals ? 2000 : match.AwayTeamGoals == match.HomeTeamGoals ? 1000 : 0;
-            var homeTeamCountryPointsResult = await countryRepository.AddCountryPointsAfterMatch(match.HomeTeamName, resultHome);
-            var awayTeamCountryPointsResult = await countryRepository.AddCountryPointsAfterMatch(match.AwayTeamName, resultAway);
-            if (homeTeamCountryPointsResult == 0 || awayTeamCountryPointsResult == 0)
+            var countriesPointsResult = await countryRepository.AddMatchCountriesPoints(match.HomeTeamName, match.AwayTeamName, resultHome, resultAway);
+            if (countriesPointsResult == 0)
                 return StatusCode(500, "Could not update teams country points");
         }
 

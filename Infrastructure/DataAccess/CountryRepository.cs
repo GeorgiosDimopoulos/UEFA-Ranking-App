@@ -221,30 +221,42 @@ public class CountryRepository : ICountryRepository
         throw new NotImplementedException("This method is not implemented yet. Deleting all countries is not allowed to prevent accidental data loss.");
     }
 
-    public async Task<int> AddCountryPointsAfterMatch(string teamName, int res)
+    public async Task<int> AddMatchCountriesPoints(string homeTeamName, string awayTeamName, int homeTeamRes, int awayTeamRes)
     {
         using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync();
         using var transaction = connection.BeginTransaction();
 
-        var countryId = await connection.ExecuteScalarAsync<int?>("SELECT CountryId FROM Teams WHERE Name = @Name", new { Name = teamName }, transaction);
-        if (countryId is null)
+        var homeTeamCountryId = await connection.ExecuteScalarAsync<int?>("SELECT CountryId FROM Teams WHERE Name = @Name", new { Name = homeTeamName }, transaction);
+        var awayTeamCountryId = await connection.ExecuteScalarAsync<int?>("SELECT CountryId FROM Teams WHERE Name = @Name", new { Name = awayTeamName }, transaction);
+        if (homeTeamCountryId is null || awayTeamCountryId is null)
         {
             await transaction.RollbackAsync();
             return 0;
         }
 
-        var countryInitialTeams = await connection.ExecuteScalarAsync<int?>("SELECT NumberOfInitialTeams FROM Countries WHERE Id = @CountryId", new { CountryId = countryId }, transaction);
-        if (countryInitialTeams is null or 0)
+        var homeTeamCountryInitialTeams = await connection.ExecuteScalarAsync<int?>("SELECT NumberOfInitialTeams FROM Countries WHERE Id = @CountryId", new { CountryId = homeTeamCountryId }, transaction);
+        var awayTeamCountryInitialTeams = await connection.ExecuteScalarAsync<int?>("SELECT NumberOfInitialTeams FROM Countries WHERE Id = @CountryId", new { CountryId = awayTeamCountryId }, transaction);
+        if (homeTeamCountryInitialTeams is null or 0 || awayTeamCountryInitialTeams is null or 0)
         {
             await transaction.RollbackAsync();
             return 0;
         }
 
-        var earnedCoefficientPoints = res / countryInitialTeams;
-        var countryUpdated = await connection.ExecuteAsync(@"UPDATE Countries SET TotalPoints = TotalPoints + @NewPoints WHERE Id = @CountryId",
-            new { NewPoints = earnedCoefficientPoints, CountryId = countryId }, transaction);
-        if (countryUpdated == 0)
+        var homeTeamCountryEarnedCoefficientPoints = homeTeamRes / homeTeamCountryInitialTeams;
+        var awayTeamCountryEarnedCoefficientPoints = awayTeamRes / awayTeamCountryInitialTeams;
+
+        var homeTeamCountryUpdated = await connection.ExecuteAsync(@"UPDATE Countries SET TotalPoints = TotalPoints + @NewPoints WHERE Id = @CountryId",
+            new { NewPoints = homeTeamCountryEarnedCoefficientPoints, CountryId = homeTeamCountryId }, transaction);
+        if (homeTeamCountryUpdated == 0)
+        {
+            await transaction.RollbackAsync();
+            return 0;
+        }
+
+        var awayTeamCountryUpdated = await connection.ExecuteAsync(@"UPDATE Countries SET TotalPoints = TotalPoints + @NewPoints WHERE Id = @CountryId",
+            new { NewPoints = awayTeamCountryEarnedCoefficientPoints, CountryId = awayTeamCountryId }, transaction);
+        if (awayTeamCountryUpdated == 0)
         {
             await transaction.RollbackAsync();
             return 0;
